@@ -1,0 +1,285 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "courses": "Courses",
+    "whyUs": "Why Us",
+    "testimonials": "Testimonials",
+    "contact": "Contact",
+    "enrollNow": "Enroll Now"
+  },
+  "hero": {
+    "badge": "Now Enrolling — Summer 2025 Cohort",
+    "title": "Learn English",
+    "titleHighlight": "with Confidence",
+    "subtitle": "Kutaisi English Academy offers internationally-aligned courses taught by certified educators. Whether you're a beginner or preparing for IELTS — we'll get you there.",
+    "enrollBtn": "Enroll Now",
+    "discoverBtn": "Discover More",
+    "trustBadges": ["1200+ Students", "CEFR Aligned", "8 Years of Excellence", "96% Success Rate"],
+    "floatingCards": [
+      { "title": "Expert Teachers", "sub": "CELTA Certified" },
+      { "title": "All Levels", "sub": "A1 to C2" },
+      { "title": "Global Standards", "sub": "CEFR Aligned" }
+    ],
+    "scrollLabel": "Scroll"
+  },
+  "stats": {
+    "students": "Students Enrolled",
+    "teachers": "Expert Teachers",
+    "years": "Years of Excellence",
+    "success": "Success Rate"
+  },
+  "about": {
+    "eyebrow": "About the Academy",
+    "title": "Trusted English Education in the Heart of ",
+    "titleHighlight": "Kutaisi",
+    "description": "For over eight years, Kutaisi English Academy has been the city's leading destination for professional English language education — from complete beginners to advanced speakers.",
+    "highlights": [
+      "Founded in 2017 with a mission to make quality English education accessible",
+      "Curriculum fully aligned with the Common European Framework of Reference (CEFR)",
+      "Small group sizes ensure personalized attention for every learner",
+      "Modern, communicative teaching methodology backed by research"
+    ],
+    "viewCourses": "View Our Courses",
+    "getInTouch": "Get in Touch",
+    "quote": "Our mission is simple: give every student in Kutaisi the tools to communicate confidently in English — and unlock the world.",
+    "founder": "Davit Gorgodze",
+    "founderTitle": "Founder & Academic Director",
+    "satisfactionLabel": "Student Satisfaction",
+    "ratingLabel": "Average Rating"
+  },
+  "courses": {
+    "eyebrow": "Our Courses",
+    "title": "Find the Perfect ",
+    "titleHighlight": "Course for You",
+    "description": "From absolute beginner to advanced professional — each programme is designed with clear outcomes, proven methodology, and personalized support.",
+    "popular": "Most Popular",
+    "metaLabels": {
+      "duration": "Duration",
+      "sessions": "Sessions/Week",
+      "groupSize": "Group Size"
+    },
+    "whatYouLearn": "What you'll learn",
+    "enrollBtn": "Enroll in This Course",
+    "placementNote": "Not sure which level is right for you?",
+    "placementLink": "Book a free placement assessment →",
+    "items": [
+      {
+        "level": "A1 – A2",
+        "badge": "Beginner",
+        "title": "Foundation English",
+        "description": "Build a solid foundation from scratch. Perfect for absolute beginners or those looking to strengthen the basics of reading, writing, and speaking.",
+        "duration": "3 months",
+        "sessionsPerWeek": "3× per week",
+        "groupSize": "Up to 8 students",
+        "features": [
+          "Alphabet, phonics & pronunciation",
+          "Basic vocabulary (1000+ words)",
+          "Simple grammar structures",
+          "Everyday conversations"
+        ]
+      },
+      {
+        "level": "B1 – B2",
+        "badge": "Intermediate",
+        "title": "Progressive English",
+        "description": "Take your English to the next level. Focus on fluency, grammar accuracy, and professional communication skills used in real-world situations.",
+        "duration": "4 months",
+        "sessionsPerWeek": "3× per week",
+        "groupSize": "Up to 8 students",
+        "features": [
+          "Advanced grammar & sentence structures",
+          "Business & professional vocabulary",
+          "Reading comprehension & writing",
+          "Listening to native speakers"
+        ]
+      },
+      {
+        "level": "C1 – C2",
+        "badge": "Advanced",
+        "title": "Mastery English",
+        "description": "Achieve near-native proficiency. Designed for confident speakers aiming for academic excellence, IELTS/TOEFL certification, or international careers.",
+        "duration": "4 months",
+        "sessionsPerWeek": "3× per week",
+        "groupSize": "Up to 6 students",
+        "features": [
+          "Academic writing & research skills",
+          "IELTS / TOEFL exam preparation",
+          "Debate, presentation & negotiation",
+          "Literature & advanced comprehension"
+        ]
+      },
+      {
+        "level": "All levels",
+        "badge": "Business",
+        "title": "Business English",
+        "description": "Tailored for professionals and entrepreneurs. Master the language of global business — from meetings and negotiations to emails and reports.",
+        "duration": "3 months",
+        "sessionsPerWeek": "2× per week",
+        "groupSize": "Up to 6 students",
+        "features": [
+          "Corporate vocabulary & tone",
+          "Email writing & formal reports",
+          "Presentations & public speaking",
+          "Cross-cultural communication"
+        ]
+      }
+    ]
+  },
+  "benefits": {
+    "eyebrow": "Why Choose Us",
+    "title": "Everything You Need to ",
+    "titleHighlight": "Succeed",
+    "description": "We've built our academy around what actually works — research-backed methods, expert teachers, and an environment where students thrive.",
+    "ctaTitle": "Ready to experience the difference?",
+    "ctaDesc": "Join over 1,200 students who have transformed their English with us.",
+    "ctaBtn": "Start Today — It's Free to Assess",
+    "items": [
+      {
+        "title": "Experienced Teachers",
+        "description": "Our educators hold internationally recognized CELTA/DELTA certifications with 5–15 years of teaching experience."
+      },
+      {
+        "title": "Small Group Classes",
+        "description": "Maximum 8 students per class ensures every student receives individual attention and personalized feedback."
+      },
+      {
+        "title": "Modern Methodology",
+        "description": "We use communicative, task-based learning aligned with the Common European Framework of Reference (CEFR)."
+      },
+      {
+        "title": "Flexible Scheduling",
+        "description": "Morning, afternoon, and evening classes available — weekdays and weekends — to fit your lifestyle."
+      },
+      {
+        "title": "Native-Speaker Sessions",
+        "description": "Regular sessions with native English speakers provide authentic language exposure and real-world practice."
+      },
+      {
+        "title": "Certified Curriculum",
+        "description": "Our curriculum meets international educational standards with proven outcomes and progress tracking for every student."
+      }
+    ]
+  },
+  "testimonials": {
+    "eyebrow": "Testimonials",
+    "title": "Hear from Our ",
+    "titleHighlight": "Students",
+    "description": "Don't take our word for it. Here's what our students say about their experience at Kutaisi English Academy.",
+    "items": [
+      {
+        "name": "Mariam Kvaratskhelia",
+        "role": "University Student",
+        "location": "Kutaisi",
+        "text": "After just 6 months at Kutaisi English Academy, I passed my IELTS with a 7.5 score. The teachers are incredibly patient and the small class sizes meant I could ask questions freely. I honestly couldn't have done it without them."
+      },
+      {
+        "name": "Giorgi Tsikarishvili",
+        "role": "Software Engineer",
+        "location": "Kutaisi",
+        "text": "I needed Business English for my remote job with a UK company. The Business English course gave me confidence in meetings and writing professional emails. My manager noticed the improvement within weeks."
+      },
+      {
+        "name": "Ana Beridze",
+        "role": "High School Student",
+        "location": "Kutaisi",
+        "text": "I started from absolute zero and now I can have full conversations in English. The teachers make learning fun and engaging. The academy feels like a family — everyone supports each other."
+      },
+      {
+        "name": "Luka Gelashvili",
+        "role": "Marketing Manager",
+        "location": "Kutaisi",
+        "text": "I had taken English courses before, but nothing like this. The methodology here is completely different — practical, modern, and results-oriented. I can now lead international client calls confidently."
+      },
+      {
+        "name": "Nino Shalamberidze",
+        "role": "Medical Professional",
+        "location": "Kutaisi",
+        "text": "As a doctor needing English for international conferences and research papers, the Advanced course was exactly what I needed. The academic writing component was invaluable for my career."
+      }
+    ]
+  },
+  "cta": {
+    "badge": "Limited Seats Available",
+    "title": "Start Your English",
+    "titleHighlight": "Journey Today",
+    "description": "Take the first step toward fluency. Our placement assessment is completely free — no pressure, no commitment. Just find out where you are and where you can go.",
+    "benefits": [
+      "Free Placement Test",
+      "No Commitment",
+      "Flexible Start Dates",
+      "Certified Teachers"
+    ],
+    "enrollBtn": "Book Your Free Assessment",
+    "browseBtn": "Browse Courses"
+  },
+  "contact": {
+    "eyebrow": "Contact Us",
+    "title": "Let's Start a ",
+    "titleHighlight": "Conversation",
+    "description": "Have questions about our courses? Ready to enroll? Fill in the form and our team will get back to you within 24 hours.",
+    "labels": {
+      "phone": "Phone",
+      "email": "Email",
+      "address": "Address",
+      "hours": "Working Hours"
+    },
+    "address": "12 Rustaveli Avenue, Kutaisi, Georgia",
+    "hours": "Mon–Fri: 9:00–20:00, Sat: 10:00–17:00",
+    "mapAddress1": "12 Rustaveli Avenue",
+    "mapAddress2": "Kutaisi, Georgia",
+    "form": {
+      "name": "Full Name",
+      "namePlaceholder": "Your full name",
+      "nameRequired": "Full name is required",
+      "phone": "Phone Number",
+      "phonePlaceholder": "+995 XXX XXX XXX",
+      "phoneRequired": "Phone number is required",
+      "phoneInvalid": "Enter a valid phone number",
+      "email": "Email Address",
+      "emailPlaceholder": "you@example.com (optional)",
+      "emailInvalid": "Enter a valid email address",
+      "course": "Interested Course",
+      "courseDefault": "Select a course...",
+      "courseRequired": "Please select a course",
+      "message": "Message",
+      "messageOptional": "(optional)",
+      "messagePlaceholder": "Tell us about your English goals, current level, or any questions...",
+      "sendBtn": "Send Message",
+      "sending": "Sending...",
+      "successTitle": "Message Sent!",
+      "successDesc": "Thank you for reaching out. Our team will contact you within 24 hours to discuss your learning goals.",
+      "successLink": "Send another message",
+      "privacy": "By submitting this form, you agree to be contacted by our team regarding your inquiry. We respect your privacy and will never share your information."
+    },
+    "courseOptions": [
+      "Foundation English (A1–A2)",
+      "Progressive English (B1–B2)",
+      "Mastery English (C1–C2)",
+      "Business English",
+      "I need a placement assessment"
+    ]
+  },
+  "footer": {
+    "brand": "Kutaisi",
+    "brandSub": "English Academy",
+    "tagline": "Empowering students across Kutaisi to master English and open doors to global opportunities since 2017.",
+    "navigation": "Navigation",
+    "courses": "Our Courses",
+    "contact": "Contact",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "copyright": "Kutaisi English Academy. All rights reserved.",
+    "courseLinks": [
+      "Foundation English",
+      "Progressive English",
+      "Mastery English",
+      "Business English"
+    ]
+  },
+  "language": {
+    "en": "English",
+    "ka": "ქართული",
+    "switchTo": "Switch language"
+  }
+}

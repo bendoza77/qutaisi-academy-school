@@ -1,0 +1,350 @@
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
+import { Phone, Mail, MapPin, Clock, Send, CheckCircle2, AlertCircle } from "lucide-react";
+import { SectionTitle } from "../ui/SectionTitle";
+import { CONTACT_INFO } from "../../constants";
+import { cn } from "../../utils/cn";
+
+const INITIAL_FORM = { name: "", phone: "", email: "", course: "", message: "" };
+
+function InputField({ label, error, className, ...props }) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+        {label}
+        {props.required && <span className="text-rose-500 ml-0.5">*</span>}
+      </label>
+      <input
+        className={cn(
+          "w-full px-4 py-3 rounded-xl border text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white",
+          "placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-all duration-200",
+          "focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500",
+          error
+            ? "border-rose-400 dark:border-rose-500"
+            : "border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600",
+          className
+        )}
+        {...props}
+      />
+      {error && (
+        <span className="flex items-center gap-1.5 text-xs text-rose-500">
+          <AlertCircle className="w-3 h-3" />
+          {error}
+        </span>
+      )}
+    </div>
+  );
+}
+
+function SelectField({ label, error, children, ...props }) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+        {label}
+        {props.required && <span className="text-rose-500 ml-0.5">*</span>}
+      </label>
+      <select
+        className={cn(
+          "w-full px-4 py-3 rounded-xl border text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white",
+          "transition-all duration-200 cursor-pointer",
+          "focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500",
+          error
+            ? "border-rose-400 dark:border-rose-500"
+            : "border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600"
+        )}
+        {...props}
+      >
+        {children}
+      </select>
+      {error && (
+        <span className="flex items-center gap-1.5 text-xs text-rose-500">
+          <AlertCircle className="w-3 h-3" />
+          {error}
+        </span>
+      )}
+    </div>
+  );
+}
+
+export function Contact() {
+  const { t } = useTranslation();
+  const [form, setForm] = useState(INITIAL_FORM);
+  const [errors, setErrors] = useState({});
+  const [status, setStatus] = useState("idle");
+
+  const courseOptions = t("contact.courseOptions", { returnObjects: true });
+
+  const validate = () => {
+    const f = t("contact.form", { returnObjects: true });
+    const errs = {};
+    if (!form.name.trim()) errs.name = f.nameRequired;
+    if (!form.phone.trim()) errs.phone = f.phoneRequired;
+    else if (!/^[\d\s+\-()]{7,}$/.test(form.phone)) errs.phone = f.phoneInvalid;
+    if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errs.email = f.emailInvalid;
+    if (!form.course) errs.course = f.courseRequired;
+    return errs;
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: undefined }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const errs = validate();
+    if (Object.keys(errs).length > 0) { setErrors(errs); return; }
+    setStatus("submitting");
+    await new Promise((r) => setTimeout(r, 1500));
+    setStatus("success");
+    setForm(INITIAL_FORM);
+  };
+
+  const contactMeta = [
+    {
+      Icon: Phone,
+      labelKey: "contact.labels.phone",
+      value: CONTACT_INFO.phone,
+      href: `tel:${CONTACT_INFO.phone.replace(/\s/g, "")}`,
+      color: "bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400",
+    },
+    {
+      Icon: Mail,
+      labelKey: "contact.labels.email",
+      value: CONTACT_INFO.email,
+      href: `mailto:${CONTACT_INFO.email}`,
+      color: "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400",
+    },
+    {
+      Icon: MapPin,
+      labelKey: "contact.labels.address",
+      valueKey: "contact.address",
+      href: null,
+      color: "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400",
+    },
+    {
+      Icon: Clock,
+      labelKey: "contact.labels.hours",
+      valueKey: "contact.hours",
+      href: null,
+      color: "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400",
+    },
+  ];
+
+  return (
+    <section
+      id="contact"
+      className="relative py-20 lg:py-32 bg-white dark:bg-slate-900 overflow-hidden"
+      aria-label="Contact us"
+    >
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-primary-50 dark:bg-primary-950/20 rounded-full blur-3xl pointer-events-none translate-x-1/2 translate-y-1/2" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col items-center mb-14">
+          <SectionTitle
+            eyebrow={t("contact.eyebrow")}
+            title={t("contact.title")}
+            highlight={t("contact.titleHighlight")}
+            description={t("contact.description")}
+            align="center"
+            className="mx-auto"
+          />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
+          {/* Contact info */}
+          <motion.div
+            initial={{ opacity: 0, x: -24 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            className="lg:col-span-4 flex flex-col gap-8"
+          >
+            <div className="flex flex-col gap-4">
+              {contactMeta.map(({ Icon, labelKey, value, valueKey, href, color }) => {
+                const displayValue = valueKey ? t(valueKey) : value;
+                return (
+                  <div
+                    key={labelKey}
+                    className="flex items-start gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700"
+                  >
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${color}`}>
+                      <Icon className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-0.5">
+                        {t(labelKey)}
+                      </div>
+                      {href ? (
+                        <a
+                          href={href}
+                          className="text-sm font-medium text-slate-900 dark:text-white hover:text-primary-700 dark:hover:text-primary-400 transition-colors duration-150"
+                        >
+                          {displayValue}
+                        </a>
+                      ) : (
+                        <p className="text-sm font-medium text-slate-900 dark:text-white">{displayValue}</p>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Map placeholder */}
+            <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 h-48 bg-slate-100 dark:bg-slate-800 flex items-center justify-center relative">
+              <div
+                className="absolute inset-0 opacity-10 dark:opacity-5"
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%231e3a8a' fill-opacity='1' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='1'/%3E%3Ccircle cx='23' cy='3' r='1'/%3E%3Ccircle cx='3' cy='23' r='1'/%3E%3Ccircle cx='23' cy='23' r='1'/%3E%3C/g%3E%3C/svg%3E")`,
+                }}
+              />
+              <div className="relative z-10 flex flex-col items-center gap-2">
+                <MapPin className="w-8 h-8 text-primary-400 dark:text-primary-600" />
+                <div className="text-center">
+                  <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
+                    {t("contact.mapAddress1")}
+                  </p>
+                  <p className="text-xs text-slate-400">{t("contact.mapAddress2")}</p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Form */}
+          <motion.div
+            initial={{ opacity: 0, x: 24 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
+            className="lg:col-span-8"
+          >
+            <div className="bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 lg:p-8 shadow-sm">
+              {status === "success" ? (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.4 }}
+                  className="flex flex-col items-center justify-center gap-4 py-16 text-center"
+                >
+                  <div className="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
+                    <CheckCircle2 className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white">
+                    {t("contact.form.successTitle")}
+                  </h3>
+                  <p className="text-slate-500 dark:text-slate-400 max-w-sm">
+                    {t("contact.form.successDesc")}
+                  </p>
+                  <button
+                    onClick={() => setStatus("idle")}
+                    className="mt-2 text-sm text-primary-600 dark:text-primary-400 hover:underline font-medium cursor-pointer"
+                  >
+                    {t("contact.form.successLink")}
+                  </button>
+                </motion.div>
+              ) : (
+                <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <InputField
+                      label={t("contact.form.name")}
+                      name="name"
+                      type="text"
+                      placeholder={t("contact.form.namePlaceholder")}
+                      value={form.name}
+                      onChange={handleChange}
+                      error={errors.name}
+                      required
+                    />
+                    <InputField
+                      label={t("contact.form.phone")}
+                      name="phone"
+                      type="tel"
+                      placeholder={t("contact.form.phonePlaceholder")}
+                      value={form.phone}
+                      onChange={handleChange}
+                      error={errors.phone}
+                      required
+                    />
+                  </div>
+
+                  <InputField
+                    label={t("contact.form.email")}
+                    name="email"
+                    type="email"
+                    placeholder={t("contact.form.emailPlaceholder")}
+                    value={form.email}
+                    onChange={handleChange}
+                    error={errors.email}
+                  />
+
+                  <SelectField
+                    label={t("contact.form.course")}
+                    name="course"
+                    value={form.course}
+                    onChange={handleChange}
+                    error={errors.course}
+                    required
+                  >
+                    <option value="">{t("contact.form.courseDefault")}</option>
+                    {Array.isArray(courseOptions) &&
+                      courseOptions.map((c) => (
+                        <option key={c} value={c}>{c}</option>
+                      ))}
+                  </SelectField>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                      {t("contact.form.message")}{" "}
+                      <span className="text-slate-400 dark:text-slate-500 font-normal">
+                        {t("contact.form.messageOptional")}
+                      </span>
+                    </label>
+                    <textarea
+                      name="message"
+                      rows={4}
+                      placeholder={t("contact.form.messagePlaceholder")}
+                      value={form.message}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 resize-none focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-200"
+                    />
+                  </div>
+
+                  <motion.button
+                    type="submit"
+                    disabled={status === "submitting"}
+                    whileHover={{ scale: status !== "submitting" ? 1.01 : 1 }}
+                    whileTap={{ scale: status !== "submitting" ? 0.99 : 1 }}
+                    className="w-full sm:w-auto self-start inline-flex items-center gap-2 px-8 py-3.5 bg-primary-900 hover:bg-primary-800 disabled:bg-primary-700 text-white rounded-xl font-semibold text-sm shadow-lg shadow-primary-900/20 transition-all duration-200 cursor-pointer disabled:cursor-wait"
+                  >
+                    {status === "submitting" ? (
+                      <>
+                        <motion.div
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                          className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full"
+                        />
+                        {t("contact.form.sending")}
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4" />
+                        {t("contact.form.sendBtn")}
+                      </>
+                    )}
+                  </motion.button>
+
+                  <p className="text-xs text-slate-400 dark:text-slate-500">
+                    {t("contact.form.privacy")}
+                  </p>
+                </form>
+              )}
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+}
