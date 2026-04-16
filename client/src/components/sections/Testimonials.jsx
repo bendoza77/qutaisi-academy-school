@@ -30,7 +30,7 @@ function TestimonialCard({ meta, text, direction }) {
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       className="absolute inset-0"
     >
-      <div className="h-full bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-8 flex flex-col">
+      <div className="h-full bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 sm:p-8 flex flex-col">
         <div className="flex items-start justify-between mb-6">
           <Quote className="w-10 h-10 text-primary-200 dark:text-primary-800" strokeWidth={1} />
           <StarRating rating={meta.rating} />
@@ -38,7 +38,7 @@ function TestimonialCard({ meta, text, direction }) {
         <p className="text-slate-700 dark:text-slate-300 text-base lg:text-lg leading-relaxed flex-1 italic">
           "{text.text}"
         </p>
-        <div className="flex items-center gap-4 mt-8 pt-6 border-t border-slate-100 dark:border-slate-700">
+        <div className="flex items-center gap-4 mt-6 pt-4 sm:mt-8 sm:pt-6 border-t border-slate-100 dark:border-slate-700">
           <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-base ${meta.color}`}>
             {meta.avatar}
           </div>
@@ -101,7 +101,7 @@ export function Testimonials() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           {/* Slider */}
           <div className="lg:col-span-7">
-            <div className="relative" style={{ height: "320px" }}>
+            <div className="relative overflow-hidden h-[430px] sm:h-[360px] lg:h-[320px]">
               <AnimatePresence initial={false} custom={direction}>
                 {Array.isArray(testimonialTexts) && (
                   <TestimonialCard
