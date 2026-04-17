@@ -4,12 +4,12 @@
  */
 
 export const NAV_LINK_KEYS = [
-  { key: "nav.home", href: "#home" },
-  { key: "nav.about", href: "#about" },
-  { key: "nav.courses", href: "#courses" },
-  { key: "nav.whyUs", href: "#why-us" },
-  { key: "nav.testimonials", href: "#testimonials" },
-  { key: "nav.contact", href: "#contact" },
+  { key: "nav.home",         href: "#home",         path: "/"             },
+  { key: "nav.about",        href: "#about",        path: "/about"        },
+  { key: "nav.courses",      href: "#courses",      path: "/courses"      },
+  { key: "nav.whyUs",        href: "#why-us",       path: "/why-us"       },
+  { key: "nav.testimonials", href: "#testimonials", path: "/testimonials" },
+  { key: "nav.contact",      href: "#contact",      path: "/contact"      },
 ];
 
 /** Visual/structural metadata for the 4 courses (order matches translation items array) */

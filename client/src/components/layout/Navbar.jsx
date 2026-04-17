@@ -1,41 +1,42 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Moon, Sun, Menu, X, BookOpen } from "lucide-react";
+import { Moon, Sun, Menu, X } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../../context/ThemeContext";
 import { LanguageSwitcher } from "../ui/LanguageSwitcher";
 import { NAV_LINK_KEYS } from "../../constants";
 import { cn } from "../../utils/cn";
+import logoSrc from "../../assets/Screenshot_2026-04-16_211914-removebg-preview.png";
+import i18n from "../../i18n/config";
 
 export function Navbar() {
   const { isDark, toggle } = useTheme();
   const { t } = useTranslation();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState("home");
+
+  const isHome = location.pathname === "/";
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-
-      const sections = NAV_LINK_KEYS.map((l) => l.href.replace("#", ""));
-      for (const id of [...sections].reverse()) {
-        const el = document.getElementById(id);
-        if (el && el.getBoundingClientRect().top <= 100) {
-          setActiveSection(id);
-          break;
-        }
-      }
-    };
-
+    const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleNavClick = (href) => {
+  useEffect(() => {
     setMobileOpen(false);
-    document.getElementById(href.replace("#", ""))?.scrollIntoView({ behavior: "smooth" });
+  }, [location.pathname]);
+
+  const handleEnroll = () => {
+    if (isHome) {
+      document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
+    } else {
+      navigate("/contact");
+    }
   };
 
   return (
@@ -55,14 +56,16 @@ export function Navbar() {
           <div className="flex items-center justify-between h-16 lg:h-20">
 
             {/* Logo */}
-            <button
-              onClick={() => handleNavClick("#home")}
-              className="flex items-center gap-2.5 group"
+            <Link
+              to="/"
+              className="flex items-center gap-2 group"
               aria-label="Kutaisi English Academy home"
             >
-              <div className="w-9 h-9 bg-primary-900 dark:bg-primary-700 rounded-lg flex items-center justify-center shadow-md group-hover:shadow-primary-900/40 transition-shadow duration-300">
-                <BookOpen className="w-5 h-5 text-white" strokeWidth={2} />
-              </div>
+              <img
+                src={logoSrc}
+                alt="Kutaisi English Academy"
+                className="h-10 w-10 object-contain drop-shadow-md transition-transform duration-300 group-hover:scale-105"
+              />
               <div className="flex flex-col leading-none">
                 <span
                   className={cn(
@@ -81,18 +84,19 @@ export function Navbar() {
                   {t("footer.brandSub")}
                 </span>
               </div>
-            </button>
+            </Link>
 
             {/* Desktop nav */}
             <nav className="hidden lg:flex items-center gap-1" role="navigation" aria-label="Main navigation">
               {NAV_LINK_KEYS.map((link) => {
-                const isActive = activeSection === link.href.replace("#", "");
+                const isActive = location.pathname === link.path ||
+                  (link.path !== "/" && location.pathname.startsWith(link.path));
                 return (
-                  <button
-                    key={link.href}
-                    onClick={() => handleNavClick(link.href)}
+                  <Link
+                    key={link.path}
+                    to={link.path}
                     className={cn(
-                      "px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer",
+                      "px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
                       scrolled
                         ? isActive
                           ? "text-primary-900 bg-primary-50 dark:text-primary-400 dark:bg-primary-900/20"
@@ -103,7 +107,7 @@ export function Navbar() {
                     )}
                   >
                     {t(link.key)}
-                  </button>
+                  </Link>
                 );
               })}
             </nav>
@@ -132,7 +136,7 @@ export function Navbar() {
 
               {/* Enroll CTA */}
               <button
-                onClick={() => handleNavClick("#contact")}
+                onClick={handleEnroll}
                 className={cn(
                   "hidden sm:inline-flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 cursor-pointer",
                   scrolled
@@ -178,16 +182,19 @@ export function Navbar() {
               aria-label="Mobile navigation"
             >
               {NAV_LINK_KEYS.map((link, i) => (
-                <motion.button
-                  key={link.href}
+                <motion.div
+                  key={link.path}
                   initial={{ opacity: 0, x: -12 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.05, duration: 0.25 }}
-                  onClick={() => handleNavClick(link.href)}
-                  className="w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-slate-700 hover:text-primary-900 hover:bg-primary-50 dark:text-slate-300 dark:hover:text-white dark:hover:bg-white/10 transition-colors duration-150 cursor-pointer"
                 >
-                  {t(link.key)}
-                </motion.button>
+                  <Link
+                    to={link.path}
+                    className="block w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-slate-700 hover:text-primary-900 hover:bg-primary-50 dark:text-slate-300 dark:hover:text-white dark:hover:bg-white/10 transition-colors duration-150"
+                  >
+                    {t(link.key)}
+                  </Link>
+                </motion.div>
               ))}
 
               {/* Language switcher — mobile */}
@@ -197,7 +204,7 @@ export function Navbar() {
 
               <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
                 <button
-                  onClick={() => handleNavClick("#contact")}
+                  onClick={handleEnroll}
                   className="w-full bg-primary-900 text-white py-3 rounded-lg text-sm font-semibold hover:bg-primary-800 transition-colors duration-200 cursor-pointer"
                 >
                   {t("nav.enrollNow")}

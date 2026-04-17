@@ -5,7 +5,15 @@
       "Bash(node -e \"const pkg = require\\('./package.json'\\); console.log\\(JSON.stringify\\(pkg.dependencies, null, 2\\)\\)\")",
       "Bash(timeout 30 npm run dev)",
       "Bash(npm run *)",
-      "Bash(node -e \"const p=require\\('./node_modules/tailwindcss/package.json'\\); console.log\\(p.version\\)\")"
+      "Bash(node -e \"const p=require\\('./node_modules/tailwindcss/package.json'\\); console.log\\(p.version\\)\")",
+      "Bash(npm --version)",
+      "Bash(npx create-next-app@latest web --typescript --tailwind --eslint --app --no-src-dir --import-alias \"@/*\" --yes)",
+      "Bash(python3 *)",
+      "Bash(node -e \"const d=require\\('./client/src/i18n/locales/en/translation.json'\\); console.log\\(JSON.stringify\\(d.nav, null, 2\\)\\)\")",
+      "Bash(node -e \"require\\('three'\\); require\\('@react-three/fiber'\\); require\\('gsap'\\); require\\('zustand'\\)\")",
+      "Bash(timeout 30 npx vite build)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5173/)",
+      "Bash(npx vite *)"
     ]
   }
 }

@@ -31,20 +31,22 @@ function TestimonialCard({ meta, text, direction }) {
       className="absolute inset-0"
     >
       <div className="h-full bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 sm:p-8 flex flex-col">
-        <div className="flex items-start justify-between mb-6">
+        <div className="flex items-start justify-between mb-4">
           <Quote className="w-10 h-10 text-primary-200 dark:text-primary-800" strokeWidth={1} />
           <StarRating rating={meta.rating} />
         </div>
-        <p className="text-slate-700 dark:text-slate-300 text-base lg:text-lg leading-relaxed flex-1 italic">
-          "{text.text}"
-        </p>
-        <div className="flex items-center gap-4 mt-6 pt-4 sm:mt-8 sm:pt-6 border-t border-slate-100 dark:border-slate-700">
-          <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-base ${meta.color}`}>
+        <div className="flex-1 min-h-0 overflow-y-auto">
+          <p className="text-slate-700 dark:text-slate-300 text-base leading-relaxed italic">
+            "{text.text}"
+          </p>
+        </div>
+        <div className="flex items-center gap-3 mt-4 pt-4 border-t border-slate-100 dark:border-slate-700 shrink-0">
+          <div className={`w-11 h-11 rounded-full flex items-center justify-center text-white font-bold text-sm shrink-0 ${meta.color}`}>
             {meta.avatar}
           </div>
-          <div>
-            <div className="font-semibold text-slate-900 dark:text-white text-sm">{text.name}</div>
-            <div className="text-xs text-slate-400 dark:text-slate-500">
+          <div className="min-w-0">
+            <div className="font-semibold text-slate-900 dark:text-white text-sm leading-tight">{text.name}</div>
+            <div className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
               {text.role} · {text.location}
             </div>
           </div>
@@ -101,7 +103,7 @@ export function Testimonials() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           {/* Slider */}
           <div className="lg:col-span-7">
-            <div className="relative overflow-hidden h-[430px] sm:h-[360px] lg:h-[320px]">
+            <div className="relative overflow-hidden h-[460px] sm:h-[380px] lg:h-[340px]">
               <AnimatePresence initial={false} custom={direction}>
                 {Array.isArray(testimonialTexts) && (
                   <TestimonialCard

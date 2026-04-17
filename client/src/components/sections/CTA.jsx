@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { ArrowRight, Sparkles } from "lucide-react";
+import { CTABackground3D } from "../3d/CTABackground3D";
 
 export function CTA() {
   const { t } = useTranslation();
@@ -15,6 +16,9 @@ export function CTA() {
       className="relative py-20 lg:py-28 overflow-hidden"
     >
       <div className="absolute inset-0 bg-gradient-to-br from-primary-950 via-primary-900 to-primary-800" />
+
+      {/* 3D sphere + rings */}
+      <CTABackground3D />
 
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-0 left-1/4 w-96 h-96 rounded-full bg-blue-600/20 blur-3xl" />

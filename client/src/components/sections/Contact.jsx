@@ -193,23 +193,18 @@ export function Contact() {
               })}
             </div>
 
-            {/* Map placeholder */}
-            <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 h-48 bg-slate-100 dark:bg-slate-800 flex items-center justify-center relative">
-              <div
-                className="absolute inset-0 opacity-10 dark:opacity-5"
-                style={{
-                  backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%231e3a8a' fill-opacity='1' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='1'/%3E%3Ccircle cx='23' cy='3' r='1'/%3E%3Ccircle cx='3' cy='23' r='1'/%3E%3Ccircle cx='23' cy='23' r='1'/%3E%3C/g%3E%3C/svg%3E")`,
-                }}
+            {/* Google Maps embed */}
+            <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 h-52">
+              <iframe
+                title="Kutaisi English Academy location"
+                src="https://maps.google.com/maps?q=Rustaveli+Avenue+Kutaisi+Georgia&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
               />
-              <div className="relative z-10 flex flex-col items-center gap-2">
-                <MapPin className="w-8 h-8 text-primary-400 dark:text-primary-600" />
-                <div className="text-center">
-                  <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                    {t("contact.mapAddress1")}
-                  </p>
-                  <p className="text-xs text-slate-400">{t("contact.mapAddress2")}</p>
-                </div>
-              </div>
             </div>
           </motion.div>
 

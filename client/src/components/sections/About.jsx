@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { CheckCircle2, ArrowRight } from "lucide-react";
 import { SectionTitle } from "../ui/SectionTitle";
 import { Button } from "../ui/Button";
+import { AboutOrb3D } from "../3d/AboutOrb3D";
 
 const cardVariants = {
   hidden: { opacity: 0, x: 40 },
@@ -87,6 +88,12 @@ export function About() {
               transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
               className="relative bg-gradient-to-br from-primary-900 to-primary-950 rounded-3xl p-8 lg:p-10 overflow-hidden"
             >
+              {/* 3D globe backdrop */}
+              <div className="absolute inset-0">
+                <AboutOrb3D />
+              </div>
+
+              {/* Dot pattern */}
               <div
                 className="absolute inset-0 opacity-5"
                 style={{

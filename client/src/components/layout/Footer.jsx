@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import { BookOpen, Phone, Mail, MapPin } from "lucide-react";
 import { NAV_LINK_KEYS, CONTACT_INFO } from "../../constants";
 
@@ -31,12 +32,9 @@ const LinkedinIcon = () => (
 export function Footer() {
   const { t } = useTranslation();
 
-  const handleNavClick = (href) => {
-    document.getElementById(href.replace("#", ""))?.scrollIntoView({ behavior: "smooth" });
-  };
-
   const year = new Date().getFullYear();
   const courseLinks = t("footer.courseLinks", { returnObjects: true });
+  const courseSlugs = ["foundation", "progressive", "mastery", "business"];
 
   return (
     <footer className="bg-slate-950 text-slate-400" role="contentinfo">
@@ -87,15 +85,31 @@ export function Footer() {
             </h3>
             <ul className="flex flex-col gap-2.5">
               {NAV_LINK_KEYS.map((link) => (
-                <li key={link.href}>
-                  <button
-                    onClick={() => handleNavClick(link.href)}
-                    className="text-sm text-slate-400 hover:text-white transition-colors duration-150 cursor-pointer group flex items-center gap-1"
+                <li key={link.path}>
+                  <Link
+                    to={link.path}
+                    className="text-sm text-slate-400 hover:text-white transition-colors duration-150 group flex items-center gap-1"
                   >
                     <span className="group-hover:translate-x-0.5 transition-transform duration-150">
                       {t(link.key)}
                     </span>
-                  </button>
+                  </Link>
+                </li>
+              ))}
+              {[
+                { label: 'Our Teachers', path: '/teachers' },
+                { label: 'FAQ', path: '/faq' },
+                { label: 'Enroll Now', path: '/enroll' },
+              ].map((link) => (
+                <li key={link.path}>
+                  <Link
+                    to={link.path}
+                    className="text-sm text-slate-400 hover:text-white transition-colors duration-150 group flex items-center gap-1"
+                  >
+                    <span className="group-hover:translate-x-0.5 transition-transform duration-150">
+                      {link.label}
+                    </span>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -108,16 +122,16 @@ export function Footer() {
             </h3>
             <ul className="flex flex-col gap-2.5">
               {Array.isArray(courseLinks) &&
-                courseLinks.map((name) => (
+                courseLinks.map((name, i) => (
                   <li key={name}>
-                    <button
-                      onClick={() => handleNavClick("#courses")}
-                      className="text-sm text-slate-400 hover:text-white transition-colors duration-150 cursor-pointer group flex items-center gap-1"
+                    <Link
+                      to={`/courses/${courseSlugs[i] ?? ""}`}
+                      className="text-sm text-slate-400 hover:text-white transition-colors duration-150 group flex items-center gap-1"
                     >
                       <span className="group-hover:translate-x-0.5 transition-transform duration-150">
                         {name}
                       </span>
-                    </button>
+                    </Link>
                   </li>
                 ))}
             </ul>
@@ -173,12 +187,12 @@ export function Footer() {
             © {year} {t("footer.copyright")}
           </p>
           <div className="flex items-center gap-4">
-            <a href="#" className="text-xs text-slate-500 hover:text-slate-300 transition-colors duration-150">
+            <Link to="/privacy" className="text-xs text-slate-500 hover:text-slate-300 transition-colors duration-150">
               {t("footer.privacy")}
-            </a>
-            <a href="#" className="text-xs text-slate-500 hover:text-slate-300 transition-colors duration-150">
+            </Link>
+            <Link to="/terms" className="text-xs text-slate-500 hover:text-slate-300 transition-colors duration-150">
               {t("footer.terms")}
-            </a>
+            </Link>
           </div>
         </div>
       </div>

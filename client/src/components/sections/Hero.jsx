@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { ArrowRight, ChevronDown, PlayCircle } from "lucide-react";
 import { Button } from "../ui/Button";
+import { HeroBackground3D } from "../3d/HeroBackground3D";
 
 const containerVariants = {
   hidden: {},
@@ -30,6 +31,9 @@ export function Hero() {
     >
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary-950 via-primary-900 to-primary-800" />
+
+      {/* 3D floating shapes */}
+      <HeroBackground3D />
 
       {/* Decorative orbs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
