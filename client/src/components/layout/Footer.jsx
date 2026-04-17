@@ -1,7 +1,8 @@
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { BookOpen, Phone, Mail, MapPin } from "lucide-react";
-import { NAV_LINK_KEYS, CONTACT_INFO } from "../../constants";
+import { NAV_LINK_KEYS } from "../../constants";
+import { useSiteData } from "../../context/SiteDataContext";
 
 const FacebookIcon = () => (
   <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
@@ -31,6 +32,8 @@ const LinkedinIcon = () => (
 
 export function Footer() {
   const { t } = useTranslation();
+  const { siteData } = useSiteData();
+  const contactInfo = siteData.contact;
 
   const year = new Date().getFullYear();
   const courseLinks = t("footer.courseLinks", { returnObjects: true });
@@ -61,10 +64,10 @@ export function Footer() {
             </p>
             <div className="flex items-center gap-2">
               {[
-                { Icon: FacebookIcon, href: CONTACT_INFO.social.facebook, label: "Facebook" },
-                { Icon: InstagramIcon, href: CONTACT_INFO.social.instagram, label: "Instagram" },
-                { Icon: YoutubeIcon, href: CONTACT_INFO.social.youtube, label: "YouTube" },
-                { Icon: LinkedinIcon, href: CONTACT_INFO.social.linkedin, label: "LinkedIn" },
+                { Icon: FacebookIcon, href: contactInfo.social.facebook, label: "Facebook" },
+                { Icon: InstagramIcon, href: contactInfo.social.instagram, label: "Instagram" },
+                { Icon: YoutubeIcon, href: contactInfo.social.youtube, label: "YouTube" },
+                { Icon: LinkedinIcon, href: contactInfo.social.linkedin, label: "LinkedIn" },
               ].map(({ Icon, href, label }) => (
                 <a
                   key={label}
@@ -145,27 +148,27 @@ export function Footer() {
             <ul className="flex flex-col gap-3.5">
               <li>
                 <a
-                  href={`tel:${CONTACT_INFO.phone.replace(/\s/g, "")}`}
+                  href={`tel:${contactInfo.phone.replace(/\s/g, "")}`}
                   className="flex items-start gap-3 group"
                 >
                   <div className="mt-0.5 w-7 h-7 rounded-md bg-slate-800 group-hover:bg-primary-700 flex items-center justify-center transition-colors duration-200 shrink-0">
                     <Phone className="w-3.5 h-3.5 text-slate-400 group-hover:text-white transition-colors duration-200" />
                   </div>
                   <span className="text-sm text-slate-400 group-hover:text-white transition-colors duration-150">
-                    {CONTACT_INFO.phone}
+                    {contactInfo.phone}
                   </span>
                 </a>
               </li>
               <li>
                 <a
-                  href={`mailto:${CONTACT_INFO.email}`}
+                  href={`mailto:${contactInfo.email}`}
                   className="flex items-start gap-3 group"
                 >
                   <div className="mt-0.5 w-7 h-7 rounded-md bg-slate-800 group-hover:bg-primary-700 flex items-center justify-center transition-colors duration-200 shrink-0">
                     <Mail className="w-3.5 h-3.5 text-slate-400 group-hover:text-white transition-colors duration-200" />
                   </div>
                   <span className="text-sm text-slate-400 group-hover:text-white transition-colors duration-150 break-all">
-                    {CONTACT_INFO.email}
+                    {contactInfo.email}
                   </span>
                 </a>
               </li>
@@ -173,7 +176,7 @@ export function Footer() {
                 <div className="mt-0.5 w-7 h-7 rounded-md bg-slate-800 flex items-center justify-center shrink-0">
                   <MapPin className="w-3.5 h-3.5 text-slate-500" />
                 </div>
-                <span className="text-sm text-slate-400">{t("contact.address")}</span>
+                <span className="text-sm text-slate-400">{contactInfo.address}</span>
               </li>
             </ul>
           </div>

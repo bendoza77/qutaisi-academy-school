@@ -1,9 +1,9 @@
 import { motion } from "framer-motion";
-import { useTranslation } from "react-i18next";
 import { CheckCircle2, ArrowRight } from "lucide-react";
 import { SectionTitle } from "../ui/SectionTitle";
 import { Button } from "../ui/Button";
 import { AboutOrb3D } from "../3d/AboutOrb3D";
+import { useSiteData } from "../../context/SiteDataContext";
 
 const cardVariants = {
   hidden: { opacity: 0, x: 40 },
@@ -11,8 +11,9 @@ const cardVariants = {
 };
 
 export function About() {
-  const { t } = useTranslation();
-  const highlights = t("about.highlights", { returnObjects: true });
+  const { siteData } = useSiteData();
+  const about = siteData.about;
+  const highlights = about.highlights;
 
   const scrollTo = (id) =>
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
@@ -31,10 +32,10 @@ export function About() {
           {/* Text */}
           <div className="flex flex-col gap-8">
             <SectionTitle
-              eyebrow={t("about.eyebrow")}
-              title={t("about.title")}
-              highlight={t("about.titleHighlight")}
-              description={t("about.description")}
+              eyebrow="About the Academy"
+              title={about.title}
+              highlight={about.titleHighlight}
+              description={about.description}
               align="left"
             />
 
@@ -70,11 +71,11 @@ export function About() {
                 onClick={() => scrollTo("courses")}
                 className="group"
               >
-                {t("about.viewCourses")}
+                View Our Courses
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
               </Button>
               <Button variant="ghost" size="md" onClick={() => scrollTo("contact")}>
-                {t("about.getInTouch")}
+                Get in Touch
               </Button>
             </motion.div>
           </div>
@@ -103,15 +104,17 @@ export function About() {
               <blockquote className="relative z-10">
                 <div className="text-5xl font-serif text-accent-400 leading-none mb-4">"</div>
                 <p className="text-white/90 text-lg lg:text-xl leading-relaxed font-medium mb-6">
-                  {t("about.quote")}
+                  {about.quote}
                 </p>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-accent-500 flex items-center justify-center">
-                    <span className="text-white font-bold text-sm">DG</span>
+                    <span className="text-white font-bold text-sm">
+                      {about.founder.split(' ').map(w => w[0]).join('').slice(0, 2)}
+                    </span>
                   </div>
                   <div>
-                    <div className="text-white font-semibold text-sm">{t("about.founder")}</div>
-                    <div className="text-blue-300/60 text-xs">{t("about.founderTitle")}</div>
+                    <div className="text-white font-semibold text-sm">{about.founder}</div>
+                    <div className="text-blue-300/60 text-xs">{about.founderTitle}</div>
                   </div>
                 </div>
               </blockquote>
@@ -131,7 +134,7 @@ export function About() {
               </div>
               <div>
                 <div className="text-slate-900 dark:text-white font-bold text-lg leading-none">98%</div>
-                <div className="text-slate-500 dark:text-slate-400 text-xs">{t("about.satisfactionLabel")}</div>
+                <div className="text-slate-500 dark:text-slate-400 text-xs">Student Satisfaction</div>
               </div>
             </motion.div>
 
@@ -148,7 +151,7 @@ export function About() {
               </div>
               <div>
                 <div className="text-slate-900 dark:text-white font-bold text-lg leading-none">4.9/5</div>
-                <div className="text-slate-500 dark:text-slate-400 text-xs">{t("about.ratingLabel")}</div>
+                <div className="text-slate-500 dark:text-slate-400 text-xs">Average Rating</div>
               </div>
             </motion.div>
           </div>

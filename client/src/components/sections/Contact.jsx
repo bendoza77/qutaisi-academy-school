@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { Phone, Mail, MapPin, Clock, Send, CheckCircle2, AlertCircle } from "lucide-react";
 import { SectionTitle } from "../ui/SectionTitle";
-import { CONTACT_INFO } from "../../constants";
+import { useSiteData } from "../../context/SiteDataContext";
 import { cn } from "../../utils/cn";
 
 const INITIAL_FORM = { name: "", phone: "", email: "", course: "", message: "" };
@@ -69,6 +69,8 @@ function SelectField({ label, error, children, ...props }) {
 
 export function Contact() {
   const { t } = useTranslation();
+  const { siteData } = useSiteData();
+  const contactInfo = siteData.contact;
   const [form, setForm] = useState(INITIAL_FORM);
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState("idle");
@@ -104,31 +106,23 @@ export function Contact() {
 
   const contactMeta = [
     {
-      Icon: Phone,
-      labelKey: "contact.labels.phone",
-      value: CONTACT_INFO.phone,
-      href: `tel:${CONTACT_INFO.phone.replace(/\s/g, "")}`,
+      Icon: Phone, label: "Phone",
+      value: contactInfo.phone, href: `tel:${contactInfo.phone.replace(/\s/g, "")}`,
       color: "bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400",
     },
     {
-      Icon: Mail,
-      labelKey: "contact.labels.email",
-      value: CONTACT_INFO.email,
-      href: `mailto:${CONTACT_INFO.email}`,
+      Icon: Mail, label: "Email",
+      value: contactInfo.email, href: `mailto:${contactInfo.email}`,
       color: "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400",
     },
     {
-      Icon: MapPin,
-      labelKey: "contact.labels.address",
-      valueKey: "contact.address",
-      href: null,
+      Icon: MapPin, label: "Address",
+      value: contactInfo.address, href: null,
       color: "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400",
     },
     {
-      Icon: Clock,
-      labelKey: "contact.labels.hours",
-      valueKey: "contact.hours",
-      href: null,
+      Icon: Clock, label: "Working Hours",
+      value: contactInfo.hours, href: null,
       color: "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400",
     },
   ];
@@ -163,11 +157,9 @@ export function Contact() {
             className="lg:col-span-4 flex flex-col gap-8"
           >
             <div className="flex flex-col gap-4">
-              {contactMeta.map(({ Icon, labelKey, value, valueKey, href, color }) => {
-                const displayValue = valueKey ? t(valueKey) : value;
-                return (
+              {contactMeta.map(({ Icon, label, value, href, color }) => (
                   <div
-                    key={labelKey}
+                    key={label}
                     className="flex items-start gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700"
                   >
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${color}`}>
@@ -175,22 +167,18 @@ export function Contact() {
                     </div>
                     <div>
                       <div className="text-xs font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-0.5">
-                        {t(labelKey)}
+                        {label}
                       </div>
                       {href ? (
-                        <a
-                          href={href}
-                          className="text-sm font-medium text-slate-900 dark:text-white hover:text-primary-700 dark:hover:text-primary-400 transition-colors duration-150"
-                        >
-                          {displayValue}
+                        <a href={href} className="text-sm font-medium text-slate-900 dark:text-white hover:text-primary-700 dark:hover:text-primary-400 transition-colors duration-150">
+                          {value}
                         </a>
                       ) : (
-                        <p className="text-sm font-medium text-slate-900 dark:text-white">{displayValue}</p>
+                        <p className="text-sm font-medium text-slate-900 dark:text-white">{value}</p>
                       )}
                     </div>
                   </div>
-                );
-              })}
+              ))}
             </div>
 
             {/* Google Maps embed */}

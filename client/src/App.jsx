@@ -2,6 +2,8 @@ import { useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ThemeProvider } from "./context/ThemeContext";
+import { SiteDataProvider } from "./context/SiteDataContext";
+import { AdminPage } from "./pages/admin/AdminPage";
 import { Navbar } from "./components/layout/Navbar";
 import { Footer } from "./components/layout/Footer";
 import { Home } from "./pages/Home";
@@ -47,9 +49,11 @@ function HomeShell() {
 
 function App() {
   return (
+    <SiteDataProvider>
     <ThemeProvider>
       <BrowserRouter>
         <Routes>
+          <Route path="/academy-panel" element={<AdminPage />} />
           <Route path="/" element={<HomeShell />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/courses" element={<CoursesPage />} />
@@ -66,6 +70,7 @@ function App() {
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
+    </SiteDataProvider>
   );
 }
 

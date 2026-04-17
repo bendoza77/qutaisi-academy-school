@@ -1,8 +1,8 @@
-import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { ArrowRight, ChevronDown, PlayCircle } from "lucide-react";
 import { Button } from "../ui/Button";
 import { HeroBackground3D } from "../3d/HeroBackground3D";
+import { useSiteData } from "../../context/SiteDataContext";
 
 const containerVariants = {
   hidden: {},
@@ -15,10 +15,14 @@ const itemVariants = {
 };
 
 export function Hero() {
-  const { t } = useTranslation();
-
-  const trustBadges = t("hero.trustBadges", { returnObjects: true });
-  const floatingCards = t("hero.floatingCards", { returnObjects: true });
+  const { siteData } = useSiteData();
+  const hero = siteData.hero;
+  const trustBadges = hero.trustBadges;
+  const floatingCards = [
+    { title: "Expert Teachers", sub: "CELTA Certified" },
+    { title: "All Levels", sub: "A1 to C2" },
+    { title: "Global Standards", sub: "CEFR Aligned" },
+  ];
 
   const scrollTo = (id) =>
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
@@ -73,7 +77,7 @@ export function Hero() {
           <motion.div variants={itemVariants}>
             <span className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/15 text-blue-100 text-xs font-semibold uppercase tracking-widest px-4 py-2 rounded-full">
               <span className="w-1.5 h-1.5 rounded-full bg-accent-400 animate-pulse" />
-              {t("hero.badge")}
+              {hero.badge}
             </span>
           </motion.div>
 
@@ -82,9 +86,9 @@ export function Hero() {
             variants={itemVariants}
             className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.1] tracking-tight max-w-4xl"
           >
-            {t("hero.title")}{" "}
+            {hero.title}{" "}
             <span className="relative inline-block">
-              <span className="gradient-text-light">{t("hero.titleHighlight")}</span>
+              <span className="gradient-text-light">{hero.titleHighlight}</span>
               <motion.span
                 initial={{ scaleX: 0 }}
                 animate={{ scaleX: 1 }}
@@ -99,7 +103,7 @@ export function Hero() {
             variants={itemVariants}
             className="text-blue-100/80 text-lg sm:text-xl max-w-2xl leading-relaxed"
           >
-            {t("hero.subtitle")}
+            {hero.subtitle}
           </motion.p>
 
           {/* CTA Buttons */}
@@ -113,7 +117,7 @@ export function Hero() {
               onClick={() => scrollTo("contact")}
               className="group w-full sm:w-auto"
             >
-              {t("hero.enrollBtn")}
+              Enroll Now
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
             </Button>
             <Button
@@ -123,7 +127,7 @@ export function Hero() {
               className="group w-full sm:w-auto"
             >
               <PlayCircle className="w-4 h-4" />
-              {t("hero.discoverBtn")}
+              Discover More
             </Button>
           </motion.div>
 
@@ -178,10 +182,10 @@ export function Hero() {
         animate={{ opacity: 1 }}
         transition={{ delay: 2, duration: 0.6 }}
         onClick={() => scrollTo("about")}
-        aria-label={t("hero.scrollLabel")}
+        aria-label="Scroll down"
         className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 text-white/40 hover:text-white/70 transition-colors duration-200 cursor-pointer"
       >
-        <span className="text-xs uppercase tracking-widest">{t("hero.scrollLabel")}</span>
+        <span className="text-xs uppercase tracking-widest">Scroll</span>
         <motion.div
           animate={{ y: [0, 6, 0] }}
           transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}

@@ -8,7 +8,6 @@ import { LanguageSwitcher } from "../ui/LanguageSwitcher";
 import { NAV_LINK_KEYS } from "../../constants";
 import { cn } from "../../utils/cn";
 import logoSrc from "../../assets/Screenshot_2026-04-16_211914-removebg-preview.png";
-import i18n from "../../i18n/config";
 
 export function Navbar() {
   const { isDark, toggle } = useTheme();

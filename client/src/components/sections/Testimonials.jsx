@@ -1,9 +1,8 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useTranslation } from "react-i18next";
 import { ChevronLeft, ChevronRight, Quote, Star } from "lucide-react";
 import { SectionTitle } from "../ui/SectionTitle";
-import { TESTIMONIALS_META } from "../../constants";
+import { useSiteData } from "../../context/SiteDataContext";
 
 function StarRating({ rating }) {
   return (
@@ -57,12 +56,12 @@ function TestimonialCard({ meta, text, direction }) {
 }
 
 export function Testimonials() {
-  const { t } = useTranslation();
+  const { siteData } = useSiteData();
+  const testimonials = siteData.testimonials;
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(1);
 
-  const testimonialTexts = t("testimonials.items", { returnObjects: true });
-  const total = TESTIMONIALS_META.length;
+  const total = testimonials.length;
 
   const goNext = useCallback(() => {
     setDirection(1);
@@ -91,10 +90,10 @@ export function Testimonials() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center mb-14">
           <SectionTitle
-            eyebrow={t("testimonials.eyebrow")}
-            title={t("testimonials.title")}
-            highlight={t("testimonials.titleHighlight")}
-            description={t("testimonials.description")}
+            eyebrow="Testimonials"
+            title="Hear from Our "
+            highlight="Students"
+            description="Don't take our word for it. Here's what our students say about their experience at Kutaisi English Academy."
             align="center"
             className="mx-auto"
           />
@@ -105,11 +104,11 @@ export function Testimonials() {
           <div className="lg:col-span-7">
             <div className="relative overflow-hidden h-[460px] sm:h-[380px] lg:h-[340px]">
               <AnimatePresence initial={false} custom={direction}>
-                {Array.isArray(testimonialTexts) && (
+                {total > 0 && (
                   <TestimonialCard
-                    key={TESTIMONIALS_META[current].id}
-                    meta={TESTIMONIALS_META[current]}
-                    text={testimonialTexts[current]}
+                    key={testimonials[current].id}
+                    meta={testimonials[current]}
+                    text={testimonials[current]}
                     direction={direction}
                   />
                 )}
@@ -136,7 +135,7 @@ export function Testimonials() {
               </div>
 
               <div className="flex items-center gap-2">
-                {TESTIMONIALS_META.map((_, i) => (
+                {testimonials.map((_, i) => (
                   <button
                     key={i}
                     onClick={() => goTo(i)}
@@ -158,10 +157,9 @@ export function Testimonials() {
 
           {/* Side list — desktop only */}
           <div className="hidden lg:flex lg:col-span-5 flex-col gap-3">
-            {Array.isArray(testimonialTexts) &&
-              TESTIMONIALS_META.map((meta, i) => (
+            {testimonials.map((item, i) => (
                 <motion.button
-                  key={meta.id}
+                  key={item.id}
                   onClick={() => goTo(i)}
                   initial={{ opacity: 0, x: 20 }}
                   whileInView={{ opacity: 1, x: 0 }}
@@ -174,19 +172,19 @@ export function Testimonials() {
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className={`w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-xs shrink-0 ${meta.color}`}>
-                      {meta.avatar}
+                    <div className={`w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-xs shrink-0 ${item.color}`}>
+                      {item.avatar}
                     </div>
                     <div className="min-w-0">
                       <div className="text-sm font-semibold text-slate-900 dark:text-white truncate">
-                        {testimonialTexts[i]?.name}
+                        {item.name}
                       </div>
                       <div className="text-xs text-slate-400 dark:text-slate-500">
-                        {testimonialTexts[i]?.role}
+                        {item.role}
                       </div>
                     </div>
                     <div className="ml-auto shrink-0">
-                      <StarRating rating={meta.rating} />
+                      <StarRating rating={item.rating} />
                     </div>
                   </div>
                 </motion.button>

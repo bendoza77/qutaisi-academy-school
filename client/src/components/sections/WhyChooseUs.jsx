@@ -1,9 +1,9 @@
 import { motion } from "framer-motion";
-import { useTranslation } from "react-i18next";
 import {
   GraduationCap, Users, Lightbulb, Calendar, Globe, Shield,
 } from "lucide-react";
 import { SectionTitle } from "../ui/SectionTitle";
+import { useSiteData } from "../../context/SiteDataContext";
 import { BENEFIT_ICONS, BENEFIT_COLORS } from "../../constants";
 
 const iconMap = { GraduationCap, Users, Lightbulb, Calendar, Globe, Shield };
@@ -38,8 +38,8 @@ function BenefitCard({ iconKey, colors, title, description }) {
 }
 
 export function WhyChooseUs() {
-  const { t } = useTranslation();
-  const benefitItems = t("benefits.items", { returnObjects: true });
+  const { siteData } = useSiteData();
+  const benefitItems = siteData.benefits;
 
   return (
     <section
@@ -52,10 +52,10 @@ export function WhyChooseUs() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center mb-14">
           <SectionTitle
-            eyebrow={t("benefits.eyebrow")}
-            title={t("benefits.title")}
-            highlight={t("benefits.titleHighlight")}
-            description={t("benefits.description")}
+            eyebrow="Why Choose Us"
+            title="Everything You Need to "
+            highlight="Succeed"
+            description="We've built our academy around what actually works — research-backed methods, expert teachers, and an environment where students thrive."
             align="center"
             className="mx-auto"
           />
@@ -90,15 +90,15 @@ export function WhyChooseUs() {
         >
           <div>
             <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-1">
-              {t("benefits.ctaTitle")}
+              Ready to experience the difference?
             </h3>
-            <p className="text-slate-500 dark:text-slate-400 text-sm">{t("benefits.ctaDesc")}</p>
+            <p className="text-slate-500 dark:text-slate-400 text-sm">Join over 1,200 students who have transformed their English with us.</p>
           </div>
           <button
             onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
             className="shrink-0 inline-flex items-center gap-2 px-7 py-3.5 bg-primary-900 text-white rounded-xl text-sm font-semibold hover:bg-primary-800 transition-colors duration-200 shadow-md shadow-primary-900/20 cursor-pointer whitespace-nowrap"
           >
-            {t("benefits.ctaBtn")}
+            Start Today — It's Free to Assess
           </button>
         </motion.div>
       </div>

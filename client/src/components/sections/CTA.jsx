@@ -1,11 +1,12 @@
 import { motion } from "framer-motion";
-import { useTranslation } from "react-i18next";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { CTABackground3D } from "../3d/CTABackground3D";
+import { useSiteData } from "../../context/SiteDataContext";
 
 export function CTA() {
-  const { t } = useTranslation();
-  const benefits = t("cta.benefits", { returnObjects: true });
+  const { siteData } = useSiteData();
+  const cta = siteData.cta;
+  const benefits = cta.benefits;
 
   const scrollTo = (id) =>
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
@@ -45,16 +46,16 @@ export function CTA() {
         >
           <span className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/15 text-blue-100 text-xs font-semibold uppercase tracking-widest px-4 py-2 rounded-full">
             <Sparkles className="w-3.5 h-3.5 text-accent-400" />
-            {t("cta.badge")}
+            {cta.badge}
           </span>
 
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-[1.1] tracking-tight">
-            {t("cta.title")}{" "}
-            <span className="gradient-text-light">{t("cta.titleHighlight")}</span>
+            {cta.title}{" "}
+            <span className="gradient-text-light">{cta.titleHighlight}</span>
           </h2>
 
           <p className="text-blue-100/75 text-lg leading-relaxed max-w-2xl">
-            {t("cta.description")}
+            {cta.description}
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-6 text-blue-200/70 text-sm">
@@ -74,7 +75,7 @@ export function CTA() {
               whileTap={{ scale: 0.98 }}
               className="inline-flex items-center gap-2 px-8 py-4 bg-accent-500 hover:bg-accent-600 text-white rounded-xl font-bold text-base shadow-xl shadow-accent-500/30 hover:shadow-accent-600/40 transition-all duration-200 cursor-pointer group"
             >
-              {t("cta.enrollBtn")}
+              Book Your Free Assessment
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-200" />
             </motion.button>
             <motion.button
@@ -83,7 +84,7 @@ export function CTA() {
               whileTap={{ scale: 0.98 }}
               className="inline-flex items-center gap-2 px-8 py-4 border border-white/25 hover:bg-white/10 text-white rounded-xl font-semibold text-base backdrop-blur-sm transition-all duration-200 cursor-pointer"
             >
-              {t("cta.browseBtn")}
+              Browse Courses
             </motion.button>
           </div>
         </motion.div>

@@ -1,11 +1,10 @@
 import { motion } from "framer-motion";
-import { useTranslation } from "react-i18next";
 import {
   BookOpen, TrendingUp, Award, Briefcase,
   Clock, Users, Calendar, CheckCircle2, ArrowRight, Star,
 } from "lucide-react";
 import { SectionTitle } from "../ui/SectionTitle";
-import { COURSES_META } from "../../constants";
+import { useSiteData } from "../../context/SiteDataContext";
 import { cn } from "../../utils/cn";
 
 const iconMap = { BookOpen, TrendingUp, Award, Briefcase };
@@ -20,9 +19,9 @@ const cardVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
 };
 
-function CourseCard({ meta, text }) {
-  const { t } = useTranslation();
-  const Icon = iconMap[meta.icon] || BookOpen;
+function CourseCard({ course }) {
+  const Icon = iconMap[course.icon] || BookOpen;
+  const meta = course;
 
   return (
     <motion.div
@@ -38,7 +37,7 @@ function CourseCard({ meta, text }) {
       {meta.popular && (
         <div className="absolute top-0 right-6 bg-primary-900 text-white text-xs font-semibold px-4 py-1 rounded-b-lg flex items-center gap-1">
           <Star className="w-3 h-3 fill-accent-400 text-accent-400" />
-          {t("courses.popular")}
+          Most Popular
         </div>
       )}
 
@@ -55,22 +54,22 @@ function CourseCard({ meta, text }) {
             <Icon className="w-5 h-5" style={{ color: meta.accent }} strokeWidth={2} />
           </div>
           <span className={cn("text-xs font-semibold px-3 py-1 rounded-full", meta.badgeColor)}>
-            {text.badge}
+            {course.badge}
           </span>
         </div>
         <div className="mb-1">
-          <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">{text.level}</span>
+          <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">{course.level}</span>
         </div>
-        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">{text.title}</h3>
-        <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">{text.description}</p>
+        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">{course.title}</h3>
+        <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">{course.description}</p>
       </div>
 
       {/* Meta row */}
       <div className="px-6 py-4 border-t border-slate-100 dark:border-slate-700/50 grid grid-cols-3 gap-3">
         {[
-          { Icon: Clock, label: text.duration },
-          { Icon: Calendar, label: text.sessionsPerWeek },
-          { Icon: Users, label: text.groupSize },
+          { Icon: Clock, label: course.duration },
+          { Icon: Calendar, label: course.sessionsPerWeek },
+          { Icon: Users, label: course.groupSize },
         ].map(({ Icon: MI, label }) => (
           <div key={label} className="flex flex-col items-center gap-1 text-center">
             <MI className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
@@ -82,10 +81,10 @@ function CourseCard({ meta, text }) {
       {/* Features */}
       <div className="px-6 pb-6 flex flex-col gap-2.5 flex-1">
         <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">
-          {t("courses.whatYouLearn")}
+          What you'll learn
         </p>
-        {Array.isArray(text.features) &&
-          text.features.map((feature) => (
+        {Array.isArray(course.features) &&
+          course.features.map((feature) => (
             <div key={feature} className="flex items-start gap-2.5">
               <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" style={{ color: meta.accent }} />
               <span className="text-sm text-slate-600 dark:text-slate-400">{feature}</span>
@@ -104,7 +103,7 @@ function CourseCard({ meta, text }) {
               : "bg-slate-50 dark:bg-slate-700/50 text-slate-900 dark:text-white hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-900 dark:hover:text-primary-300"
           )}
         >
-          {t("courses.enrollBtn")}
+          Enroll in This Course
           <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform duration-200" />
         </button>
       </div>
@@ -113,8 +112,8 @@ function CourseCard({ meta, text }) {
 }
 
 export function Courses() {
-  const { t } = useTranslation();
-  const courseItems = t("courses.items", { returnObjects: true });
+  const { siteData } = useSiteData();
+  const courseItems = siteData.courses;
 
   return (
     <section
@@ -127,10 +126,10 @@ export function Courses() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center gap-4 mb-14">
           <SectionTitle
-            eyebrow={t("courses.eyebrow")}
-            title={t("courses.title")}
-            highlight={t("courses.titleHighlight")}
-            description={t("courses.description")}
+            eyebrow="Our Courses"
+            title="Find the Perfect "
+            highlight="Course for You"
+            description="From absolute beginner to advanced professional — each programme is designed with clear outcomes, proven methodology, and personalized support."
             align="center"
             className="mx-auto"
           />
@@ -144,8 +143,8 @@ export function Courses() {
           className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6"
         >
           {Array.isArray(courseItems) &&
-            courseItems.map((text, i) => (
-              <CourseCard key={COURSES_META[i].id} meta={COURSES_META[i]} text={text} />
+            courseItems.map((course) => (
+              <CourseCard key={course.id} course={course} />
             ))}
         </motion.div>
 
@@ -156,12 +155,12 @@ export function Courses() {
           transition={{ delay: 0.4 }}
           className="text-center text-sm text-slate-400 dark:text-slate-500 mt-10"
         >
-          {t("courses.placementNote")}{" "}
+          Not sure which level is right for you?{" "}
           <button
             onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
             className="text-primary-600 dark:text-primary-400 font-medium hover:underline cursor-pointer"
           >
-            {t("courses.placementLink")}
+            Book a free placement assessment →
           </button>
         </motion.p>
       </div>

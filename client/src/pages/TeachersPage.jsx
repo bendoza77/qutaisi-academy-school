@@ -4,7 +4,7 @@ import { Award, Globe, ArrowRight } from 'lucide-react'
 import { PageLayout } from '../components/layout/PageLayout'
 import { PageHero } from '../components/ui/PageHero'
 import { CTA } from '../components/sections/CTA'
-import { TEACHERS } from '../data/teachers'
+import { useSiteData } from '../context/SiteDataContext'
 
 function TeacherCard({ teacher, index }) {
   return (
@@ -67,6 +67,8 @@ function TeacherCard({ teacher, index }) {
 }
 
 export function TeachersPage() {
+  const { siteData } = useSiteData()
+  const teachers = siteData.teachers
   return (
     <PageLayout pageTitle="Our Teachers">
       <PageHero
@@ -99,7 +101,7 @@ export function TeachersPage() {
       <section className="py-20 lg:py-28 bg-white dark:bg-slate-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {TEACHERS.map((teacher, i) => (
+            {teachers.map((teacher, i) => (
               <TeacherCard key={teacher.id} teacher={teacher} index={i} />
             ))}
           </div>
