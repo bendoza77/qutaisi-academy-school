@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { ArrowRight, ChevronDown, PlayCircle } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "../ui/Button";
 import { HeroBackground3D } from "../3d/HeroBackground3D";
 import { useSiteData } from "../../context/SiteDataContext";
@@ -15,14 +16,19 @@ const itemVariants = {
 };
 
 export function Hero() {
+  const { t, i18n } = useTranslation();
   const { siteData } = useSiteData();
-  const hero = siteData.hero;
-  const trustBadges = hero.trustBadges;
-  const floatingCards = [
-    { title: "Expert Teachers", sub: "CELTA Certified" },
-    { title: "All Levels", sub: "A1 to C2" },
-    { title: "Global Standards", sub: "CEFR Aligned" },
-  ];
+  const isKa = i18n.language === "ka";
+
+  const heroEn = siteData.hero;
+  const heroKaOverride = heroEn.ka || {};
+
+  const badge           = isKa ? (heroKaOverride.badge           || t("hero.badge"))           : heroEn.badge;
+  const title           = isKa ? (heroKaOverride.title           || t("hero.title"))           : heroEn.title;
+  const titleHighlight  = isKa ? (heroKaOverride.titleHighlight  || t("hero.titleHighlight"))  : heroEn.titleHighlight;
+  const subtitle        = isKa ? (heroKaOverride.subtitle        || t("hero.subtitle"))        : heroEn.subtitle;
+  const trustBadges     = isKa ? (heroKaOverride.trustBadges     || t("hero.trustBadges", { returnObjects: true })) : heroEn.trustBadges;
+  const floatingCards   = isKa ? (heroKaOverride.floatingCards   || t("hero.floatingCards", { returnObjects: true })) : (heroEn.floatingCards || t("hero.floatingCards", { returnObjects: true }));
 
   const scrollTo = (id) =>
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
@@ -33,13 +39,9 @@ export function Hero() {
       className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
       aria-label="Hero section"
     >
-      {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary-950 via-primary-900 to-primary-800" />
-
-      {/* 3D floating shapes */}
       <HeroBackground3D />
 
-      {/* Decorative orbs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
           animate={{ y: [-8, 8, -8] }}
@@ -58,7 +60,6 @@ export function Hero() {
         />
       </div>
 
-      {/* Grid pattern */}
       <div
         className="absolute inset-0 opacity-[0.04]"
         style={{
@@ -73,22 +74,20 @@ export function Hero() {
           animate="visible"
           className="flex flex-col items-center gap-6"
         >
-          {/* Badge */}
           <motion.div variants={itemVariants}>
             <span className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/15 text-blue-100 text-xs font-semibold uppercase tracking-widest px-4 py-2 rounded-full">
               <span className="w-1.5 h-1.5 rounded-full bg-accent-400 animate-pulse" />
-              {hero.badge}
+              {badge}
             </span>
           </motion.div>
 
-          {/* Heading */}
           <motion.h1
             variants={itemVariants}
             className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.1] tracking-tight max-w-4xl"
           >
-            {hero.title}{" "}
+            {title}{" "}
             <span className="relative inline-block">
-              <span className="gradient-text-light">{hero.titleHighlight}</span>
+              <span className="gradient-text-light">{titleHighlight}</span>
               <motion.span
                 initial={{ scaleX: 0 }}
                 animate={{ scaleX: 1 }}
@@ -98,15 +97,13 @@ export function Hero() {
             </span>
           </motion.h1>
 
-          {/* Subtitle */}
           <motion.p
             variants={itemVariants}
             className="text-blue-100/80 text-lg sm:text-xl max-w-2xl leading-relaxed"
           >
-            {hero.subtitle}
+            {subtitle}
           </motion.p>
 
-          {/* CTA Buttons */}
           <motion.div
             variants={itemVariants}
             className="flex flex-col sm:flex-row items-center gap-3 pt-2"
@@ -117,7 +114,7 @@ export function Hero() {
               onClick={() => scrollTo("contact")}
               className="group w-full sm:w-auto"
             >
-              Enroll Now
+              {t("hero.enrollBtn")}
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
             </Button>
             <Button
@@ -127,18 +124,17 @@ export function Hero() {
               className="group w-full sm:w-auto"
             >
               <PlayCircle className="w-4 h-4" />
-              Discover More
+              {t("hero.discoverBtn")}
             </Button>
           </motion.div>
 
-          {/* Trust badges */}
           <motion.div
             variants={itemVariants}
             className="flex flex-wrap items-center justify-center gap-6 pt-4"
           >
             {Array.isArray(trustBadges) &&
-              trustBadges.map((badge) => (
-                <div key={badge} className="flex items-center gap-2 text-blue-200/70 text-sm">
+              trustBadges.map((badge, i) => (
+                <div key={i} className="flex items-center gap-2 text-blue-200/70 text-sm">
                   <div className="w-1 h-1 rounded-full bg-accent-400" />
                   {badge}
                 </div>
@@ -146,7 +142,6 @@ export function Hero() {
           </motion.div>
         </motion.div>
 
-        {/* Floating cards — desktop only */}
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -156,19 +151,12 @@ export function Hero() {
           {Array.isArray(floatingCards) &&
             floatingCards.map((card, i) => (
               <motion.div
-                key={card.title}
+                key={i}
                 animate={{ y: [0, i % 2 === 0 ? -8 : 8, 0] }}
-                transition={{
-                  duration: 4 + i,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: i * 0.5,
-                }}
+                transition={{ duration: 4 + i, repeat: Infinity, ease: "easeInOut", delay: i * 0.5 }}
                 className="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl px-6 py-4 text-center"
               >
-                <div className="text-2xl mb-1">
-                  {["🎓", "📚", "🌍"][i]}
-                </div>
+                <div className="text-2xl mb-1">{["🎓", "📚", "🌍"][i]}</div>
                 <div className="text-white font-semibold text-sm">{card.title}</div>
                 <div className="text-blue-200/60 text-xs">{card.sub}</div>
               </motion.div>
@@ -176,7 +164,6 @@ export function Hero() {
         </motion.div>
       </div>
 
-      {/* Scroll indicator */}
       <motion.button
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -185,7 +172,7 @@ export function Hero() {
         aria-label="Scroll down"
         className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 text-white/40 hover:text-white/70 transition-colors duration-200 cursor-pointer"
       >
-        <span className="text-xs uppercase tracking-widest">Scroll</span>
+        <span className="text-xs uppercase tracking-widest">{t("hero.scrollLabel")}</span>
         <motion.div
           animate={{ y: [0, 6, 0] }}
           transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}

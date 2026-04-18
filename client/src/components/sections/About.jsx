@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { CheckCircle2, ArrowRight } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { SectionTitle } from "../ui/SectionTitle";
 import { Button } from "../ui/Button";
 import { AboutOrb3D } from "../3d/AboutOrb3D";
@@ -11,9 +12,20 @@ const cardVariants = {
 };
 
 export function About() {
+  const { t, i18n } = useTranslation();
   const { siteData } = useSiteData();
-  const about = siteData.about;
-  const highlights = about.highlights;
+  const isKa = i18n.language === "ka";
+
+  const enData = siteData.about;
+  const kaOverride = enData.ka || {};
+
+  const title           = isKa ? (kaOverride.title           || t("about.title"))           : enData.title;
+  const titleHighlight  = isKa ? (kaOverride.titleHighlight  || t("about.titleHighlight"))  : enData.titleHighlight;
+  const description     = isKa ? (kaOverride.description     || t("about.description"))     : enData.description;
+  const highlights      = isKa ? (kaOverride.highlights      || t("about.highlights", { returnObjects: true })) : enData.highlights;
+  const quote           = isKa ? (kaOverride.quote           || t("about.quote"))           : enData.quote;
+  const founder         = isKa ? (kaOverride.founder         || t("about.founder"))         : enData.founder;
+  const founderTitle    = isKa ? (kaOverride.founderTitle    || t("about.founderTitle"))    : enData.founderTitle;
 
   const scrollTo = (id) =>
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
@@ -29,13 +41,12 @@ export function About() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
 
-          {/* Text */}
           <div className="flex flex-col gap-8">
             <SectionTitle
-              eyebrow="About the Academy"
-              title={about.title}
-              highlight={about.titleHighlight}
-              description={about.description}
+              eyebrow={t("about.eyebrow")}
+              title={title}
+              highlight={titleHighlight}
+              description={description}
               align="left"
             />
 
@@ -65,22 +76,16 @@ export function About() {
               transition={{ delay: 0.4, duration: 0.5 }}
               className="flex items-center gap-4"
             >
-              <Button
-                variant="primary"
-                size="md"
-                onClick={() => scrollTo("courses")}
-                className="group"
-              >
-                View Our Courses
+              <Button variant="primary" size="md" onClick={() => scrollTo("courses")} className="group">
+                {t("about.viewCourses")}
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
               </Button>
               <Button variant="ghost" size="md" onClick={() => scrollTo("contact")}>
-                Get in Touch
+                {t("about.getInTouch")}
               </Button>
             </motion.div>
           </div>
 
-          {/* Visual */}
           <div className="relative">
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
@@ -89,12 +94,7 @@ export function About() {
               transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
               className="relative bg-gradient-to-br from-primary-900 to-primary-950 rounded-3xl p-8 lg:p-10 overflow-hidden"
             >
-              {/* 3D globe backdrop */}
-              <div className="absolute inset-0">
-                <AboutOrb3D />
-              </div>
-
-              {/* Dot pattern */}
+              <div className="absolute inset-0"><AboutOrb3D /></div>
               <div
                 className="absolute inset-0 opacity-5"
                 style={{
@@ -103,24 +103,21 @@ export function About() {
               />
               <blockquote className="relative z-10">
                 <div className="text-5xl font-serif text-accent-400 leading-none mb-4">"</div>
-                <p className="text-white/90 text-lg lg:text-xl leading-relaxed font-medium mb-6">
-                  {about.quote}
-                </p>
+                <p className="text-white/90 text-lg lg:text-xl leading-relaxed font-medium mb-6">{quote}</p>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-accent-500 flex items-center justify-center">
                     <span className="text-white font-bold text-sm">
-                      {about.founder.split(' ').map(w => w[0]).join('').slice(0, 2)}
+                      {founder.split(" ").map((w) => w[0]).join("").slice(0, 2)}
                     </span>
                   </div>
                   <div>
-                    <div className="text-white font-semibold text-sm">{about.founder}</div>
-                    <div className="text-blue-300/60 text-xs">{about.founderTitle}</div>
+                    <div className="text-white font-semibold text-sm">{founder}</div>
+                    <div className="text-blue-300/60 text-xs">{founderTitle}</div>
                   </div>
                 </div>
               </blockquote>
             </motion.div>
 
-            {/* Floating achievement badges */}
             <motion.div
               variants={cardVariants}
               initial="hidden"
@@ -134,7 +131,7 @@ export function About() {
               </div>
               <div>
                 <div className="text-slate-900 dark:text-white font-bold text-lg leading-none">98%</div>
-                <div className="text-slate-500 dark:text-slate-400 text-xs">Student Satisfaction</div>
+                <div className="text-slate-500 dark:text-slate-400 text-xs">{t("about.satisfactionLabel")}</div>
               </div>
             </motion.div>
 
@@ -151,7 +148,7 @@ export function About() {
               </div>
               <div>
                 <div className="text-slate-900 dark:text-white font-bold text-lg leading-none">4.9/5</div>
-                <div className="text-slate-500 dark:text-slate-400 text-xs">Average Rating</div>
+                <div className="text-slate-500 dark:text-slate-400 text-xs">{t("about.ratingLabel")}</div>
               </div>
             </motion.div>
           </div>

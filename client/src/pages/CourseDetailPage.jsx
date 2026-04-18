@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { Link, useParams, Navigate } from 'react-router-dom'
 import { CheckCircle2, Clock, Users, Calendar, ChevronDown, ArrowRight } from 'lucide-react'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { PageLayout } from '../components/layout/PageLayout'
 import { COURSE_DETAILS } from '../data/courseDetails'
 
@@ -38,9 +39,28 @@ function FaqItem({ q, a }) {
 
 export function CourseDetailPage() {
   const { courseSlug } = useParams()
-  const course = COURSE_DETAILS[courseSlug]
+  const { t } = useTranslation()
+  const baseData = COURSE_DETAILS[courseSlug]
 
-  if (!course) return <Navigate to="/courses" replace />
+  if (!baseData) return <Navigate to="/courses" replace />
+
+  const cd = t('courseDetail', { returnObjects: true })
+  const translated = cd?.courses?.[courseSlug] || {}
+  const card = cd?.card || {}
+
+  const course = {
+    ...baseData,
+    tagline:      translated.tagline      || baseData.tagline,
+    description:  translated.description  || baseData.description,
+    whoIsItFor:   translated.whoIsItFor   || baseData.whoIsItFor,
+    features:     translated.features     || baseData.features,
+    curriculum:   translated.curriculum   || baseData.curriculum,
+    schedule:     translated.schedule     || baseData.schedule,
+    faq:          translated.faq          || baseData.faq,
+  }
+
+  const allCourses = Object.values(COURSE_DETAILS)
+  const otherSlugs = allCourses.filter((c) => c.slug !== courseSlug)
 
   return (
     <PageLayout pageTitle={course.title}>
@@ -52,7 +72,7 @@ export function CourseDetailPage() {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col gap-4 max-w-3xl">
             <nav className="flex items-center gap-2 text-blue-200/60 text-xs">
-              <Link to="/courses" className="hover:text-white transition-colors">Courses</Link>
+              <Link to="/courses" className="hover:text-white transition-colors">{cd.breadcrumb || 'Courses'}</Link>
               <span>/</span>
               <span className="text-white">{course.title}</span>
             </nav>
@@ -87,16 +107,16 @@ export function CourseDetailPage() {
 
               {/* Description */}
               <div>
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">About this course</h2>
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">{cd.aboutCourse}</h2>
                 <p className="text-slate-600 dark:text-slate-400 leading-relaxed">{course.description}</p>
               </div>
 
               {/* Who is it for */}
               <div>
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-5">Who is this course for?</h2>
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-5">{cd.whoIsItFor}</h2>
                 <ul className="flex flex-col gap-3">
-                  {course.whoIsItFor.map((item) => (
-                    <li key={item} className="flex items-start gap-3">
+                  {course.whoIsItFor.map((item, i) => (
+                    <li key={i} className="flex items-start gap-3">
                       <CheckCircle2 className="w-5 h-5 shrink-0 mt-0.5" style={{ color: course.accent }} />
                       <span className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">{item}</span>
                     </li>
@@ -106,11 +126,11 @@ export function CourseDetailPage() {
 
               {/* Curriculum */}
               <div>
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Course Curriculum</h2>
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">{cd.curriculum}</h2>
                 <div className="flex flex-col gap-4">
                   {course.curriculum.map((mod, i) => (
                     <motion.div
-                      key={mod.module}
+                      key={i}
                       initial={{ opacity: 0, y: 16 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
@@ -128,8 +148,8 @@ export function CourseDetailPage() {
                       </div>
                       <div className="px-6 py-4">
                         <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                          {mod.topics.map((topic) => (
-                            <li key={topic} className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                          {mod.topics.map((topic, j) => (
+                            <li key={j} className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
                               <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: course.accent }} />
                               {topic}
                             </li>
@@ -143,10 +163,10 @@ export function CourseDetailPage() {
 
               {/* Schedule */}
               <div>
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Class Schedule</h2>
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">{cd.schedule}</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  {course.schedule.map((s) => (
-                    <div key={s.label} className="bg-slate-50 dark:bg-slate-800 rounded-xl p-5 border border-slate-100 dark:border-slate-700 text-center">
+                  {course.schedule.map((s, i) => (
+                    <div key={i} className="bg-slate-50 dark:bg-slate-800 rounded-xl p-5 border border-slate-100 dark:border-slate-700 text-center">
                       <div className="text-xs uppercase tracking-widest font-semibold mb-2" style={{ color: course.accent }}>{s.label}</div>
                       <div className="font-bold text-slate-900 dark:text-white text-sm mb-1">{s.time}</div>
                       <div className="text-xs text-slate-400 dark:text-slate-500">{s.days}</div>
@@ -157,10 +177,10 @@ export function CourseDetailPage() {
 
               {/* FAQ */}
               <div>
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Frequently Asked Questions</h2>
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">{cd.faq}</h2>
                 <div className="flex flex-col gap-3">
-                  {course.faq.map((item) => (
-                    <FaqItem key={item.q} {...item} />
+                  {course.faq.map((item, i) => (
+                    <FaqItem key={i} {...item} />
                   ))}
                 </div>
               </div>
@@ -177,21 +197,21 @@ export function CourseDetailPage() {
                 >
                   <div className="text-center mb-6">
                     <div className="text-4xl font-bold text-slate-900 dark:text-white mb-0.5">{course.price}</div>
-                    <div className="text-sm text-slate-400 dark:text-slate-500">{course.priceNote}</div>
+                    <div className="text-sm text-slate-400 dark:text-slate-500">{card.perMonth || 'per month'}</div>
                   </div>
 
                   <div className="h-px bg-slate-100 dark:bg-slate-700 mb-5" />
 
                   <ul className="flex flex-col gap-3 mb-6">
                     {[
-                      `Level: ${course.level}`,
-                      `Duration: ${course.duration}`,
-                      `${course.sessionsPerWeek}`,
-                      `${course.groupSize}`,
-                      'All materials included',
-                      'Progress tracking',
-                    ].map((item) => (
-                      <li key={item} className="flex items-center gap-2.5 text-sm text-slate-600 dark:text-slate-400">
+                      `${card.level || 'Level'}: ${course.level}`,
+                      `${card.duration || 'Duration'}: ${course.duration}`,
+                      course.sessionsPerWeek,
+                      course.groupSize,
+                      card.allMaterials || 'All materials included',
+                      card.progressTracking || 'Progress tracking',
+                    ].map((item, i) => (
+                      <li key={i} className="flex items-center gap-2.5 text-sm text-slate-600 dark:text-slate-400">
                         <CheckCircle2 className="w-4 h-4 shrink-0" style={{ color: course.accent }} />
                         {item}
                       </li>
@@ -203,22 +223,23 @@ export function CourseDetailPage() {
                     className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-white font-bold text-sm transition-opacity hover:opacity-90 group"
                     style={{ background: course.accent }}
                   >
-                    Enroll Now
+                    {card.enrollNow || 'Enroll Now'}
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
                   </Link>
 
                   <p className="text-xs text-center text-slate-400 dark:text-slate-500 mt-3">
-                    Free placement test · No commitment required
+                    {card.freePlacement || 'Free placement test · No commitment required'}
                   </p>
                 </motion.div>
 
-                {/* Other courses */}
                 <div className="mt-6">
-                  <p className="text-xs text-slate-400 uppercase tracking-widest font-semibold mb-3">Other Courses</p>
+                  <p className="text-xs text-slate-400 uppercase tracking-widest font-semibold mb-3">
+                    {card.otherCourses || 'Other Courses'}
+                  </p>
                   <div className="flex flex-col gap-2">
-                    {Object.values(COURSE_DETAILS)
-                      .filter((c) => c.slug !== course.slug)
-                      .map((c) => (
+                    {otherSlugs.map((c) => {
+                      const otherTranslated = t(`courseDetail.courses.${c.slug}`, { returnObjects: true })
+                      return (
                         <Link
                           key={c.slug}
                           to={`/courses/${c.slug}`}
@@ -226,12 +247,15 @@ export function CourseDetailPage() {
                         >
                           <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: c.accent }} />
                           <div>
-                            <div className="text-sm font-semibold text-slate-900 dark:text-white">{c.title}</div>
+                            <div className="text-sm font-semibold text-slate-900 dark:text-white">
+                              {otherTranslated?.tagline ? c.title : c.title}
+                            </div>
                             <div className="text-xs text-slate-400 dark:text-slate-500">{c.level}</div>
                           </div>
                           <ArrowRight className="w-3.5 h-3.5 text-slate-400 ml-auto shrink-0" />
                         </Link>
-                      ))}
+                      )
+                    })}
                   </div>
                 </div>
               </div>

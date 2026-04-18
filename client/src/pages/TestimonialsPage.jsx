@@ -49,29 +49,26 @@ function TestimonialCard({ meta, text, index }) {
 export function TestimonialsPage() {
   const { t } = useTranslation()
   const items = t('testimonials.items', { returnObjects: true })
+  const stats = t('testimonialsPage.stats', { returnObjects: true })
+  const hero = t('testimonialsPage.pageHero', { returnObjects: true })
 
   return (
     <PageLayout pageTitle="Student Testimonials">
       <PageHero
-        eyebrow="Testimonials"
-        title="Hear from Our"
-        highlight="Students"
-        subtitle="Don't take our word for it. Here's what our students say about learning English at Kutaisi English Academy."
+        eyebrow={hero.eyebrow}
+        title={hero.title}
+        highlight={hero.highlight}
+        subtitle={hero.subtitle}
       />
 
       {/* Overall rating */}
       <section className="py-10 bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-center justify-center gap-10">
-            {[
-              { value: '4.9 / 5',   label: 'Average Rating',    stars: 5 },
-              { value: '96%',       label: 'Student Satisfaction' },
-              { value: '1,200+',    label: 'Total Students'      },
-              { value: '8+ Years',  label: 'Trusted Since 2017'  },
-            ].map((stat) => (
+            {Array.isArray(stats) && stats.map((stat) => (
               <div key={stat.label} className="text-center">
                 <div className="text-2xl font-bold text-primary-900 dark:text-primary-300 mb-0.5">{stat.value}</div>
-                {stat.stars && <StarRow rating={stat.stars} />}
+                {stat.stars && <StarRow rating={5} />}
                 <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">{stat.label}</div>
               </div>
             ))}
@@ -96,13 +93,13 @@ export function TestimonialsPage() {
             className="mt-14 text-center"
           >
             <p className="text-slate-500 dark:text-slate-400 text-sm mb-5">
-              Ready to write your own success story?
+              {t('testimonialsPage.ctaText')}
             </p>
             <Link
               to="/contact"
               className="inline-flex items-center gap-2 px-7 py-3.5 bg-primary-900 text-white rounded-xl font-semibold text-sm hover:bg-primary-800 transition-colors shadow-md shadow-primary-900/20 group"
             >
-              Book Your Free Assessment
+              {t('testimonialsPage.ctaBtn')}
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
           </motion.div>

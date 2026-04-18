@@ -281,5 +281,448 @@
     "en": "English",
     "ka": "ქართული",
     "switchTo": "Switch language"
+  },
+  "aboutPage": {
+    "story": {
+      "eyebrow": "Our Story",
+      "title": "Eight years of shaping",
+      "titleHighlight": "English fluency in Georgia",
+      "p1": "Founded in 2017 by Davit Gorgodze, Kutaisi English Academy was born from a simple but powerful belief: every student in Kutaisi deserves access to world-class English education. What started as a small classroom has grown into the city's most trusted language institution.",
+      "p2": "Today we offer four CEFR-aligned programmes, taught by 15+ CELTA/DELTA-certified educators, with a 96% student satisfaction rate and over 1,200 graduates who have transformed their careers, studies, and lives through English.",
+      "badges": ["CEFR Aligned", "15+ Teachers", "96% Satisfaction", "8 Years"]
+    },
+    "values": {
+      "eyebrow": "What We Stand For",
+      "title": "Our Core Values",
+      "items": [
+        { "title": "Student-First", "desc": "Every decision we make starts and ends with what is best for the learner." },
+        { "title": "Academic Rigour", "desc": "CEFR-aligned curriculum, research-backed methodology, measurable outcomes." },
+        { "title": "Excellence", "desc": "We hold ourselves and our students to the highest possible standards." },
+        { "title": "Global Mindset", "desc": "English is the bridge to the world. We build that bridge one student at a time." }
+      ]
+    },
+    "mission": {
+      "quote": "Our mission is simple: give every student in Kutaisi the tools to communicate confidently in English — and unlock the world.",
+      "founder": "Davit Gorgodze",
+      "founderTitle": "Founder & Academic Director"
+    },
+    "highlights": {
+      "eyebrow": "Why Students Choose Us",
+      "title": "Built around what actually works",
+      "points": [
+        "Founded in 2017 with a mission to make quality English education accessible to all",
+        "Curriculum fully aligned with the Common European Framework of Reference (CEFR)",
+        "Small group sizes ensure personalized attention for every learner",
+        "Modern, communicative teaching methodology backed by research",
+        "CELTA/DELTA certified educators with 5–15 years of teaching experience"
+      ],
+      "stats": [
+        { "label": "Student Satisfaction", "value": "96%" },
+        { "label": "Average Rating", "value": "4.9★" },
+        { "label": "Total Graduates", "value": "1,200+" },
+        { "label": "Years of Excellence", "value": "8+" }
+      ],
+      "viewCourses": "View Our Courses",
+      "getInTouch": "Get in Touch"
+    },
+    "pageHero": {
+      "eyebrow": "About the Academy",
+      "title": "Trusted English Education in the Heart of",
+      "highlight": "Kutaisi",
+      "subtitle": "For over eight years we have been Kutaisi's leading destination for professional English language education — from complete beginners to advanced speakers."
+    },
+    "timeline": [
+      { "title": "Academy Founded", "desc": "Davit Gorgodze opens Kutaisi English Academy with a vision to make quality English education accessible to all." },
+      { "title": "CEFR Accreditation", "desc": "Curriculum fully aligned with the Common European Framework of Reference, recognised across Europe." },
+      { "title": "500 Graduates", "desc": "Over 500 students successfully complete our courses and go on to achieve their personal and professional goals." },
+      { "title": "1,200+ Students", "desc": "The academy grows to become Kutaisi's leading English language institution with 15+ certified educators." }
+    ]
+  },
+  "coursesPage": {
+    "levelGuide": "Find your level",
+    "levels": [
+      { "code": "A1–A2", "name": "Beginner", "desc": "No prior experience needed" },
+      { "code": "B1–B2", "name": "Intermediate", "desc": "Basic sentences & conversations" },
+      { "code": "C1–C2", "name": "Advanced", "desc": "Confident speaker, targeting exam" },
+      { "code": "All", "name": "Business", "desc": "Any level, professional focus" }
+    ],
+    "enrollBtn": "Enroll",
+    "placementNote": "Not sure which level is right for you?",
+    "placementLink": "Book a free placement assessment →",
+    "pageHero": {
+      "eyebrow": "Our Courses",
+      "title": "Find the Perfect",
+      "highlight": "Course for You",
+      "subtitle": "From absolute beginner to advanced professional — each programme is designed with clear outcomes, proven methodology, and personalised support."
+    }
+  },
+  "courseDetail": {
+    "breadcrumb": "Courses",
+    "aboutCourse": "About this course",
+    "whoIsItFor": "Who is this course for?",
+    "curriculum": "Course Curriculum",
+    "schedule": "Class Schedule",
+    "faq": "Frequently Asked Questions",
+    "card": {
+      "allMaterials": "All materials included",
+      "progressTracking": "Progress tracking",
+      "enrollNow": "Enroll Now",
+      "freePlacement": "Free placement test · No commitment required",
+      "otherCourses": "Other Courses",
+      "level": "Level",
+      "duration": "Duration",
+      "perMonth": "per month"
+    },
+    "courses": {
+      "foundation": {
+        "tagline": "Build a solid foundation from zero",
+        "description": "Start your English journey with confidence. Foundation English is designed for absolute beginners and those who want to strengthen core skills from the ground up — pronunciation, grammar, vocabulary, and everyday conversation.",
+        "whoIsItFor": [
+          "Complete beginners with no prior English experience",
+          "Students who studied English years ago and need a fresh start",
+          "Anyone wanting a strong grammatical foundation before advancing",
+          "Young adults preparing for travel, study, or work abroad"
+        ],
+        "features": [
+          "Alphabet, phonics & pronunciation training",
+          "Core vocabulary — 1,000+ essential words",
+          "Simple grammar structures & sentence patterns",
+          "Everyday conversations & guided role-play"
+        ],
+        "curriculum": [
+          { "module": "Module 1", "title": "First Steps", "weeks": "Weeks 1–2", "topics": ["Alphabet & phonics", "Greetings & introductions", "Numbers, dates & colors", "Basic sentence patterns"] },
+          { "module": "Module 2", "title": "Daily Life", "weeks": "Weeks 3–5", "topics": ["Family & relationships", "Food, shopping & money", "Daily routines & time", "Present simple tense"] },
+          { "module": "Module 3", "title": "Around Town", "weeks": "Weeks 6–8", "topics": ["Directions & transport", "Jobs & workplace basics", "Past simple tense", "Short written texts"] },
+          { "module": "Module 4", "title": "Moving Forward", "weeks": "Weeks 9–12", "topics": ["Future plans & intentions", "Travel & tourism", "Health & body vocabulary", "Final project & assessment"] }
+        ],
+        "schedule": [
+          { "label": "Morning", "time": "09:00–11:00", "days": "Mon / Wed / Fri" },
+          { "label": "Evening", "time": "18:00–20:00", "days": "Mon / Wed / Fri" },
+          { "label": "Weekend", "time": "10:00–13:00", "days": "Sat / Sun" }
+        ],
+        "faq": [
+          { "q": "Do I need any prior English knowledge?", "a": "No — this course starts from zero. We welcome complete beginners." },
+          { "q": "What materials are included?", "a": "Textbooks, workbooks, and digital resources are all included in the monthly fee." },
+          { "q": "What happens after Foundation English?", "a": "Students typically move on to Progressive English (B1–B2) after completing this course." }
+        ]
+      },
+      "progressive": {
+        "tagline": "Take your English to the next level",
+        "description": "Bridge the gap between basic and advanced. Progressive English focuses on fluency, grammar accuracy, and professional communication skills used in real-world situations — from the workplace to everyday conversation.",
+        "whoIsItFor": [
+          "Learners who completed Foundation English or equivalent (A2 level)",
+          "Professionals who need English for work communications",
+          "Students preparing for higher-level English certification",
+          "Anyone who can have basic conversations but wants more fluency"
+        ],
+        "features": [
+          "Advanced grammar & complex sentence structures",
+          "Business & professional vocabulary sets",
+          "Reading comprehension & academic writing",
+          "Listening to native speakers & authentic media"
+        ],
+        "curriculum": [
+          { "module": "Module 1", "title": "Communication Skills", "weeks": "Weeks 1–3", "topics": ["Complex tenses review", "Professional introductions", "Email writing basics", "Listening strategies"] },
+          { "module": "Module 2", "title": "Real-World English", "weeks": "Weeks 4–7", "topics": ["Conditional sentences", "Work & career vocabulary", "Report writing", "Discussions & debates"] },
+          { "module": "Module 3", "title": "Fluency Focus", "weeks": "Weeks 8–11", "topics": ["Idioms & expressions", "Media & current events", "Presentation skills", "Advanced reading"] },
+          { "module": "Module 4", "title": "Mastery Prep", "weeks": "Weeks 12–16", "topics": ["Passive & reported speech", "Academic vocabulary", "Mock assessments", "Portfolio review"] }
+        ],
+        "schedule": [
+          { "label": "Morning", "time": "09:00–11:00", "days": "Mon / Wed / Fri" },
+          { "label": "Afternoon", "time": "14:00–16:00", "days": "Tue / Thu" },
+          { "label": "Evening", "time": "18:00–20:00", "days": "Mon / Wed / Fri" }
+        ],
+        "faq": [
+          { "q": "What level should I be at to join?", "a": "You should be able to form basic sentences and understand simple spoken English. Take our free placement test to confirm." },
+          { "q": "Is this suitable for professionals?", "a": "Yes — the curriculum includes workplace vocabulary and professional communication skills throughout." },
+          { "q": "Can I join this course directly without Foundation?", "a": "Yes, provided your placement assessment confirms B1 level or above." }
+        ]
+      },
+      "mastery": {
+        "tagline": "Achieve near-native proficiency",
+        "description": "Reach the pinnacle of English proficiency. Mastery English is designed for confident speakers targeting academic excellence, IELTS/TOEFL certification, or international career advancement.",
+        "whoIsItFor": [
+          "Advanced speakers (B2+) aiming for C1 or C2 fluency",
+          "Students preparing for IELTS (band 6.5+) or TOEFL",
+          "Professionals targeting international careers or postgraduate programs",
+          "Anyone who wants near-native command and precision in English"
+        ],
+        "features": [
+          "Academic writing & critical argumentation",
+          "Full IELTS / TOEFL examination preparation",
+          "Debate, negotiation & advanced presentation",
+          "Literature, nuance & advanced comprehension"
+        ],
+        "curriculum": [
+          { "module": "Module 1", "title": "Advanced Grammar & Style", "weeks": "Weeks 1–3", "topics": ["Complex structures & inversion", "Discourse markers", "Register & stylistic range", "Critical reading"] },
+          { "module": "Module 2", "title": "Academic Skills", "weeks": "Weeks 4–7", "topics": ["Essay structure & argumentation", "Research & citation skills", "IELTS Writing Tasks 1 & 2", "Academic vocabulary depth"] },
+          { "module": "Module 3", "title": "Oral Proficiency", "weeks": "Weeks 8–11", "topics": ["IELTS / TOEFL speaking prep", "Debate & critical thinking", "Presentation techniques", "Pronunciation refinement"] },
+          { "module": "Module 4", "title": "Certification Preparation", "weeks": "Weeks 12–16", "topics": ["Full mock exams with scoring", "Personalized feedback sessions", "Individual study plan", "Certificate preparation"] }
+        ],
+        "schedule": [
+          { "label": "Morning", "time": "09:00–11:00", "days": "Mon / Wed / Fri" },
+          { "label": "Evening", "time": "18:00–20:00", "days": "Tue / Thu / Sat" }
+        ],
+        "faq": [
+          { "q": "What IELTS band can I expect?", "a": "Most students achieve 6.5–8.0 depending on starting level and commitment. Our class average is 7.2." },
+          { "q": "Why is the class size limited to 6?", "a": "Advanced courses need more individual attention. Smaller classes ensure you get personalized feedback every session." },
+          { "q": "Do I need to register for IELTS separately?", "a": "Yes — we prepare you for the exam but registration is done through the British Council or IDP independently." }
+        ]
+      },
+      "business": {
+        "tagline": "Master the language of global business",
+        "description": "Tailored for professionals and entrepreneurs. Master the language of global business — from high-stakes meetings and negotiations to polished emails, compelling presentations, and cross-cultural communication.",
+        "whoIsItFor": [
+          "Professionals working with international clients or partners",
+          "Entrepreneurs expanding into global markets",
+          "Managers and team leads in multinational companies",
+          "Anyone preparing for an international business career"
+        ],
+        "features": [
+          "Corporate vocabulary & professional register",
+          "Business email & formal report writing",
+          "Presentations, pitching & public speaking",
+          "Cross-cultural business communication"
+        ],
+        "curriculum": [
+          { "module": "Module 1", "title": "Professional Communication", "weeks": "Weeks 1–3", "topics": ["Business introductions & networking", "Professional email writing", "Phone & video call etiquette", "Corporate vocabulary foundations"] },
+          { "module": "Module 2", "title": "Business Operations", "weeks": "Weeks 4–6", "topics": ["Meeting facilitation & language", "Negotiation strategies", "Report & proposal writing", "Data presentation & charts"] },
+          { "module": "Module 3", "title": "Advanced Business Skills", "weeks": "Weeks 7–9", "topics": ["Presentations & pitch decks", "Cross-cultural communication", "Business idioms & expressions", "Case study analysis"] },
+          { "module": "Module 4", "title": "Mastery & Application", "weeks": "Weeks 10–12", "topics": ["Mock business scenarios", "LinkedIn & professional writing", "Interview preparation", "Personal business portfolio"] }
+        ],
+        "schedule": [
+          { "label": "Morning", "time": "08:00–10:00", "days": "Tue / Thu" },
+          { "label": "Lunch", "time": "12:00–14:00", "days": "Tue / Thu" },
+          { "label": "Evening", "time": "19:00–21:00", "days": "Mon / Wed" }
+        ],
+        "faq": [
+          { "q": "What English level do I need?", "a": "We recommend at least B1 level. A free placement test will confirm your suitability." },
+          { "q": "Is this useful for Georgian companies with international clients?", "a": "Absolutely — many of our students work for Georgian companies with international partners or clients." },
+          { "q": "Will this help with job interviews conducted in English?", "a": "Yes — Module 4 specifically covers interview preparation and professional self-presentation in English." }
+        ]
+      }
+    }
+  },
+  "teachersPage": {
+    "pageHero": {
+      "eyebrow": "Meet the Team",
+      "title": "Expert Teachers,",
+      "highlight": "Proven Results",
+      "subtitle": "Every teacher at Kutaisi English Academy holds a professional CELTA or DELTA qualification. We don't just teach English — we live it."
+    },
+    "stats": [
+      { "value": "15+", "label": "Expert Teachers" },
+      { "value": "100%", "label": "CELTA / DELTA Certified" },
+      { "value": "5–15", "label": "Years of Experience" },
+      { "value": "4.9 / 5", "label": "Average Teacher Rating" }
+    ],
+    "experienceLabel": "experience",
+    "join": {
+      "title": "Want to join our team?",
+      "desc": "We are always looking for passionate, qualified English teachers. CELTA or equivalent required.",
+      "btn": "Get in Touch"
+    }
+  },
+  "testimonialsPage": {
+    "pageHero": {
+      "eyebrow": "Testimonials",
+      "title": "Hear from Our",
+      "highlight": "Students",
+      "subtitle": "Don't take our word for it. Here's what our students say about learning English at Kutaisi English Academy."
+    },
+    "stats": [
+      { "value": "4.9 / 5", "label": "Average Rating", "stars": true },
+      { "value": "96%", "label": "Student Satisfaction" },
+      { "value": "1,200+", "label": "Total Students" },
+      { "value": "8+ Years", "label": "Trusted Since 2017" }
+    ],
+    "ctaText": "Ready to write your own success story?",
+    "ctaBtn": "Book Your Free Assessment"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "desc": "The page you are looking for doesn't exist or has been moved. Let's get you back on track.",
+    "backHome": "Back to Home",
+    "browseCourses": "Browse Courses"
+  },
+  "faqPage": {
+    "pageHero": {
+      "eyebrow": "FAQ",
+      "title": "Your Questions,",
+      "highlight": "Answered",
+      "subtitle": "Everything you need to know about studying at Kutaisi English Academy. Can't find your answer? Contact us directly."
+    },
+    "categories": [
+      {
+        "id": "general",
+        "label": "General",
+        "items": [
+          { "q": "What is Kutaisi English Academy?", "a": "Kutaisi English Academy is a professional English language school founded in 2017. We offer CEFR-aligned courses for all levels from complete beginners (A1) to advanced speakers (C2), as well as a dedicated Business English programme." },
+          { "q": "Where are you located?", "a": "We are located at 12 Rustaveli Avenue, Kutaisi, Georgia. Our academy is easy to reach by public transport and has nearby parking. Open Monday–Friday 9:00–20:00, Saturday 10:00–17:00." },
+          { "q": "How long has the academy been running?", "a": "We opened our doors in 2017 and have been teaching English continuously since then — that's over 8 years of experience. In that time we have helped more than 1,200 students reach their English language goals." },
+          { "q": "Are your teachers qualified?", "a": "Every teacher at the academy holds a CELTA or DELTA qualification — the internationally recognised standard for English language teaching. Many also hold additional post-graduate degrees in Applied Linguistics, TESOL, or Education." },
+          { "q": "Do you offer online classes?", "a": "Our main programme is in-person, which we believe produces the best results for most learners. In exceptional circumstances (illness, travel) we can accommodate a limited number of online sessions. Please contact us to discuss your situation." }
+        ]
+      },
+      {
+        "id": "enrollment",
+        "label": "Enrollment & Placement",
+        "items": [
+          { "q": "How do I enroll?", "a": "The easiest way is to fill in the enrollment form on our website or contact us by phone or WhatsApp. We'll arrange a free placement assessment at a time that suits you, and from there you can begin in the appropriate course." },
+          { "q": "What is the placement assessment?", "a": "The placement assessment is a short (20–30 minute) written and spoken test that helps us identify your current level of English. It is completely free, there is no pressure to enrol, and the results are useful to you regardless of what you decide. We use the CEFR framework (A1–C2) to determine the right course for you." },
+          { "q": "Can I start at any time of year?", "a": "New cohorts start at the beginning of each month. In most cases you can join within 2–4 weeks of contacting us, depending on availability in the relevant level group. Contact us for exact start dates." },
+          { "q": "What if I already have some English knowledge but am not sure of my level?", "a": "That is exactly what the placement assessment is for. Many students have some prior knowledge but are unsure where they fit. Our assessment will place you accurately so you are challenged but not overwhelmed from your very first class." },
+          { "q": "Is there a minimum age requirement?", "a": "Our main adult programme is designed for students aged 16 and above. For younger learners, please contact us directly to discuss available options." }
+        ]
+      },
+      {
+        "id": "classes",
+        "label": "Classes & Schedule",
+        "items": [
+          { "q": "How many students are in each class?", "a": "We keep classes intentionally small — a maximum of 8 students in most groups, and just 6 in our Mastery and Business English courses. This ensures every student receives personal attention and meaningful speaking practice in every session." },
+          { "q": "How often are classes held?", "a": "Foundation, Progressive, and Mastery courses meet 3 times per week. Business English meets twice per week. Each session is 90 minutes. We offer morning, afternoon, and evening time slots, as well as Saturday classes." },
+          { "q": "What happens if I miss a class?", "a": "We understand that life happens. We ask that you notify us in advance where possible. Teachers share session notes and materials for missed classes. However, if a student misses more than 30% of sessions in a month without prior notification, they may be asked to repeat that month at the standard fee." },
+          { "q": "What materials will I need?", "a": "All course materials — including textbooks, workbooks, and digital resources — are included in the course fee. You will not need to purchase anything separately. We use internationally published textbooks aligned to the CEFR framework." },
+          { "q": "Do you teach on Georgian public holidays?", "a": "Classes are suspended on official Georgian public holidays. We compensate for any missed sessions by extending the course duration accordingly, so you always receive the full number of scheduled lessons." }
+        ]
+      },
+      {
+        "id": "fees",
+        "label": "Fees & Payment",
+        "items": [
+          { "q": "How much do courses cost?", "a": "Foundation English is ₾180/month, Progressive English ₾200/month, Mastery English ₾240/month, and Business English ₾220/month. All fees include course materials. Visit our Courses page for full pricing details." },
+          { "q": "When and how do I pay?", "a": "Monthly fees are due by the 5th of each calendar month. We accept bank transfer, cash payment at the academy, and card payment. Details are provided upon enrollment. You can also pay via our online enrollment form." },
+          { "q": "Can I get a refund if I leave mid-month?", "a": "We do not issue refunds for partially-completed months as a general rule. However, in exceptional circumstances — serious illness or family bereavement — refund requests will be considered on a case-by-case basis. Please contact us as soon as possible if you are in this situation." },
+          { "q": "Is the placement assessment really free?", "a": "Yes, completely free and with no obligation to enrol. We believe everyone deserves to know their current English level, and we're happy to provide that service regardless of whether you choose to study with us." },
+          { "q": "Are there any discounts available?", "a": "We offer a 10% sibling discount for two or more family members enrolled at the same time. We also periodically offer early-bird rates for new cohorts — subscribe to our newsletter or follow us on social media to be the first to hear about promotions." }
+        ]
+      },
+      {
+        "id": "progress",
+        "label": "Progress & Certification",
+        "items": [
+          { "q": "Will I receive a certificate when I finish?", "a": "Yes. Upon successful completion of any course, you will receive a Kutaisi English Academy certificate of completion, which includes your CEFR level achieved. This is a recognised document that you can include in your CV or university applications." },
+          { "q": "How will I know if I'm making progress?", "a": "Progress is tracked continuously through in-class activities, monthly progress reviews, and end-of-course assessments. Teachers provide regular verbal and written feedback. You will always know where you stand and what to focus on next." },
+          { "q": "Do you help with IELTS or TOEFL preparation?", "a": "Our Mastery English course includes dedicated IELTS and TOEFL preparation modules. We also offer one-to-one exam preparation sessions for students who need focused coaching on a specific exam. Contact us to discuss your target score and timeline." },
+          { "q": "What is the average improvement a student makes?", "a": "Most students advance by one full CEFR level (e.g., A2 to B1) within a single 3–4 month course. Results depend on attendance, home study, and the individual student, but our 96% student satisfaction rate reflects how consistently we help people progress." },
+          { "q": "Can I move up to the next course level before completing the current one?", "a": "If a student is progressing exceptionally quickly, the teacher may recommend an early advancement. This is assessed by the Academic Director and is based on demonstrated proficiency, not just enthusiasm. We want every student in the class level where they will thrive." }
+        ]
+      }
+    ],
+    "stillQuestion": {
+      "title": "Still have a question?",
+      "desc": "Our team is happy to help. Get in touch and we'll respond within 24 hours.",
+      "btn": "Contact Us"
+    }
+  },
+  "enrollPage": {
+    "pageHero": {
+      "eyebrow": "Enroll Now",
+      "title": "Start Your English",
+      "highlight": "Journey",
+      "subtitle": "Choose your course, fill in your details, and complete the first month's payment to secure your place."
+    },
+    "steps": ["Choose Course", "Your Details", "Confirm & Pay"],
+    "courses": {
+      "foundation": { "title": "Foundation English", "level": "A1 – A2", "badge": "Beginner", "duration": "3 months", "sessions": "3× per week" },
+      "progressive": { "title": "Progressive English", "level": "B1 – B2", "badge": "Most Popular", "duration": "4 months", "sessions": "3× per week" },
+      "mastery":     { "title": "Mastery English",     "level": "C1 – C2", "badge": "Advanced",    "duration": "4 months", "sessions": "3× per week" },
+      "business":    { "title": "Business English",    "level": "All Levels","badge": "Professional","duration": "3 months", "sessions": "2× per week" }
+    },
+    "step0": {
+      "title": "Which course would you like to join?",
+      "notSure": "Not sure of your level?",
+      "notSureLink": "Book a free placement assessment",
+      "notSureEnd": "first.",
+      "mostPopular": "Most Popular",
+      "perMonth": "/month",
+      "continueBtn": "Continue"
+    },
+    "step1": {
+      "changeBtn": "Change",
+      "title": "Your details",
+      "name": "Full Name",
+      "namePlaceholder": "e.g. Mariam Beridze",
+      "nameRequired": "Full name is required",
+      "phone": "Phone Number",
+      "phonePlaceholder": "+995 5XX XXX XXX",
+      "phoneRequired": "Phone number is required",
+      "phoneInvalid": "Please enter a valid phone number",
+      "email": "Email Address",
+      "emailOptional": "(optional)",
+      "emailPlaceholder": "your@email.com (optional)",
+      "emailInvalid": "Please enter a valid email address",
+      "notes": "Additional Notes",
+      "notesOptional": "(optional)",
+      "notesPH": "Preferred schedule, any questions, etc.",
+      "backBtn": "Back",
+      "continueBtn": "Continue"
+    },
+    "step2": {
+      "title": "Confirm & pay first month",
+      "summaryTitle": "Enrollment Summary",
+      "courseLabel": "Course",
+      "levelLabel": "Level",
+      "durationLabel": "Duration",
+      "nameLabel": "Name",
+      "phoneLabel": "Phone",
+      "amountDue": "Amount due (1st month)",
+      "bankTitle": "Bank Transfer Details",
+      "bankRef": "Please use your full name as the payment reference. You will receive a confirmation email once the transfer is verified (usually within 1 business day).",
+      "bankLabels": { "Bank": "Bank", "Account Name": "Account Name", "IBAN": "IBAN", "Currency": "Currency" },
+      "payInPerson": "Prefer to pay in person?",
+      "payInPersonDesc": "You can also pay cash or card at the academy — 12 Rustaveli Avenue, Kutaisi. Mon–Fri 9:00–20:00, Sat 10:00–17:00.",
+      "agreePrefix": "I have read and agree to the",
+      "termsLink": "Terms of Service",
+      "agreeAnd": "and",
+      "privacyLink": "Privacy Policy",
+      "agreeSuffix": "I understand that my place is confirmed once payment is verified.",
+      "backBtn": "Back",
+      "confirmBtn": "Confirm Enrollment"
+    },
+    "success": {
+      "title": "Enrollment Request Received!",
+      "thankYou": "Thank you,",
+      "receivedFor": "We've received your enrollment request for",
+      "desc": "Our team will contact you within 24 hours to confirm your place and arrange your free placement assessment. Please complete the bank transfer to secure your spot.",
+      "homeBtn": "Back to Home",
+      "coursesBtn": "Browse Courses"
+    }
+  },
+  "privacyPage": {
+    "legal": "Legal",
+    "title": "Privacy Policy",
+    "lastUpdated": "Last Updated: April 2025",
+    "intro": "Kutaisi English Academy (\"we\", \"us\", or \"our\") is committed to protecting your personal information. This Privacy Policy explains how we collect, use, and safeguard the data you provide to us.",
+    "sections": [
+      { "title": "1. Information We Collect", "body": "We collect information you provide directly to us when you fill in our contact form, enrol in a course, or communicate with our team. This includes your full name, phone number, email address, and any messages or enquiries you submit.\n\nWe also collect basic technical data automatically when you visit our website, such as your IP address, browser type, and pages visited, in order to improve our service." },
+      { "title": "2. How We Use Your Information", "body": "We use the information we collect to:\n• Respond to your enquiries and provide the services you request\n• Process course enrolments and manage your learning account\n• Send you relevant updates about your course or the academy\n• Improve our website and educational programmes\n• Comply with legal obligations\n\nWe do not use your personal data for automated decision-making or profiling." },
+      { "title": "3. Sharing Your Information", "body": "Kutaisi English Academy does not sell, trade, or rent your personal information to third parties. We may share your data with trusted service providers who assist us in operating our website or conducting our business, provided they agree to keep your information confidential.\n\nWe may disclose your information if required by law or to protect the safety of our students and staff." },
+      { "title": "4. Data Retention", "body": "We retain your personal information only for as long as necessary to fulfil the purposes described in this policy, or as required by Georgian law. Enquiry data is typically retained for up to 2 years. Active student records are retained for the duration of enrolment plus 3 years." },
+      { "title": "5. Your Rights", "body": "Under applicable data protection laws, you have the right to:\n• Access the personal data we hold about you\n• Request correction of inaccurate data\n• Request deletion of your data\n• Object to certain uses of your data\n• Withdraw consent at any time\n\nTo exercise any of these rights, please contact us at info@kutaisi-english.ge." },
+      { "title": "6. Cookies", "body": "Our website uses cookies to improve your browsing experience. Cookies are small text files stored on your device. We use only essential cookies required for basic website functionality. You can configure your browser to refuse cookies, but this may affect some features of our website." },
+      { "title": "7. Security", "body": "We implement appropriate technical and organisational measures to protect your personal data against unauthorised access, alteration, disclosure, or destruction. However, no method of transmission over the Internet is 100% secure, and we cannot guarantee absolute security." },
+      { "title": "8. Changes to This Policy", "body": "We may update this Privacy Policy from time to time. When we do, we will revise the \"Last Updated\" date at the top of this page. We encourage you to review this policy periodically to stay informed about how we protect your information." },
+      { "title": "9. Contact Us", "body": "If you have any questions about this Privacy Policy or our data practices, please contact us:\n\nKutaisi English Academy\n12 Rustaveli Avenue, Kutaisi, Georgia\ninfo@kutaisi-english.ge\n+995 599 123 456" }
+    ]
+  },
+  "termsPage": {
+    "legal": "Legal",
+    "title": "Terms of Service",
+    "lastUpdated": "Last Updated: April 2025",
+    "intro": "These Terms of Service govern your use of Kutaisi English Academy's website and educational services. Please read them carefully before enrolling or using our services.",
+    "sections": [
+      { "title": "1. Acceptance of Terms", "body": "By accessing our website or enrolling in any course at Kutaisi English Academy, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our services." },
+      { "title": "2. Course Enrolment", "body": "Enrolment in a course is confirmed upon receipt of full payment for the first month (or full course fee where applicable). All enrolments are subject to availability and placement assessment results. We reserve the right to decline enrolment at our discretion.\n\nStudents must meet the minimum English level requirements for their chosen course as determined by our free placement assessment." },
+      { "title": "3. Fees and Payment", "body": "Course fees are due at the beginning of each month. Monthly fees must be paid no later than the 5th of each calendar month. Late payment may result in suspension of access to classes.\n\nAll fees are quoted in Georgian Lari (₾). Fees may be subject to annual review. Students will be notified of any fee changes at least 30 days in advance." },
+      { "title": "4. Cancellation and Refunds", "body": "Students wishing to cancel their enrolment must provide written notice at least 14 days before the start of the next billing period. No refunds are issued for partially-completed months.\n\nIf the Academy cancels a course, enrolled students will receive a full refund of any fees paid for uncompleted sessions.\n\nIn exceptional circumstances (serious illness, family bereavement), refund requests may be considered on a case-by-case basis." },
+      { "title": "5. Attendance and Conduct", "body": "Students are expected to attend all scheduled classes. If a student misses more than 30% of sessions in a month without prior notification, they may be asked to repeat the month at standard fee.\n\nAll students and staff are expected to treat each other with respect. Disruptive behaviour, harassment, or discrimination of any kind will result in immediate dismissal without refund." },
+      { "title": "6. Materials and Intellectual Property", "body": "All course materials, including textbooks, handouts, recordings, and digital resources, are provided for the personal educational use of enrolled students only. Reproduction, distribution, or commercial use of any materials without prior written consent from Kutaisi English Academy is strictly prohibited." },
+      { "title": "7. Limitation of Liability", "body": "Kutaisi English Academy provides educational services in good faith. We do not guarantee specific outcomes, exam scores, or employment results from completing our courses. Our liability is limited to the course fees paid in the relevant period." },
+      { "title": "8. Privacy", "body": "Your use of our services is also governed by our Privacy Policy, which is incorporated into these Terms by reference. Please review our Privacy Policy to understand our practices." },
+      { "title": "9. Governing Law", "body": "These Terms of Service are governed by and construed in accordance with the laws of Georgia. Any disputes arising under these terms shall be subject to the exclusive jurisdiction of the courts of Georgia." },
+      { "title": "10. Changes to Terms", "body": "We reserve the right to modify these Terms of Service at any time. Changes will be communicated to enrolled students by email and published on our website. Continued use of our services after such changes constitutes acceptance of the revised terms." },
+      { "title": "11. Contact", "body": "For questions about these Terms, please contact:\n\nKutaisi English Academy\n12 Rustaveli Avenue, Kutaisi, Georgia\ninfo@kutaisi-english.ge\n+995 599 123 456" }
+    ]
   }
 }

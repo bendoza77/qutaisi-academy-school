@@ -1,13 +1,14 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Home } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { PageLayout } from '../components/layout/PageLayout'
 
 export function NotFoundPage() {
+  const { t } = useTranslation()
   return (
     <PageLayout pageTitle="Page Not Found">
       <section className="relative min-h-[calc(100vh-80px)] flex items-center justify-center bg-white dark:bg-slate-900 overflow-hidden">
-        {/* Background */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary-50 dark:bg-primary-950/20 rounded-full blur-3xl" />
           <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-50 dark:bg-blue-950/20 rounded-full blur-3xl" />
@@ -23,10 +24,10 @@ export function NotFoundPage() {
             404
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-4">
-            Page not found
+            {t('notFound.title')}
           </h1>
           <p className="text-slate-500 dark:text-slate-400 leading-relaxed mb-8">
-            The page you are looking for doesn't exist or has been moved. Let's get you back on track.
+            {t('notFound.desc')}
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
@@ -34,13 +35,13 @@ export function NotFoundPage() {
               className="inline-flex items-center gap-2 px-7 py-3.5 bg-primary-900 text-white rounded-xl font-semibold text-sm hover:bg-primary-800 transition-colors shadow-md shadow-primary-900/20 group"
             >
               <Home className="w-4 h-4" />
-              Back to Home
+              {t('notFound.backHome')}
             </Link>
             <Link
               to="/courses"
               className="inline-flex items-center gap-2 px-7 py-3.5 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-semibold text-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group"
             >
-              Browse Courses
+              {t('notFound.browseCourses')}
               <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
             </Link>
           </div>
