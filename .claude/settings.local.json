@@ -13,7 +13,10 @@
       "Bash(node -e \"require\\('three'\\); require\\('@react-three/fiber'\\); require\\('gsap'\\); require\\('zustand'\\)\")",
       "Bash(timeout 30 npx vite build)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5173/)",
-      "Bash(npx vite *)"
+      "Bash(npx vite *)",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('client/src/i18n/locales/en/translation.json','utf8'\\)\\)\")",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('client/src/i18n/locales/ka/translation.json','utf8'\\)\\)\")",
+      "Bash(node -e ' *)"
     ]
   }
 }

@@ -2,7 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <!-- Inline theme script: runs synchronously before first paint to prevent flash -->
+
+    <!-- Inline theme script: runs synchronously before first paint to prevent FOUC -->
     <script>
       (function () {
         try {
@@ -16,15 +17,148 @@
         } catch (_) {}
       })();
     </script>
-    <link rel="icon" type="image/png" href="/logo.png" />
-    <link rel="apple-touch-icon" href="/logo.png" />
+
+    <!-- ═══════════════════════════════════════════
+         CORE
+    ════════════════════════════════════════════ -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Kutaisi English Academy — Learn English with confidence. Professional courses for all levels in Kutaisi, Georgia." />
-    <meta name="keywords" content="English Academy, Kutaisi, English courses, language learning, Georgia" />
-    <title>Kutaisi English Academy</title>
+    <meta name="theme-color" content="#1e3a5f" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/logo.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/logo.png" />
+    <link rel="shortcut icon" href="/logo.png" />
+
+    <!-- ═══════════════════════════════════════════
+         PRIMARY SEO
+    ════════════════════════════════════════════ -->
+    <title>Kutaisi English Academy — Professional English Courses in Kutaisi, Georgia</title>
+    <meta name="description" content="Kutaisi English Academy offers professional English courses for all levels — from beginner to advanced. Small groups, CELTA-certified teachers, flexible schedule. Enroll today in Kutaisi, Georgia." />
+    <meta name="keywords" content="English Academy Kutaisi, English courses Georgia, Learn English Kutaisi, ინგლისური კურსი ქუთაისი, English language school Georgia, IELTS preparation Kutaisi, Business English Georgia" />
+    <meta name="author" content="Kutaisi English Academy" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <link rel="canonical" href="https://qutaisi-academy-school.vercel.app/" />
+
+    <!-- ═══════════════════════════════════════════
+         OPEN GRAPH (Facebook, LinkedIn, WhatsApp)
+    ════════════════════════════════════════════ -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://qutaisi-academy-school.vercel.app/" />
+    <meta property="og:site_name" content="Kutaisi English Academy" />
+    <meta property="og:title" content="Kutaisi English Academy — Professional English Courses" />
+    <meta property="og:description" content="Professional English courses for all levels in Kutaisi, Georgia. CELTA-certified teachers, small groups, flexible schedule. Free placement test." />
+    <meta property="og:image" content="https://qutaisi-academy-school.vercel.app/og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Kutaisi English Academy — Learn English with Confidence" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="ka_GE" />
+
+    <!-- ═══════════════════════════════════════════
+         TWITTER / X CARD
+    ════════════════════════════════════════════ -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Kutaisi English Academy — Professional English Courses" />
+    <meta name="twitter:description" content="Professional English courses for all levels in Kutaisi, Georgia. CELTA-certified teachers, small groups, flexible schedule." />
+    <meta name="twitter:image" content="https://qutaisi-academy-school.vercel.app/og-image.jpg" />
+
+    <!-- ═══════════════════════════════════════════
+         GEO / LOCAL SEO
+    ════════════════════════════════════════════ -->
+    <meta name="geo.region" content="GE-IM" />
+    <meta name="geo.placename" content="Kutaisi, Georgia" />
+    <meta name="geo.position" content="42.2679;42.7180" />
+    <meta name="ICBM" content="42.2679, 42.7180" />
+
+    <!-- ═══════════════════════════════════════════
+         FONT LOADING — only needed weights
+    ════════════════════════════════════════════ -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+Georgian:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Georgian:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- ═══════════════════════════════════════════
+         STRUCTURED DATA — JSON-LD
+    ════════════════════════════════════════════ -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": ["EducationalOrganization", "LocalBusiness"],
+          "@id": "https://qutaisi-academy-school.vercel.app/#organization",
+          "name": "Kutaisi English Academy",
+          "alternateName": "KEA",
+          "description": "Professional English language school in Kutaisi, Georgia offering courses for all levels — Foundation, Progressive, Mastery, and Business English.",
+          "url": "https://qutaisi-academy-school.vercel.app",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://qutaisi-academy-school.vercel.app/logo.png"
+          },
+          "image": "https://qutaisi-academy-school.vercel.app/og-image.jpg",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Kutaisi",
+            "addressRegion": "Imereti",
+            "addressCountry": "GE"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": 42.2679,
+            "longitude": 42.7180
+          },
+          "areaServed": {
+            "@type": "City",
+            "name": "Kutaisi"
+          },
+          "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "English Courses",
+            "itemListElement": [
+              {
+                "@type": "Course",
+                "name": "Foundation English",
+                "description": "Build a solid foundation from scratch. Perfect for absolute beginners.",
+                "provider": { "@id": "https://qutaisi-academy-school.vercel.app/#organization" }
+              },
+              {
+                "@type": "Course",
+                "name": "Progressive English",
+                "description": "Take your English to the next level with focus on fluency and grammar.",
+                "provider": { "@id": "https://qutaisi-academy-school.vercel.app/#organization" }
+              },
+              {
+                "@type": "Course",
+                "name": "Mastery English",
+                "description": "Achieve near-native proficiency for IELTS, TOEFL, and academic excellence.",
+                "provider": { "@id": "https://qutaisi-academy-school.vercel.app/#organization" }
+              },
+              {
+                "@type": "Course",
+                "name": "Business English",
+                "description": "Master the language of global business — meetings, negotiations, presentations.",
+                "provider": { "@id": "https://qutaisi-academy-school.vercel.app/#organization" }
+              }
+            ]
+          },
+          "inLanguage": ["en", "ka"],
+          "sameAs": []
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://qutaisi-academy-school.vercel.app/#website",
+          "url": "https://qutaisi-academy-school.vercel.app",
+          "name": "Kutaisi English Academy",
+          "publisher": { "@id": "https://qutaisi-academy-school.vercel.app/#organization" },
+          "inLanguage": ["en", "ka"]
+        }
+      ]
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>

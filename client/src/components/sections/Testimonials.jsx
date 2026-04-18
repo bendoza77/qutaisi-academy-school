@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Quote, Star } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { SectionTitle } from "../ui/SectionTitle";
 import { useSiteData } from "../../context/SiteDataContext";
 
@@ -56,10 +57,25 @@ function TestimonialCard({ meta, text, direction }) {
 }
 
 export function Testimonials() {
+  const { t, i18n } = useTranslation();
   const { siteData } = useSiteData();
-  const testimonials = siteData.testimonials;
+  const rawTestimonials = siteData.testimonials;
+  const isKa = i18n.language === "ka";
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(1);
+
+  const testimonials = rawTestimonials.map((item, i) => {
+    if (!isKa) return item;
+    const kaData = item.ka || {};
+    const tItem = t(`testimonials.items.${i}`, { returnObjects: true }) || {};
+    return {
+      ...item,
+      name:     kaData.name     || tItem.name     || item.name,
+      role:     kaData.role     || tItem.role     || item.role,
+      location: kaData.location || tItem.location || item.location,
+      text:     kaData.text     || tItem.text     || item.text,
+    };
+  });
 
   const total = testimonials.length;
 
@@ -90,10 +106,10 @@ export function Testimonials() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center mb-14">
           <SectionTitle
-            eyebrow="Testimonials"
-            title="Hear from Our "
-            highlight="Students"
-            description="Don't take our word for it. Here's what our students say about their experience at Kutaisi English Academy."
+            eyebrow={t("testimonials.eyebrow")}
+            title={t("testimonials.title")}
+            highlight={t("testimonials.titleHighlight")}
+            description={t("testimonials.description")}
             align="center"
             className="mx-auto"
           />

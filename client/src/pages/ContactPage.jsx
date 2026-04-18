@@ -1,15 +1,17 @@
+import { useTranslation } from 'react-i18next'
 import { PageLayout } from '../components/layout/PageLayout'
 import { PageHero } from '../components/ui/PageHero'
 import { Contact } from '../components/sections/Contact'
 
 export function ContactPage() {
+  const { t } = useTranslation()
   return (
-    <PageLayout pageTitle="Contact Us">
+    <PageLayout pageTitle={t('contact.eyebrow')}>
       <PageHero
-        eyebrow="Contact Us"
-        title="Let's Start a"
-        highlight="Conversation"
-        subtitle="Have questions about our courses? Ready to enrol? Our team will get back to you within 24 hours."
+        eyebrow={t('contact.eyebrow')}
+        title={t('contact.title')}
+        highlight={t('contact.titleHighlight')}
+        subtitle={t('contact.description')}
       />
       <Contact />
     </PageLayout>

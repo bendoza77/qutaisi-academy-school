@@ -1,25 +1,35 @@
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ThemeProvider } from "./context/ThemeContext";
 import { SiteDataProvider } from "./context/SiteDataContext";
-import { AdminPage } from "./pages/admin/AdminPage";
 import { Navbar } from "./components/layout/Navbar";
 import { Footer } from "./components/layout/Footer";
 import { Home } from "./pages/Home";
-import { AboutPage } from "./pages/AboutPage";
-import { CoursesPage } from "./pages/CoursesPage";
-import { CourseDetailPage } from "./pages/CourseDetailPage";
-import { WhyUsPage } from "./pages/WhyUsPage";
-import { TestimonialsPage } from "./pages/TestimonialsPage";
-import { ContactPage } from "./pages/ContactPage";
-import { PrivacyPage } from "./pages/PrivacyPage";
-import { TermsPage } from "./pages/TermsPage";
-import { NotFoundPage } from "./pages/NotFoundPage"
-import { TeachersPage } from "./pages/TeachersPage"
-import { FAQPage } from "./pages/FAQPage"
-import { EnrollPage } from "./pages/EnrollPage"
 import { WhatsAppButton } from "./components/ui/WhatsAppButton";
+
+// Lazy-load every route except the home page shell
+const AdminPage        = lazy(() => import("./pages/admin/AdminPage").then(m => ({ default: m.AdminPage })));
+const AboutPage        = lazy(() => import("./pages/AboutPage").then(m => ({ default: m.AboutPage })));
+const CoursesPage      = lazy(() => import("./pages/CoursesPage").then(m => ({ default: m.CoursesPage })));
+const CourseDetailPage = lazy(() => import("./pages/CourseDetailPage").then(m => ({ default: m.CourseDetailPage })));
+const WhyUsPage        = lazy(() => import("./pages/WhyUsPage").then(m => ({ default: m.WhyUsPage })));
+const TestimonialsPage = lazy(() => import("./pages/TestimonialsPage").then(m => ({ default: m.TestimonialsPage })));
+const ContactPage      = lazy(() => import("./pages/ContactPage").then(m => ({ default: m.ContactPage })));
+const TeachersPage     = lazy(() => import("./pages/TeachersPage").then(m => ({ default: m.TeachersPage })));
+const FAQPage          = lazy(() => import("./pages/FAQPage").then(m => ({ default: m.FAQPage })));
+const EnrollPage       = lazy(() => import("./pages/EnrollPage").then(m => ({ default: m.EnrollPage })));
+const PrivacyPage      = lazy(() => import("./pages/PrivacyPage").then(m => ({ default: m.PrivacyPage })));
+const TermsPage        = lazy(() => import("./pages/TermsPage").then(m => ({ default: m.TermsPage })));
+const NotFoundPage     = lazy(() => import("./pages/NotFoundPage").then(m => ({ default: m.NotFoundPage })));
+
+function PageLoader() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-white dark:bg-slate-900">
+      <div className="w-8 h-8 border-2 border-primary-200 border-t-primary-600 rounded-full animate-spin" />
+    </div>
+  );
+}
 
 function HomeShell() {
   const { i18n } = useTranslation();
@@ -50,26 +60,52 @@ function HomeShell() {
 function App() {
   return (
     <SiteDataProvider>
-    <ThemeProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/academy-panel" element={<AdminPage />} />
-          <Route path="/" element={<HomeShell />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/courses" element={<CoursesPage />} />
-          <Route path="/courses/:courseSlug" element={<CourseDetailPage />} />
-          <Route path="/why-us" element={<WhyUsPage />} />
-          <Route path="/testimonials" element={<TestimonialsPage />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/privacy" element={<PrivacyPage />} />
-          <Route path="/terms" element={<TermsPage />} />
-          <Route path="/teachers" element={<TeachersPage />} />
-          <Route path="/faq" element={<FAQPage />} />
-          <Route path="/enroll" element={<EnrollPage />} />
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-      </BrowserRouter>
-    </ThemeProvider>
+      <ThemeProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<HomeShell />} />
+            <Route path="/academy-panel" element={
+              <Suspense fallback={<PageLoader />}><AdminPage /></Suspense>
+            } />
+            <Route path="/about" element={
+              <Suspense fallback={<PageLoader />}><AboutPage /></Suspense>
+            } />
+            <Route path="/courses" element={
+              <Suspense fallback={<PageLoader />}><CoursesPage /></Suspense>
+            } />
+            <Route path="/courses/:courseSlug" element={
+              <Suspense fallback={<PageLoader />}><CourseDetailPage /></Suspense>
+            } />
+            <Route path="/why-us" element={
+              <Suspense fallback={<PageLoader />}><WhyUsPage /></Suspense>
+            } />
+            <Route path="/testimonials" element={
+              <Suspense fallback={<PageLoader />}><TestimonialsPage /></Suspense>
+            } />
+            <Route path="/contact" element={
+              <Suspense fallback={<PageLoader />}><ContactPage /></Suspense>
+            } />
+            <Route path="/teachers" element={
+              <Suspense fallback={<PageLoader />}><TeachersPage /></Suspense>
+            } />
+            <Route path="/faq" element={
+              <Suspense fallback={<PageLoader />}><FAQPage /></Suspense>
+            } />
+            <Route path="/enroll" element={
+              <Suspense fallback={<PageLoader />}><EnrollPage /></Suspense>
+            } />
+            <Route path="/privacy" element={
+              <Suspense fallback={<PageLoader />}><PrivacyPage /></Suspense>
+            } />
+            <Route path="/terms" element={
+              <Suspense fallback={<PageLoader />}><TermsPage /></Suspense>
+            } />
+            <Route path="*" element={
+              <Suspense fallback={<PageLoader />}><NotFoundPage /></Suspense>
+            } />
+          </Routes>
+        </BrowserRouter>
+      </ThemeProvider>
     </SiteDataProvider>
   );
 }

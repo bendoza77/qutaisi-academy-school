@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Disallow: /academy-panel
+Disallow: /academy-panel/
+
+# Block common bad bots
+User-agent: AhrefsBot
+Crawl-delay: 10
+
+User-agent: SemrushBot
+Crawl-delay: 10
+
+Sitemap: https://qutaisi-academy-school.vercel.app/sitemap.xml

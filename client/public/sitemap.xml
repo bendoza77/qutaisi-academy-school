@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml"
+>
+  <url>
+    <loc>https://qutaisi-academy-school.vercel.app/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://qutaisi-academy-school.vercel.app/"/>
+    <xhtml:link rel="alternate" hreflang="ka" href="https://qutaisi-academy-school.vercel.app/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://qutaisi-academy-school.vercel.app/"/>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://qutaisi-academy-school.vercel.app/about</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://qutaisi-academy-school.vercel.app/about"/>
+    <xhtml:link rel="alternate" hreflang="ka" href="https://qutaisi-academy-school.vercel.app/about"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://qutaisi-academy-school.vercel.app/courses</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://qutaisi-academy-school.vercel.app/courses"/>
+    <xhtml:link rel="alternate" hreflang="ka" href="https://qutaisi-academy-school.vercel.app/courses"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://qutaisi-academy-school.vercel.app/courses/foundation</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://qutaisi-academy-school.vercel.app/courses/progressive</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://qutaisi-academy-school.vercel.app/courses/mastery</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://qutaisi-academy-school.vercel.app/courses/business</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://qutaisi-academy-school.vercel.app/why-us</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://qutaisi-academy-school.vercel.app/teachers</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://qutaisi-academy-school.vercel.app/testimonials</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://qutaisi-academy-school.vercel.app/faq</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://qutaisi-academy-school.vercel.app/contact</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://qutaisi-academy-school.vercel.app/enroll</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://qutaisi-academy-school.vercel.app/privacy</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://qutaisi-academy-school.vercel.app/terms</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+</urlset>

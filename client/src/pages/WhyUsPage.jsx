@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { PageLayout } from '../components/layout/PageLayout'
 import { PageHero } from '../components/ui/PageHero'
 import { WhyChooseUs } from '../components/sections/WhyChooseUs'
@@ -8,13 +9,14 @@ import { Testimonials } from '../components/sections/Testimonials'
 import { CTA } from '../components/sections/CTA'
 
 export function WhyUsPage() {
+  const { t } = useTranslation()
   return (
-    <PageLayout pageTitle="Why Choose Us">
+    <PageLayout pageTitle={t('benefits.eyebrow')}>
       <PageHero
-        eyebrow="Why Choose Us"
-        title="Everything You Need to"
-        highlight="Succeed"
-        subtitle="We've built our academy around what actually works — research-backed methods, expert teachers, and an environment where students truly thrive."
+        eyebrow={t('benefits.eyebrow')}
+        title={t('benefits.title')}
+        highlight={t('benefits.titleHighlight')}
+        subtitle={t('benefits.description')}
       />
       <WhyChooseUs />
       <Stats />

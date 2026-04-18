@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import {
   GraduationCap, Users, Lightbulb, Calendar, Globe, Shield,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { SectionTitle } from "../ui/SectionTitle";
 import { useSiteData } from "../../context/SiteDataContext";
 import { BENEFIT_ICONS, BENEFIT_COLORS } from "../../constants";
@@ -38,8 +39,10 @@ function BenefitCard({ iconKey, colors, title, description }) {
 }
 
 export function WhyChooseUs() {
+  const { t, i18n } = useTranslation();
   const { siteData } = useSiteData();
   const benefitItems = siteData.benefits;
+  const isKa = i18n.language === "ka";
 
   return (
     <section
@@ -52,10 +55,10 @@ export function WhyChooseUs() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center mb-14">
           <SectionTitle
-            eyebrow="Why Choose Us"
-            title="Everything You Need to "
-            highlight="Succeed"
-            description="We've built our academy around what actually works — research-backed methods, expert teachers, and an environment where students thrive."
+            eyebrow={t("benefits.eyebrow")}
+            title={t("benefits.title")}
+            highlight={t("benefits.titleHighlight")}
+            description={t("benefits.description")}
             align="center"
             className="mx-auto"
           />
@@ -69,15 +72,24 @@ export function WhyChooseUs() {
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6"
         >
           {Array.isArray(benefitItems) &&
-            benefitItems.map((item, i) => (
-              <BenefitCard
-                key={i}
-                iconKey={BENEFIT_ICONS[i]}
-                colors={BENEFIT_COLORS[i]}
-                title={item.title}
-                description={item.description}
-              />
-            ))}
+            benefitItems.map((item, i) => {
+              const kaData = item.ka || {};
+              const title = isKa
+                ? (kaData.title || t(`benefits.items.${i}.title`))
+                : item.title;
+              const description = isKa
+                ? (kaData.description || t(`benefits.items.${i}.description`))
+                : item.description;
+              return (
+                <BenefitCard
+                  key={i}
+                  iconKey={BENEFIT_ICONS[i]}
+                  colors={BENEFIT_COLORS[i]}
+                  title={title}
+                  description={description}
+                />
+              );
+            })}
         </motion.div>
 
         {/* CTA strip */}
@@ -90,15 +102,15 @@ export function WhyChooseUs() {
         >
           <div>
             <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-1">
-              Ready to experience the difference?
+              {t("benefits.ctaTitle")}
             </h3>
-            <p className="text-slate-500 dark:text-slate-400 text-sm">Join over 1,200 students who have transformed their English with us.</p>
+            <p className="text-slate-500 dark:text-slate-400 text-sm">{t("benefits.ctaDesc")}</p>
           </div>
           <button
             onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
             className="shrink-0 inline-flex items-center gap-2 px-7 py-3.5 bg-primary-900 text-white rounded-xl text-sm font-semibold hover:bg-primary-800 transition-colors duration-200 shadow-md shadow-primary-900/20 cursor-pointer whitespace-nowrap"
           >
-            Start Today — It's Free to Assess
+            {t("benefits.ctaBtn")}
           </button>
         </motion.div>
       </div>

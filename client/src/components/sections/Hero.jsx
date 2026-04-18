@@ -1,9 +1,13 @@
+import { lazy, Suspense } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, ChevronDown, PlayCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "../ui/Button";
-import { HeroBackground3D } from "../3d/HeroBackground3D";
 import { useSiteData } from "../../context/SiteDataContext";
+
+const HeroBackground3D = lazy(() =>
+  import("../3d/HeroBackground3D").then(m => ({ default: m.HeroBackground3D }))
+);
 
 const containerVariants = {
   hidden: {},
@@ -40,7 +44,7 @@ export function Hero() {
       aria-label="Hero section"
     >
       <div className="absolute inset-0 bg-gradient-to-br from-primary-950 via-primary-900 to-primary-800" />
-      <HeroBackground3D />
+      <Suspense fallback={null}><HeroBackground3D /></Suspense>
 
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div

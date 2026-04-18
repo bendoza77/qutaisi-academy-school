@@ -1,10 +1,17 @@
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { useCounter } from "../../hooks/useCounter";
 import { useSiteData } from "../../context/SiteDataContext";
 
-function StatItem({ stat, isActive, index, total }) {
+const STAT_KEYS = ["students", "teachers", "years", "success"];
+
+function StatItem({ stat, isActive, index, total, isKa }) {
+  const { t } = useTranslation();
   const count = useCounter(stat.value, 2200, isActive);
+  const label = isKa
+    ? (stat.labelKa || t(`stats.${STAT_KEYS[index] || "students"}`))
+    : stat.label;
 
   return (
     <motion.div
@@ -25,7 +32,7 @@ function StatItem({ stat, isActive, index, total }) {
           {stat.suffix}
         </span>
       </div>
-      <p className="text-blue-200/70 text-sm font-medium">{stat.label}</p>
+      <p className="text-blue-200/70 text-sm font-medium">{label}</p>
       <div className="absolute inset-0 rounded-xl bg-white/0 group-hover:bg-white/5 transition-colors duration-300" />
     </motion.div>
   );
@@ -34,8 +41,10 @@ function StatItem({ stat, isActive, index, total }) {
 export function Stats() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const { i18n } = useTranslation();
   const { siteData } = useSiteData();
   const stats = siteData.stats;
+  const isKa = i18n.language === "ka";
 
   return (
     <section
@@ -52,6 +61,7 @@ export function Stats() {
               isActive={isInView}
               index={i}
               total={stats.length}
+              isKa={isKa}
             />
           ))}
         </div>
