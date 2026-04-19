@@ -1,11 +1,23 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { CheckCircle2, ChevronRight, BookOpen, TrendingUp, Award, Briefcase, Copy, Check, AlertCircle } from 'lucide-react'
+import { CheckCircle2, ChevronRight, BookOpen, TrendingUp, Award, Briefcase, Copy, Check, AlertCircle, ExternalLink, CreditCard, ChevronDown } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { PageLayout } from '../components/layout/PageLayout'
 import { PageHero } from '../components/ui/PageHero'
 import { cn } from '../utils/cn'
+
+// ─── Payment Links ────────────────────────────────────────────────────────────
+// Replace these with your actual TBC Pay or BOG Pay payment links.
+// Generate them from: TBC Merchant Portal → "Quick Pay"
+//                 or: BOG Merchant Portal → "Payment Links"
+// Each link should be pre-set to the exact amount for that course.
+const PAYMENT_LINKS = {
+  foundation:  '#',  // ₾180 / month — replace with real link
+  progressive: '#',  // ₾200 / month — replace with real link
+  mastery:     '#',  // ₾240 / month — replace with real link
+  business:    '#',  // ₾220 / month — replace with real link
+}
 
 const COURSE_STYLES = [
   {

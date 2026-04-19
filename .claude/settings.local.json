@@ -16,7 +16,11 @@
       "Bash(npx vite *)",
       "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('client/src/i18n/locales/en/translation.json','utf8'\\)\\)\")",
       "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('client/src/i18n/locales/ka/translation.json','utf8'\\)\\)\")",
-      "Bash(node -e ' *)"
+      "Bash(node -e ' *)",
+      "Bash(xargs cat *)",
+      "Bash(npx --yes acorn --ecma2020 --module src/pages/admin/AdminPage.jsx)",
+      "Bash(node -e \"const p = require\\('./node_modules/lucide-react/package.json'\\); console.log\\(p.version\\)\")",
+      "Bash(node -e \"const {Sparkles, Bot, MessageCircle} = require\\('lucide-react'\\); console.log\\('Sparkles:', !!Sparkles, 'Bot:', !!Bot, 'MessageCircle:', !!MessageCircle\\)\")"
     ]
   }
 }

@@ -6,17 +6,23 @@ import { PageLayout } from '../components/layout/PageLayout'
 import { PageHero } from '../components/ui/PageHero'
 import { Stats } from '../components/sections/Stats'
 import { CTA } from '../components/sections/CTA'
+import { useSiteData } from '../context/SiteDataContext'
 
 const VALUE_ICONS = [Users, BookOpen, Award, Globe]
 
 export function AboutPage() {
-  const { t } = useTranslation()
-  const story = t('aboutPage.story', { returnObjects: true })
-  const values = t('aboutPage.values', { returnObjects: true })
-  const mission = t('aboutPage.mission', { returnObjects: true })
-  const highlights = t('aboutPage.highlights', { returnObjects: true })
-  const hero = t('aboutPage.pageHero', { returnObjects: true })
-  const timeline = t('aboutPage.timeline', { returnObjects: true })
+  const { t, i18n } = useTranslation()
+  const { siteData } = useSiteData()
+  const isKa = i18n.language.startsWith('ka')
+  const pd = siteData.pages?.about || {}
+  const g = (key) => (isKa ? pd.ka?.[key] : pd[key]) || t(`aboutPage.${key}`, { returnObjects: true })
+
+  const story = g('story')
+  const values = g('values')
+  const mission = g('mission')
+  const highlights = g('highlights')
+  const hero = (isKa ? pd.ka?.hero : pd.hero) || t('aboutPage.pageHero', { returnObjects: true })
+  const timeline = g('timeline')
 
   return (
     <PageLayout pageTitle="About Us">

@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { PageLayout } from '../components/layout/PageLayout'
 import { PageHero } from '../components/ui/PageHero'
 import { CTA } from '../components/sections/CTA'
+import { useSiteData } from '../context/SiteDataContext'
 
 const CATEGORY_COLORS = {
   general:    'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400',
@@ -53,9 +54,12 @@ function FaqItem({ q, a, index }) {
 }
 
 export function FAQPage() {
-  const { t } = useTranslation()
-  const hero = t('faqPage.pageHero', { returnObjects: true })
-  const categories = t('faqPage.categories', { returnObjects: true })
+  const { t, i18n } = useTranslation()
+  const { siteData } = useSiteData()
+  const isKa = i18n.language.startsWith('ka')
+  const pd = siteData.pages?.faq || {}
+  const hero = (isKa ? pd.ka?.hero : pd.hero) || t('faqPage.pageHero', { returnObjects: true })
+  const categories = (isKa ? pd.ka?.categories : pd.categories) || t('faqPage.categories', { returnObjects: true })
   const stillQ = t('faqPage.stillQuestion', { returnObjects: true })
 
   const [activeCategory, setActiveCategory] = useState('general')

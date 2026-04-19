@@ -7,6 +7,7 @@ import { Navbar } from "./components/layout/Navbar";
 import { Footer } from "./components/layout/Footer";
 import { Home } from "./pages/Home";
 import { WhatsAppButton } from "./components/ui/WhatsAppButton";
+import { AIChatWidget } from "./components/ui/AIChatWidget";
 
 // Lazy-load every route except the home page shell
 const AdminPage        = lazy(() => import("./pages/admin/AdminPage").then(m => ({ default: m.AdminPage })));
@@ -53,6 +54,7 @@ function HomeShell() {
       </main>
       <Footer />
       <WhatsAppButton />
+      <AIChatWidget />
     </div>
   );
 }

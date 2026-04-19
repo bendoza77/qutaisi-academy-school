@@ -63,12 +63,14 @@ function TeacherCard({ teacher, index, experienceLabel }) {
 }
 
 export function TeachersPage() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { siteData } = useSiteData()
+  const isKa = i18n.language.startsWith('ka')
+  const pd = siteData.pages?.teachers || {}
   const teachers = siteData.teachers
-  const stats = t('teachersPage.stats', { returnObjects: true })
-  const hero = t('teachersPage.pageHero', { returnObjects: true })
-  const join = t('teachersPage.join', { returnObjects: true })
+  const stats = (isKa ? pd.ka?.stats : pd.stats) || t('teachersPage.stats', { returnObjects: true })
+  const hero = (isKa ? pd.ka?.hero : pd.hero) || t('teachersPage.pageHero', { returnObjects: true })
+  const join = (isKa ? pd.ka?.join : pd.join) || t('teachersPage.join', { returnObjects: true })
 
   return (
     <PageLayout pageTitle="Our Teachers">

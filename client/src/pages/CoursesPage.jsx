@@ -6,6 +6,7 @@ import { PageLayout } from '../components/layout/PageLayout'
 import { PageHero } from '../components/ui/PageHero'
 import { CTA } from '../components/sections/CTA'
 import { COURSE_DETAILS } from '../data/courseDetails'
+import { useSiteData } from '../context/SiteDataContext'
 
 const LEVEL_COLORS = ['bg-emerald-500', 'bg-blue-500', 'bg-purple-500', 'bg-amber-500']
 
@@ -74,17 +75,23 @@ function CourseCard({ course, enrollLabel }) {
 }
 
 export function CoursesPage() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const { siteData } = useSiteData()
+  const isKa = i18n.language.startsWith('ka')
+  const pd = siteData.pages?.courses || {}
+  const hero = (isKa ? pd.ka?.hero : pd.hero) || t('coursesPage.pageHero', { returnObjects: true })
   const levels = t('coursesPage.levels', { returnObjects: true })
-  const hero = t('coursesPage.pageHero', { returnObjects: true })
 
-  const courseItems = t('courseDetail.courses', { returnObjects: true })
   const slugs = ['foundation', 'progressive', 'mastery', 'business']
-  const courses = slugs.map((slug) => ({
-    ...COURSE_DETAILS[slug],
-    tagline: courseItems[slug]?.tagline || COURSE_DETAILS[slug].tagline,
-    features: courseItems[slug]?.features || COURSE_DETAILS[slug].features,
-  }))
+  const courses = slugs.map((slug) => {
+    const cdPage = siteData.pages?.courseDetail?.[slug] || {}
+    const cdTrans = t(`courseDetail.courses.${slug}`, { returnObjects: true }) || {}
+    return {
+      ...COURSE_DETAILS[slug],
+      tagline: (isKa ? cdPage.ka?.tagline : cdPage.tagline) || cdTrans.tagline || COURSE_DETAILS[slug].tagline,
+      features: (isKa ? cdPage.ka?.features : cdPage.features) || cdTrans.features || COURSE_DETAILS[slug].features,
+    }
+  })
 
   return (
     <PageLayout pageTitle="Our Courses">

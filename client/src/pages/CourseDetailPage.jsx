@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { PageLayout } from '../components/layout/PageLayout'
 import { COURSE_DETAILS } from '../data/courseDetails'
+import { useSiteData } from '../context/SiteDataContext'
 
 function FaqItem({ q, a }) {
   const [open, setOpen] = useState(false)
@@ -39,10 +40,15 @@ function FaqItem({ q, a }) {
 
 export function CourseDetailPage() {
   const { courseSlug } = useParams()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const { siteData } = useSiteData()
   const baseData = COURSE_DETAILS[courseSlug]
 
   if (!baseData) return <Navigate to="/courses" replace />
+
+  const isKa = i18n.language.startsWith('ka')
+  const cdPage = siteData.pages?.courseDetail?.[courseSlug] || {}
+  const cdSiteData = isKa ? (cdPage.ka || {}) : cdPage
 
   const cd = t('courseDetail', { returnObjects: true })
   const translated = cd?.courses?.[courseSlug] || {}
@@ -50,10 +56,10 @@ export function CourseDetailPage() {
 
   const course = {
     ...baseData,
-    tagline:      translated.tagline      || baseData.tagline,
-    description:  translated.description  || baseData.description,
-    whoIsItFor:   translated.whoIsItFor   || baseData.whoIsItFor,
-    features:     translated.features     || baseData.features,
+    tagline:      cdSiteData.tagline      || translated.tagline      || baseData.tagline,
+    description:  cdSiteData.description  || translated.description  || baseData.description,
+    whoIsItFor:   cdSiteData.whoIsItFor   || translated.whoIsItFor   || baseData.whoIsItFor,
+    features:     cdSiteData.features     || translated.features     || baseData.features,
     curriculum:   translated.curriculum   || baseData.curriculum,
     schedule:     translated.schedule     || baseData.schedule,
     faq:          translated.faq          || baseData.faq,

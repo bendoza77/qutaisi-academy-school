@@ -6,6 +6,7 @@ import { PageLayout } from '../components/layout/PageLayout'
 import { PageHero } from '../components/ui/PageHero'
 import { TESTIMONIALS_META } from '../constants'
 import { CTA } from '../components/sections/CTA'
+import { useSiteData } from '../context/SiteDataContext'
 
 function StarRow({ rating }) {
   return (
@@ -47,10 +48,15 @@ function TestimonialCard({ meta, text, index }) {
 }
 
 export function TestimonialsPage() {
-  const { t } = useTranslation()
-  const items = t('testimonials.items', { returnObjects: true })
-  const stats = t('testimonialsPage.stats', { returnObjects: true })
-  const hero = t('testimonialsPage.pageHero', { returnObjects: true })
+  const { t, i18n } = useTranslation()
+  const { siteData } = useSiteData()
+  const isKa = i18n.language.startsWith('ka')
+  const pd = siteData.pages?.testimonials || {}
+  const hero = (isKa ? pd.ka?.hero : pd.hero) || t('testimonialsPage.pageHero', { returnObjects: true })
+  const stats = (isKa ? pd.ka?.stats : pd.stats) || t('testimonialsPage.stats', { returnObjects: true })
+  const ctaText = (isKa ? pd.ka?.ctaText : pd.ctaText) || t('testimonialsPage.ctaText')
+  const ctaBtn = (isKa ? pd.ka?.ctaBtn : pd.ctaBtn) || t('testimonialsPage.ctaBtn')
+  const items = siteData.testimonials
 
   return (
     <PageLayout pageTitle="Student Testimonials">
@@ -80,8 +86,8 @@ export function TestimonialsPage() {
       <section className="py-20 lg:py-28 bg-white dark:bg-slate-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {Array.isArray(items) && TESTIMONIALS_META.map((meta, i) => (
-              <TestimonialCard key={meta.id} meta={meta} text={items[i]} index={i} />
+            {Array.isArray(items) && items.map((item, i) => (
+              <TestimonialCard key={item.id} meta={item} text={item} index={i} />
             ))}
           </div>
 
@@ -93,13 +99,13 @@ export function TestimonialsPage() {
             className="mt-14 text-center"
           >
             <p className="text-slate-500 dark:text-slate-400 text-sm mb-5">
-              {t('testimonialsPage.ctaText')}
+              {ctaText}
             </p>
             <Link
               to="/contact"
               className="inline-flex items-center gap-2 px-7 py-3.5 bg-primary-900 text-white rounded-xl font-semibold text-sm hover:bg-primary-800 transition-colors shadow-md shadow-primary-900/20 group"
             >
-              {t('testimonialsPage.ctaBtn')}
+              {ctaBtn}
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
           </motion.div>

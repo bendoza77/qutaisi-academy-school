@@ -31,9 +31,11 @@ const LinkedinIcon = () => (
 );
 
 export function Footer() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { siteData } = useSiteData();
   const contactInfo = siteData.contact;
+  const isKa = i18n.language.startsWith('ka');
+  const address = (isKa && contactInfo.ka?.address) || contactInfo.address;
 
   const year = new Date().getFullYear();
   const courseLinks = t("footer.courseLinks", { returnObjects: true });
@@ -100,9 +102,9 @@ export function Footer() {
                 </li>
               ))}
               {[
-                { label: 'Our Teachers', path: '/teachers' },
-                { label: 'FAQ', path: '/faq' },
-                { label: 'Enroll Now', path: '/enroll' },
+                { label: t('nav.teachers'), path: '/teachers' },
+                { label: t('nav.faq'), path: '/faq' },
+                { label: t('nav.enrollNow'), path: '/enroll' },
               ].map((link) => (
                 <li key={link.path}>
                   <Link
@@ -176,7 +178,7 @@ export function Footer() {
                 <div className="mt-0.5 w-7 h-7 rounded-md bg-slate-800 flex items-center justify-center shrink-0">
                   <MapPin className="w-3.5 h-3.5 text-slate-500" />
                 </div>
-                <span className="text-sm text-slate-400">{contactInfo.address}</span>
+                <span className="text-sm text-slate-400">{address}</span>
               </li>
             </ul>
           </div>

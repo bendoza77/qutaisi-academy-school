@@ -68,9 +68,12 @@ function SelectField({ label, error, children, ...props }) {
 }
 
 export function Contact() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { siteData } = useSiteData();
   const contactInfo = siteData.contact;
+  const isKa = i18n.language.startsWith('ka');
+  const address = (isKa && contactInfo.ka?.address) || contactInfo.address;
+  const hours = (isKa && contactInfo.ka?.hours) || contactInfo.hours;
   const [form, setForm] = useState(INITIAL_FORM);
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState("idle");
@@ -106,23 +109,23 @@ export function Contact() {
 
   const contactMeta = [
     {
-      Icon: Phone, label: "Phone",
+      Icon: Phone, label: t("contact.labels.phone"),
       value: contactInfo.phone, href: `tel:${contactInfo.phone.replace(/\s/g, "")}`,
       color: "bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400",
     },
     {
-      Icon: Mail, label: "Email",
+      Icon: Mail, label: t("contact.labels.email"),
       value: contactInfo.email, href: `mailto:${contactInfo.email}`,
       color: "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400",
     },
     {
-      Icon: MapPin, label: "Address",
-      value: contactInfo.address, href: null,
+      Icon: MapPin, label: t("contact.labels.address"),
+      value: address, href: null,
       color: "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400",
     },
     {
-      Icon: Clock, label: "Working Hours",
-      value: contactInfo.hours, href: null,
+      Icon: Clock, label: t("contact.labels.hours"),
+      value: hours, href: null,
       color: "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400",
     },
   ];
