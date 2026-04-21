@@ -11,6 +11,7 @@ export const NAV_LINK_KEYS = [
   { key: "nav.testimonials", href: "#testimonials", path: "/testimonials" },
   { key: "nav.contact",      href: "#contact",      path: "/contact"      },
   { key: "nav.blog",         href: "/blog",          path: "/blog"         },
+  { key: "nav.englishTest",  href: "/english-test",  path: "/english-test" },
 ];
 
 /** Visual/structural metadata for the 4 courses (order matches translation items array) */
