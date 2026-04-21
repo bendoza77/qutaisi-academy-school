@@ -6,7 +6,7 @@ import { SectionTitle } from "../ui/SectionTitle";
 import { useSiteData } from "../../context/SiteDataContext";
 import { cn } from "../../utils/cn";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+const API_URL = import.meta.env.VITE_API_URL || "";
 
 const INITIAL_FORM = { name: "", phone: "", email: "", course: "", message: "" };
 
