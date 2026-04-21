@@ -1,14 +1,14 @@
 import { motion } from "framer-motion";
 import {
-  BookOpen, TrendingUp, Award, Briefcase,
-  Clock, Users, Calendar, CheckCircle2, ArrowRight, Star,
+  BookOpen, TrendingUp, Award, Briefcase, Star, Zap, Target, Globe, GraduationCap, Layers,
+  Clock, Users, Calendar, CheckCircle2, ArrowRight,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { SectionTitle } from "../ui/SectionTitle";
 import { useSiteData } from "../../context/SiteDataContext";
 import { cn } from "../../utils/cn";
 
-const iconMap = { BookOpen, TrendingUp, Award, Briefcase };
+const iconMap = { BookOpen, TrendingUp, Award, Briefcase, Star, Zap, Target, Globe, GraduationCap, Layers };
 
 const SLUG_TO_INDEX = { foundation: 0, progressive: 1, mastery: 2, business: 3 };
 

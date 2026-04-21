@@ -1,63 +1,27 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { CheckCircle2, ChevronRight, BookOpen, TrendingUp, Award, Briefcase, Copy, Check, AlertCircle, ExternalLink, CreditCard, ChevronDown } from 'lucide-react'
+import {
+  CheckCircle2, ChevronRight, BookOpen, TrendingUp, Award, Briefcase,
+  Star, Zap, Target, Globe, GraduationCap, Layers,
+  Copy, Check, AlertCircle, CreditCard, ChevronDown,
+} from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { PageLayout } from '../components/layout/PageLayout'
 import { PageHero } from '../components/ui/PageHero'
 import { cn } from '../utils/cn'
+import { useSiteData } from '../context/SiteDataContext'
+
+const iconMap = { BookOpen, TrendingUp, Award, Briefcase, Star, Zap, Target, Globe, GraduationCap, Layers }
 
 // ─── Payment Links ────────────────────────────────────────────────────────────
-// Replace these with your actual TBC Pay or BOG Pay payment links.
-// Generate them from: TBC Merchant Portal → "Quick Pay"
-//                 or: BOG Merchant Portal → "Payment Links"
-// Each link should be pre-set to the exact amount for that course.
+// Add entries here for any course slug. Unknown slugs default to '#'.
 const PAYMENT_LINKS = {
-  foundation:  '#',  // ₾180 / month — replace with real link
-  progressive: '#',  // ₾200 / month — replace with real link
-  mastery:     '#',  // ₾240 / month — replace with real link
-  business:    '#',  // ₾220 / month — replace with real link
+  foundation:  '#',
+  progressive: '#',
+  mastery:     '#',
+  business:    '#',
 }
-
-const COURSE_STYLES = [
-  {
-    slug: 'foundation',
-    price: '₾180',
-    Icon: BookOpen,
-    accent: 'border-emerald-400 dark:border-emerald-600',
-    accentBg: 'bg-emerald-50 dark:bg-emerald-950/20',
-    accentText: 'text-emerald-700 dark:text-emerald-400',
-    accentIcon: 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400',
-  },
-  {
-    slug: 'progressive',
-    price: '₾200',
-    Icon: TrendingUp,
-    accent: 'border-blue-400 dark:border-blue-600',
-    accentBg: 'bg-blue-50 dark:bg-blue-950/20',
-    accentText: 'text-blue-700 dark:text-blue-400',
-    accentIcon: 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400',
-    popular: true,
-  },
-  {
-    slug: 'mastery',
-    price: '₾240',
-    Icon: Award,
-    accent: 'border-purple-400 dark:border-purple-600',
-    accentBg: 'bg-purple-50 dark:bg-purple-950/20',
-    accentText: 'text-purple-700 dark:text-purple-400',
-    accentIcon: 'bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-400',
-  },
-  {
-    slug: 'business',
-    price: '₾220',
-    Icon: Briefcase,
-    accent: 'border-amber-400 dark:border-amber-600',
-    accentBg: 'bg-amber-50 dark:bg-amber-950/20',
-    accentText: 'text-amber-700 dark:text-amber-400',
-    accentIcon: 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400',
-  },
-]
 
 const BANK_DETAILS = {
   bank: 'TBC Bank',
@@ -150,23 +114,34 @@ function CopyButton({ text }) {
 const INITIAL_DETAILS = { name: '', phone: '', email: '', notes: '' }
 
 export function EnrollPage() {
-  const { t } = useTranslation()
-  const hero = t('enrollPage.pageHero', { returnObjects: true })
-  const steps = t('enrollPage.steps', { returnObjects: true })
-  const courseTexts = t('enrollPage.courses', { returnObjects: true })
-  const s0 = t('enrollPage.step0', { returnObjects: true })
-  const s1 = t('enrollPage.step1', { returnObjects: true })
-  const s2 = t('enrollPage.step2', { returnObjects: true })
+  const { t, i18n } = useTranslation()
+  const { siteData } = useSiteData()
+  const isKa = i18n.language.startsWith('ka')
+
+  const hero    = t('enrollPage.pageHero', { returnObjects: true })
+  const steps   = t('enrollPage.steps',   { returnObjects: true })
+  const s0      = t('enrollPage.step0',   { returnObjects: true })
+  const s1      = t('enrollPage.step1',   { returnObjects: true })
+  const s2      = t('enrollPage.step2',   { returnObjects: true })
   const success = t('enrollPage.success', { returnObjects: true })
 
-  const COURSES = COURSE_STYLES.map((style) => ({
-    ...style,
-    title: courseTexts?.[style.slug]?.title || style.slug,
-    level: courseTexts?.[style.slug]?.level || '',
-    badge: courseTexts?.[style.slug]?.badge || '',
-    duration: courseTexts?.[style.slug]?.duration || '',
-    sessions: courseTexts?.[style.slug]?.sessions || '',
-  }))
+  // Build course list from live siteData — updates instantly when admin saves
+  const COURSES = siteData.courses.map((course) => {
+    const kaData = course.ka || {}
+    return {
+      slug:     course.slug,
+      accent:   course.accent || '#2563eb',
+      popular:  course.popular || false,
+      Icon:     iconMap[course.icon] || BookOpen,
+      title:    isKa ? (kaData.title          || course.title)          : course.title,
+      level:    isKa ? (kaData.level          || course.level)          : course.level,
+      badge:    isKa ? (kaData.badge          || course.badge)          : course.badge,
+      duration: isKa ? (kaData.duration       || course.duration)       : course.duration,
+      sessions: isKa ? (kaData.sessionsPerWeek|| course.sessionsPerWeek): course.sessionsPerWeek,
+      price:    course.price,
+      priceNote:course.priceNote,
+    }
+  })
 
   const [step, setStep] = useState(0)
   const [selectedCourse, setSelectedCourse] = useState(null)
@@ -224,20 +199,15 @@ export function EnrollPage() {
             </div>
             <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">{success.title}</h1>
             <p className="text-slate-500 dark:text-slate-400 leading-relaxed mb-2">
-              {success.thankYou} <span className="font-semibold text-slate-700 dark:text-slate-300">{details.name}</span>. {success.receivedFor} <span className="font-semibold text-slate-700 dark:text-slate-300">{course?.title}</span>.
+              {success.thankYou} <span className="font-semibold text-slate-700 dark:text-slate-300">{details.name}</span>.{' '}
+              {success.receivedFor} <span className="font-semibold text-slate-700 dark:text-slate-300">{course?.title}</span>.
             </p>
             <p className="text-slate-500 dark:text-slate-400 leading-relaxed mb-8">{success.desc}</p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Link
-                to="/"
-                className="inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-primary-900 text-white rounded-xl font-semibold text-sm hover:bg-primary-800 transition-colors"
-              >
+              <Link to="/" className="inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-primary-900 text-white rounded-xl font-semibold text-sm hover:bg-primary-800 transition-colors">
                 {success.homeBtn}
               </Link>
-              <Link
-                to="/courses"
-                className="inline-flex items-center justify-center gap-2 px-7 py-3.5 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-semibold text-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
-              >
+              <Link to="/courses" className="inline-flex items-center justify-center gap-2 px-7 py-3.5 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-semibold text-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
                 {success.coursesBtn}
               </Link>
             </div>
@@ -261,7 +231,8 @@ export function EnrollPage() {
           <StepIndicator current={step} steps={Array.isArray(steps) ? steps : []} />
 
           <AnimatePresence mode="wait">
-            {/* Step 0: Choose course */}
+
+            {/* ── Step 0: Choose course ─────────────────────────────────── */}
             {step === 0 && (
               <motion.div
                 key="step0"
@@ -278,6 +249,7 @@ export function EnrollPage() {
                   </Link>{' '}
                   {s0.notSureEnd}
                 </p>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
                   {COURSES.map((c) => {
                     const isSelected = selectedCourse === c.slug
@@ -285,10 +257,11 @@ export function EnrollPage() {
                       <button
                         key={c.slug}
                         onClick={() => setSelectedCourse(c.slug)}
+                        style={isSelected ? { borderColor: c.accent, backgroundColor: c.accent + '18' } : {}}
                         className={cn(
                           'relative text-left p-5 rounded-2xl border-2 transition-all duration-200 cursor-pointer group',
                           isSelected
-                            ? `${c.accent} ${c.accentBg}`
+                            ? ''
                             : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600'
                         )}
                       >
@@ -297,26 +270,30 @@ export function EnrollPage() {
                             {s0.mostPopular}
                           </span>
                         )}
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 ${c.accentIcon}`}>
+                        <div
+                          style={{ backgroundColor: c.accent + '20', color: c.accent }}
+                          className="w-10 h-10 rounded-xl flex items-center justify-center mb-3"
+                        >
                           <c.Icon className="w-5 h-5" />
                         </div>
                         <div className="font-bold text-slate-900 dark:text-white text-sm mb-0.5">{c.title}</div>
-                        <div className={`text-xs font-semibold mb-3 ${c.accentText}`}>{c.level}</div>
-                        <div className="text-xs text-slate-500 dark:text-slate-400 space-y-0.5">
-                          <div>{c.duration} · {c.sessions}</div>
+                        <div style={{ color: c.accent }} className="text-xs font-semibold mb-3">{c.level}</div>
+                        <div className="text-xs text-slate-500 dark:text-slate-400">
+                          {c.duration} · {c.sessions}
                         </div>
-                        <div className={`mt-3 text-lg font-bold ${c.accentText}`}>
+                        <div style={{ color: c.accent }} className="mt-3 text-lg font-bold">
                           {c.price} <span className="text-xs font-normal text-slate-400">{s0.perMonth}</span>
                         </div>
                         {isSelected && (
                           <div className="absolute top-3 right-3">
-                            <CheckCircle2 className={`w-5 h-5 ${c.accentText}`} />
+                            <CheckCircle2 style={{ color: c.accent }} className="w-5 h-5" />
                           </div>
                         )}
                       </button>
                     )
                   })}
                 </div>
+
                 <button
                   onClick={goNext}
                   disabled={!selectedCourse}
@@ -328,7 +305,7 @@ export function EnrollPage() {
               </motion.div>
             )}
 
-            {/* Step 1: Personal details */}
+            {/* ── Step 1: Personal details ──────────────────────────────── */}
             {step === 1 && (
               <motion.div
                 key="step1"
@@ -337,11 +314,16 @@ export function EnrollPage() {
                 exit={{ opacity: 0, x: -24 }}
                 transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
               >
-                <div className={cn('flex items-center gap-3 p-4 rounded-xl border mb-8', course?.accentBg, course?.accent)}>
-                  {course && <course.Icon className={`w-5 h-5 ${course.accentText}`} />}
+                <div
+                  style={{ borderColor: course?.accent, backgroundColor: course?.accent + '10' }}
+                  className="flex items-center gap-3 p-4 rounded-xl border mb-8"
+                >
+                  {course && <course.Icon style={{ color: course.accent }} className="w-5 h-5 shrink-0" />}
                   <div>
                     <div className="font-semibold text-slate-900 dark:text-white text-sm">{course?.title}</div>
-                    <div className={`text-xs ${course?.accentText}`}>{course?.level} · {course?.price}{s0.perMonth}</div>
+                    <div style={{ color: course?.accent }} className="text-xs font-medium">
+                      {course?.level} · {course?.price}{s0.perMonth}
+                    </div>
                   </div>
                   <button
                     onClick={() => setStep(0)}
@@ -353,35 +335,9 @@ export function EnrollPage() {
 
                 <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-6">{s1.title}</h2>
                 <div className="flex flex-col gap-5">
-                  <InputField
-                    label={s1.name}
-                    name="name"
-                    type="text"
-                    placeholder={s1.namePlaceholder}
-                    value={details.name}
-                    onChange={handleDetailsChange}
-                    error={errors.name}
-                    required
-                  />
-                  <InputField
-                    label={s1.phone}
-                    name="phone"
-                    type="tel"
-                    placeholder={s1.phonePlaceholder}
-                    value={details.phone}
-                    onChange={handleDetailsChange}
-                    error={errors.phone}
-                    required
-                  />
-                  <InputField
-                    label={s1.email}
-                    name="email"
-                    type="email"
-                    placeholder={s1.emailPlaceholder}
-                    value={details.email}
-                    onChange={handleDetailsChange}
-                    error={errors.email}
-                  />
+                  <InputField label={s1.name} name="name" type="text" placeholder={s1.namePlaceholder} value={details.name} onChange={handleDetailsChange} error={errors.name} required />
+                  <InputField label={s1.phone} name="phone" type="tel" placeholder={s1.phonePlaceholder} value={details.phone} onChange={handleDetailsChange} error={errors.phone} required />
+                  <InputField label={s1.email} name="email" type="email" placeholder={s1.emailPlaceholder} value={details.email} onChange={handleDetailsChange} error={errors.email} />
                   <div className="flex flex-col gap-1.5">
                     <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
                       {s1.notes} <span className="text-slate-400 font-normal">{s1.notesOptional}</span>
@@ -398,16 +354,10 @@ export function EnrollPage() {
                 </div>
 
                 <div className="flex gap-3 mt-8">
-                  <button
-                    onClick={() => setStep(0)}
-                    className="px-6 py-3.5 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-semibold text-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-                  >
+                  <button onClick={() => setStep(0)} className="px-6 py-3.5 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-semibold text-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer">
                     {s1.backBtn}
                   </button>
-                  <button
-                    onClick={goNext}
-                    className="inline-flex items-center gap-2 px-8 py-3.5 bg-primary-900 text-white rounded-xl font-semibold text-sm hover:bg-primary-800 transition-all shadow-md shadow-primary-900/20 cursor-pointer"
-                  >
+                  <button onClick={goNext} className="inline-flex items-center gap-2 px-8 py-3.5 bg-primary-900 text-white rounded-xl font-semibold text-sm hover:bg-primary-800 transition-all shadow-md shadow-primary-900/20 cursor-pointer">
                     {s1.continueBtn}
                     <ChevronRight className="w-4 h-4" />
                   </button>
@@ -415,7 +365,7 @@ export function EnrollPage() {
               </motion.div>
             )}
 
-            {/* Step 2: Confirm & Pay */}
+            {/* ── Step 2: Confirm & Pay ─────────────────────────────────── */}
             {step === 2 && (
               <motion.div
                 key="step2"
@@ -452,7 +402,7 @@ export function EnrollPage() {
                     </div>
                     <div className="pt-3 mt-1 border-t border-slate-200 dark:border-slate-700 flex justify-between">
                       <span className="font-bold text-slate-900 dark:text-white">{s2.amountDue}</span>
-                      <span className={`font-bold text-lg ${course?.accentText}`}>{course?.price}</span>
+                      <span style={{ color: course?.accent }} className="font-bold text-lg">{course?.price}</span>
                     </div>
                   </div>
                 </div>
@@ -503,10 +453,7 @@ export function EnrollPage() {
                 </label>
 
                 <div className="flex gap-3">
-                  <button
-                    onClick={() => setStep(1)}
-                    className="px-6 py-3.5 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-semibold text-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-                  >
+                  <button onClick={() => setStep(1)} className="px-6 py-3.5 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-semibold text-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer">
                     {s2.backBtn}
                   </button>
                   <button

@@ -8,6 +8,7 @@
     "teachers": "Our Teachers",
     "faq": "FAQ",
     "contact": "Contact",
+    "blog": "Blog",
     "enrollNow": "Enroll Now"
   },
   "hero": {
@@ -252,6 +253,9 @@
       "successTitle": "Message Sent!",
       "successDesc": "Thank you for reaching out. Our team will contact you within 24 hours to discuss your learning goals.",
       "successLink": "Send another message",
+      "errorTitle": "Something went wrong",
+      "errorDesc": "We couldn't send your message. Please try again or contact us directly by phone or email.",
+      "errorRetry": "Try again",
       "privacy": "By submitting this form, you agree to be contacted by our team regarding your inquiry. We respect your privacy and will never share your information."
     },
     "courseOptions": [

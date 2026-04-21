@@ -38,8 +38,6 @@ export function Footer() {
   const address = (isKa && contactInfo.ka?.address) || contactInfo.address;
 
   const year = new Date().getFullYear();
-  const courseLinks = t("footer.courseLinks", { returnObjects: true });
-  const courseSlugs = ["foundation", "progressive", "mastery", "business"];
 
   return (
     <footer className="bg-slate-950 text-slate-400" role="contentinfo">
@@ -126,19 +124,18 @@ export function Footer() {
               {t("footer.courses")}
             </h3>
             <ul className="flex flex-col gap-2.5">
-              {Array.isArray(courseLinks) &&
-                courseLinks.map((name, i) => (
-                  <li key={name}>
-                    <Link
-                      to={`/courses/${courseSlugs[i] ?? ""}`}
-                      className="text-sm text-slate-400 hover:text-white transition-colors duration-150 group flex items-center gap-1"
-                    >
-                      <span className="group-hover:translate-x-0.5 transition-transform duration-150">
-                        {name}
-                      </span>
-                    </Link>
-                  </li>
-                ))}
+              {siteData.courses.map((course) => (
+                <li key={course.slug}>
+                  <Link
+                    to={`/courses/${course.slug}`}
+                    className="text-sm text-slate-400 hover:text-white transition-colors duration-150 group flex items-center gap-1"
+                  >
+                    <span className="group-hover:translate-x-0.5 transition-transform duration-150">
+                      {isKa ? (course.ka?.title || course.title) : course.title}
+                    </span>
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 

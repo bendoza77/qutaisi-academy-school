@@ -42,31 +42,41 @@ export function CourseDetailPage() {
   const { courseSlug } = useParams()
   const { t, i18n } = useTranslation()
   const { siteData } = useSiteData()
-  const baseData = COURSE_DETAILS[courseSlug]
-
-  if (!baseData) return <Navigate to="/courses" replace />
-
   const isKa = i18n.language.startsWith('ka')
+  const staticData = COURSE_DETAILS[courseSlug]
+  const siteDataCourse = siteData.courses?.find(c => c.slug === courseSlug)
+
+  if (!staticData && !siteDataCourse) return <Navigate to="/courses" replace />
+
   const cdPage = siteData.pages?.courseDetail?.[courseSlug] || {}
   const cdSiteData = isKa ? (cdPage.ka || {}) : cdPage
-
   const cd = t('courseDetail', { returnObjects: true })
   const translated = cd?.courses?.[courseSlug] || {}
   const card = cd?.card || {}
+  const kaData = siteDataCourse?.ka || {}
+
+  const merged = staticData
+    ? { ...staticData, ...(siteDataCourse || {}), badgeClass: siteDataCourse?.badgeColor || staticData.badgeClass }
+    : { ...siteDataCourse, badgeClass: siteDataCourse.badgeColor, accentBg: siteDataCourse.accent + '15', curriculum: [], schedule: [], faq: [], whoIsItFor: [] }
 
   const course = {
-    ...baseData,
-    tagline:      cdSiteData.tagline      || translated.tagline      || baseData.tagline,
-    description:  cdSiteData.description  || translated.description  || baseData.description,
-    whoIsItFor:   cdSiteData.whoIsItFor   || translated.whoIsItFor   || baseData.whoIsItFor,
-    features:     cdSiteData.features     || translated.features     || baseData.features,
-    curriculum:   translated.curriculum   || baseData.curriculum,
-    schedule:     translated.schedule     || baseData.schedule,
-    faq:          translated.faq          || baseData.faq,
+    ...merged,
+    tagline:      (isKa ? (cdSiteData.tagline || kaData.description) : cdSiteData.tagline) || translated.tagline      || merged.tagline      || merged.description,
+    description:  (isKa ? (cdSiteData.description || kaData.description) : cdSiteData.description) || translated.description  || merged.description,
+    whoIsItFor:   cdSiteData.whoIsItFor   || translated.whoIsItFor   || merged.whoIsItFor   || [],
+    features:     (isKa ? (cdSiteData.features || kaData.features) : cdSiteData.features) || translated.features || merged.features || [],
+    curriculum:   cdPage.curriculum || translated.curriculum || merged.curriculum || [],
+    schedule:     cdPage.schedule   || translated.schedule  || merged.schedule   || [],
+    faq:          cdPage.faq        || translated.faq       || merged.faq        || [],
+    title:        isKa ? (kaData.title || merged.title) : merged.title,
+    badge:        isKa ? (kaData.badge || merged.badge) : merged.badge,
+    level:        isKa ? (kaData.level || merged.level) : merged.level,
   }
 
-  const allCourses = Object.values(COURSE_DETAILS)
-  const otherSlugs = allCourses.filter((c) => c.slug !== courseSlug)
+  const allCourses = siteData.courses?.length
+    ? siteData.courses.filter(c => c.slug !== courseSlug).map(c => ({ ...COURSE_DETAILS[c.slug], ...c, badgeClass: c.badgeColor }))
+    : Object.values(COURSE_DETAILS).filter(c => c.slug !== courseSlug)
+  const otherSlugs = allCourses
 
   return (
     <PageLayout pageTitle={course.title}>
@@ -118,7 +128,7 @@ export function CourseDetailPage() {
               </div>
 
               {/* Who is it for */}
-              <div>
+              {course.whoIsItFor?.length > 0 && <div>
                 <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-5">{cd.whoIsItFor}</h2>
                 <ul className="flex flex-col gap-3">
                   {course.whoIsItFor.map((item, i) => (
@@ -128,10 +138,10 @@ export function CourseDetailPage() {
                     </li>
                   ))}
                 </ul>
-              </div>
+              </div>}
 
               {/* Curriculum */}
-              <div>
+              {course.curriculum?.length > 0 && <div>
                 <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">{cd.curriculum}</h2>
                 <div className="flex flex-col gap-4">
                   {course.curriculum.map((mod, i) => (
@@ -165,10 +175,10 @@ export function CourseDetailPage() {
                     </motion.div>
                   ))}
                 </div>
-              </div>
+              </div>}
 
               {/* Schedule */}
-              <div>
+              {course.schedule?.length > 0 && <div>
                 <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">{cd.schedule}</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   {course.schedule.map((s, i) => (
@@ -179,17 +189,17 @@ export function CourseDetailPage() {
                     </div>
                   ))}
                 </div>
-              </div>
+              </div>}
 
               {/* FAQ */}
-              <div>
+              {course.faq?.length > 0 && <div>
                 <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">{cd.faq}</h2>
                 <div className="flex flex-col gap-3">
                   {course.faq.map((item, i) => (
                     <FaqItem key={i} {...item} />
                   ))}
                 </div>
-              </div>
+              </div>}
             </div>
 
             {/* Right: enrollment card */}

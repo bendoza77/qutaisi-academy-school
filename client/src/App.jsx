@@ -22,6 +22,8 @@ const FAQPage          = lazy(() => import("./pages/FAQPage").then(m => ({ defau
 const EnrollPage       = lazy(() => import("./pages/EnrollPage").then(m => ({ default: m.EnrollPage })));
 const PrivacyPage      = lazy(() => import("./pages/PrivacyPage").then(m => ({ default: m.PrivacyPage })));
 const TermsPage        = lazy(() => import("./pages/TermsPage").then(m => ({ default: m.TermsPage })));
+const BlogPage         = lazy(() => import("./pages/BlogPage").then(m => ({ default: m.BlogPage })));
+const BlogDetailPage   = lazy(() => import("./pages/BlogDetailPage").then(m => ({ default: m.BlogDetailPage })));
 const NotFoundPage     = lazy(() => import("./pages/NotFoundPage").then(m => ({ default: m.NotFoundPage })));
 
 function PageLoader() {
@@ -95,6 +97,12 @@ function App() {
             } />
             <Route path="/enroll" element={
               <Suspense fallback={<PageLoader />}><EnrollPage /></Suspense>
+            } />
+            <Route path="/blog" element={
+              <Suspense fallback={<PageLoader />}><BlogPage /></Suspense>
+            } />
+            <Route path="/blog/:slug" element={
+              <Suspense fallback={<PageLoader />}><BlogDetailPage /></Suspense>
             } />
             <Route path="/privacy" element={
               <Suspense fallback={<PageLoader />}><PrivacyPage /></Suspense>

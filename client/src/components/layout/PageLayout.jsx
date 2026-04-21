@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Navbar } from './Navbar'
 import { Footer } from './Footer'
 import { WhatsAppButton } from '../ui/WhatsAppButton'
+import { AIChatWidget } from '../ui/AIChatWidget'
 
 export function PageLayout({ children, pageTitle }) {
   useEffect(() => {
@@ -17,6 +18,7 @@ export function PageLayout({ children, pageTitle }) {
       <main id="main-content">{children}</main>
       <Footer />
       <WhatsAppButton />
+      <AIChatWidget />
     </div>
   )
 }

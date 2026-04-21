@@ -82,14 +82,25 @@ export function CoursesPage() {
   const hero = (isKa ? pd.ka?.hero : pd.hero) || t('coursesPage.pageHero', { returnObjects: true })
   const levels = t('coursesPage.levels', { returnObjects: true })
 
-  const slugs = ['foundation', 'progressive', 'mastery', 'business']
-  const courses = slugs.map((slug) => {
-    const cdPage = siteData.pages?.courseDetail?.[slug] || {}
-    const cdTrans = t(`courseDetail.courses.${slug}`, { returnObjects: true }) || {}
+  const courses = siteData.courses.map((course) => {
+    const staticData = COURSE_DETAILS[course.slug] || {}
+    const cdPage = siteData.pages?.courseDetail?.[course.slug] || {}
+    const cdTrans = t(`courseDetail.courses.${course.slug}`, { returnObjects: true }) || {}
+    const kaData = course.ka || {}
     return {
-      ...COURSE_DETAILS[slug],
-      tagline: (isKa ? cdPage.ka?.tagline : cdPage.tagline) || cdTrans.tagline || COURSE_DETAILS[slug].tagline,
-      features: (isKa ? cdPage.ka?.features : cdPage.features) || cdTrans.features || COURSE_DETAILS[slug].features,
+      ...staticData,
+      ...course,
+      badgeClass: course.badgeColor || staticData.badgeClass || 'bg-blue-100 text-blue-700',
+      title:          isKa ? (kaData.title          || course.title)          : course.title,
+      badge:          isKa ? (kaData.badge          || course.badge)          : course.badge,
+      level:          isKa ? (kaData.level          || course.level)          : course.level,
+      duration:       isKa ? (kaData.duration       || course.duration)       : course.duration,
+      sessionsPerWeek:isKa ? (kaData.sessionsPerWeek|| course.sessionsPerWeek): course.sessionsPerWeek,
+      groupSize:      isKa ? (kaData.groupSize      || course.groupSize)      : course.groupSize,
+      tagline: (isKa ? (cdPage.ka?.tagline || kaData.description) : cdPage.tagline)
+        || cdTrans.tagline || staticData.tagline || course.description || '',
+      features: (isKa ? (cdPage.ka?.features || kaData.features) : cdPage.features)
+        || cdTrans.features || course.features || staticData.features || [],
     }
   })
 

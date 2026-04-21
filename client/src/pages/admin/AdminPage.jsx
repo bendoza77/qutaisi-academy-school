@@ -1,20 +1,21 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   LayoutDashboard, Image, Info, BarChart2, BookOpen, Users, MessageSquare,
   Star, Phone, Megaphone, LogOut, Menu, X, Save, RotateCcw, Plus, Trash2,
   Edit3, Eye, Settings, Shield, FileText, HelpCircle, GraduationCap,
-  MessageCircle, Layers, BookMarked
+  MessageCircle, Layers, BookMarked, Newspaper
 } from 'lucide-react'
+import {
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut,
+  updatePassword,
+} from 'firebase/auth'
+import { auth } from '../../firebase'
+import { AdminBlogSection } from './AdminBlogSection'
 import { useSiteData, DEFAULT_SITE_DATA } from '../../context/SiteDataContext'
 import kaT from '../../i18n/locales/ka/translation.json'
-
-const ADMIN_PW_KEY = 'kea-admin-pw'
-const DEFAULT_PW = 'admin123'
-
-function getPassword() {
-  return localStorage.getItem(ADMIN_PW_KEY) || DEFAULT_PW
-}
 
 // ─── Reusable UI ────────────────────────────────────────────────────────────
 
@@ -134,20 +135,39 @@ function LangTabs({ lang, setLang }) {
   )
 }
 
+// ─── Firebase error messages ─────────────────────────────────────────────────
+
+function firebaseError(code) {
+  const map = {
+    'auth/invalid-email':          'Invalid email address.',
+    'auth/user-not-found':         'No account found with this email.',
+    'auth/wrong-password':         'Incorrect password.',
+    'auth/email-already-in-use':   'An account with this email already exists.',
+    'auth/weak-password':          'Password must be at least 6 characters.',
+    'auth/too-many-requests':      'Too many attempts. Try again later.',
+    'auth/invalid-credential':     'Invalid email or password.',
+    'auth/network-request-failed': 'Network error. Check your connection.',
+  }
+  return map[code] || 'Authentication error. Please try again.'
+}
+
 // ─── Login ───────────────────────────────────────────────────────────────────
 
-function LoginPage({ onLogin }) {
-  const { t } = useTranslation()
-  const [pw, setPw] = useState('')
+function LoginPage() {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const submit = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault()
-    if (pw === getPassword()) {
-      onLogin()
-    } else {
-      setError(t('admin.login.incorrect'))
-      setPw('')
+    setLoading(true); setError('')
+    try {
+      await signInWithEmailAndPassword(auth, email.trim(), password)
+    } catch (err) {
+      setError(firebaseError(err.code))
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -155,40 +175,58 @@ function LoginPage({ onLogin }) {
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
         <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-8">
+
           <div className="flex items-center gap-3 mb-8">
-            <div className="w-10 h-10 bg-blue-700 rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-blue-700 rounded-xl flex items-center justify-center shrink-0">
               <Shield className="w-5 h-5 text-white" />
             </div>
             <div>
-              <div className="font-bold text-slate-900 text-sm">{t('admin.login.title')}</div>
-              <div className="text-xs text-slate-400">{t('admin.login.subtitle')}</div>
+              <div className="font-bold text-slate-900 text-sm">Kutaisi English Academy</div>
+              <div className="text-xs text-slate-400">Admin Panel</div>
             </div>
           </div>
 
-          <form onSubmit={submit} className="flex flex-col gap-4">
+          <form onSubmit={handleLogin} className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-semibold text-slate-600 uppercase tracking-wide">{t('admin.login.password')}</label>
+              <label className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Email</label>
               <input
-                type="password"
-                value={pw}
-                onChange={e => { setPw(e.target.value); setError('') }}
-                placeholder={t('admin.login.placeholder')}
+                type="email"
+                value={email}
+                onChange={e => { setEmail(e.target.value); setError('') }}
+                placeholder="admin@example.com"
                 autoFocus
+                required
                 className="w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500"
               />
-              {error && <p className="text-xs text-rose-500">{error}</p>}
             </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Password</label>
+              <input
+                type="password"
+                value={password}
+                onChange={e => { setPassword(e.target.value); setError('') }}
+                placeholder="••••••••"
+                required
+                className="w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500"
+              />
+            </div>
+
+            {error && (
+              <div className="p-3 bg-rose-50 border border-rose-200 rounded-lg">
+                <p className="text-xs text-rose-600 font-medium">{error}</p>
+              </div>
+            )}
+
             <button
               type="submit"
-              className="w-full py-2.5 bg-blue-700 hover:bg-blue-800 text-white rounded-xl font-semibold text-sm transition-colors"
+              disabled={loading}
+              className="w-full py-2.5 bg-blue-700 hover:bg-blue-800 disabled:opacity-60 text-white rounded-xl font-semibold text-sm transition-colors mt-1"
             >
-              {t('admin.login.signIn')}
+              {loading ? 'Signing in…' : 'Sign In'}
             </button>
           </form>
 
-          <p className="text-xs text-slate-400 text-center mt-6">
-            {t('admin.login.defaultPw')} <code className="bg-slate-100 px-1.5 py-0.5 rounded text-slate-600">admin123</code>
-          </p>
         </div>
       </div>
     </div>
@@ -420,20 +458,188 @@ function StatsSection() {
 
 // ─── Courses Section ──────────────────────────────────────────────────────────
 
+// ─── Course Modal ─────────────────────────────────────────────────────────────
+
+const COURSE_ICONS = [
+  'BookOpen', 'TrendingUp', 'Award', 'Briefcase', 'Star',
+  'Zap', 'Target', 'Globe', 'GraduationCap', 'Layers',
+]
+
+const COURSE_BADGE_COLORS = [
+  { label: 'Green',  value: 'bg-emerald-100 text-emerald-700', dot: 'bg-emerald-500' },
+  { label: 'Blue',   value: 'bg-blue-100 text-blue-700',       dot: 'bg-blue-500' },
+  { label: 'Purple', value: 'bg-purple-100 text-purple-700',   dot: 'bg-purple-500' },
+  { label: 'Amber',  value: 'bg-amber-100 text-amber-700',     dot: 'bg-amber-500' },
+  { label: 'Rose',   value: 'bg-rose-100 text-rose-700',       dot: 'bg-rose-500' },
+  { label: 'Cyan',   value: 'bg-cyan-100 text-cyan-700',       dot: 'bg-cyan-500' },
+  { label: 'Indigo', value: 'bg-indigo-100 text-indigo-700',   dot: 'bg-indigo-500' },
+  { label: 'Slate',  value: 'bg-slate-100 text-slate-700',     dot: 'bg-slate-500' },
+]
+
+const EMPTY_COURSE = {
+  slug: '', icon: 'BookOpen', accent: '#2563eb',
+  badgeColor: 'bg-blue-100 text-blue-700', popular: false,
+  level: '', badge: '', title: '', description: '',
+  duration: '', sessionsPerWeek: '', groupSize: '',
+  price: '', priceNote: 'per month', features: [],
+}
+
+function CourseModal({ course, onSave, onClose }) {
+  const [data, setData] = useState({ ...EMPTY_COURSE, ...course })
+  const [lang, setLang] = useState('en')
+  const set = (key, val) => setData(prev => ({ ...prev, [key]: val }))
+  const setKa = (key, val) => setData(prev => ({ ...prev, ka: { ...(prev.ka || {}), [key]: val } }))
+  const ka = data.ka || {}
+  const isNew = !course.id
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto">
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-2xl my-8">
+
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: data.accent + '20', color: data.accent }}>
+              <BookOpen className="w-4 h-4" />
+            </div>
+            <h3 className="font-bold text-slate-900">{isNew ? 'Add New Course' : 'Edit Course'}</h3>
+          </div>
+          <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        <div className="px-6 pt-4">
+          <LangTabs lang={lang} setLang={setLang} />
+        </div>
+
+        <div className="p-6 flex flex-col gap-5">
+          {lang === 'en' ? (
+            <>
+              {/* Basic Info */}
+              <div className="grid grid-cols-2 gap-4">
+                <Field label="Course Title" value={data.title} onChange={v => set('title', v)} placeholder="e.g. Foundation English" />
+                <Field label="Badge Label" value={data.badge} onChange={v => set('badge', v)} placeholder="e.g. Beginner" />
+                <Field label="Level" value={data.level} onChange={v => set('level', v)} placeholder="e.g. A1 – A2" />
+                <Field label="Slug" value={data.slug} onChange={v => set('slug', v.toLowerCase().replace(/\s+/g, '-'))} hint="URL: /courses/[slug]" />
+              </div>
+              <Field label="Description" value={data.description} onChange={v => set('description', v)} rows={3} placeholder="Short course description…" />
+
+              {/* Pricing & Schedule */}
+              <div className="bg-slate-50 rounded-xl p-4 flex flex-col gap-4 border border-slate-100">
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Pricing & Schedule</p>
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                  <Field label="Price" value={data.price} onChange={v => set('price', v)} placeholder="₾180" />
+                  <Field label="Price Note" value={data.priceNote} onChange={v => set('priceNote', v)} placeholder="per month" />
+                  <Field label="Duration" value={data.duration} onChange={v => set('duration', v)} placeholder="3 months" />
+                  <Field label="Sessions / Week" value={data.sessionsPerWeek} onChange={v => set('sessionsPerWeek', v)} placeholder="3× per week" />
+                </div>
+                <Field label="Group Size" value={data.groupSize} onChange={v => set('groupSize', v)} placeholder="Up to 8 students" />
+              </div>
+
+              {/* Style */}
+              <div className="bg-slate-50 rounded-xl p-4 flex flex-col gap-4 border border-slate-100">
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Style</p>
+
+                <div className="flex flex-col gap-2">
+                  <label className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Icon</label>
+                  <div className="flex gap-2 flex-wrap">
+                    {COURSE_ICONS.map(icon => (
+                      <button
+                        key={icon}
+                        onClick={() => set('icon', icon)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${data.icon === icon ? 'bg-blue-700 text-white border-blue-700' : 'bg-white border-slate-200 text-slate-600 hover:border-blue-300'}`}
+                      >
+                        {icon}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex flex-col gap-2">
+                    <label className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Accent Color</label>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="color"
+                        value={data.accent}
+                        onChange={e => set('accent', e.target.value)}
+                        className="w-10 h-10 rounded-lg border border-slate-200 cursor-pointer p-0.5 bg-white"
+                      />
+                      <span className="text-sm text-slate-500 font-mono">{data.accent}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <label className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Badge Color</label>
+                    <div className="flex gap-2 flex-wrap">
+                      {COURSE_BADGE_COLORS.map(opt => (
+                        <button
+                          key={opt.value}
+                          onClick={() => set('badgeColor', opt.value)}
+                          title={opt.label}
+                          className={`w-7 h-7 rounded-lg ${opt.dot} border-2 transition-all ${data.badgeColor === opt.value ? 'border-slate-900 scale-110' : 'border-transparent'}`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <label className="flex items-center gap-2.5 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={data.popular}
+                    onChange={e => set('popular', e.target.checked)}
+                    className="w-4 h-4 rounded accent-blue-700"
+                  />
+                  <span className="text-sm font-medium text-slate-700">Mark as Most Popular</span>
+                </label>
+              </div>
+
+              {/* Features */}
+              <ArrayField label="What Students Learn" items={data.features} onChange={v => set('features', v)} placeholder="Add learning outcome…" />
+            </>
+          ) : (
+            <>
+              <p className="text-xs text-slate-500 bg-slate-50 rounded-lg px-3 py-2 border border-slate-100">Georgian translations are optional. Leave blank to show English.</p>
+              <div className="grid grid-cols-2 gap-4">
+                <Field label="Course Title" value={ka.title || ''} onChange={v => setKa('title', v)} placeholder="კურსის სახელი…" />
+                <Field label="Badge" value={ka.badge || ''} onChange={v => setKa('badge', v)} placeholder="დონე…" />
+                <Field label="Level" value={ka.level || ''} onChange={v => setKa('level', v)} placeholder="A1 – A2" />
+              </div>
+              <Field label="Description" value={ka.description || ''} onChange={v => setKa('description', v)} rows={3} placeholder="კურსის აღწერა…" />
+              <div className="grid grid-cols-2 gap-4">
+                <Field label="Duration" value={ka.duration || ''} onChange={v => setKa('duration', v)} placeholder="3 თვე…" />
+                <Field label="Sessions / Week" value={ka.sessionsPerWeek || ''} onChange={v => setKa('sessionsPerWeek', v)} placeholder="კვირაში 3×" />
+              </div>
+              <Field label="Group Size" value={ka.groupSize || ''} onChange={v => setKa('groupSize', v)} placeholder="მაქსიმუმ 8 სტუდენტი" />
+              <ArrayField label="What Students Learn" items={ka.features || []} onChange={v => setKa('features', v)} placeholder="სასწავლო შედეგი…" />
+            </>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="flex gap-3 px-6 py-4 border-t border-slate-100">
+          <button
+            onClick={() => onSave(data)}
+            className="flex items-center gap-2 px-5 py-2.5 bg-blue-700 hover:bg-blue-800 text-white rounded-xl text-sm font-semibold transition-colors"
+          >
+            <Save className="w-4 h-4" /> {isNew ? 'Add Course' : 'Save Changes'}
+          </button>
+          <button onClick={onClose} className="px-4 py-2.5 border border-slate-200 text-slate-600 rounded-xl text-sm font-medium hover:border-slate-300 transition-colors">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function CoursesSection() {
-  const { t } = useTranslation()
   const { siteData, updateSection, resetSection } = useSiteData()
   const [courses, setCourses] = useState(siteData.courses)
-  const [active, setActive] = useState(0)
-  const [lang, setLang] = useState('en')
+  const [modal, setModal] = useState(null)
   const [saved, setSaved] = useState(false)
-
-  const update = (i, key, val) => {
-    setCourses(prev => prev.map((c, idx) => idx === i ? { ...c, [key]: val } : c))
-  }
-  const updateKa = (i, key, val) => {
-    setCourses(prev => prev.map((c, idx) => idx === i ? { ...c, ka: { ...(c.ka || {}), [key]: val } } : c))
-  }
 
   const save = () => {
     updateSection('courses', courses)
@@ -446,76 +652,111 @@ function CoursesSection() {
     setCourses(DEFAULT_SITE_DATA.courses)
   }
 
-  const c = courses[active]
-  const ka = c.ka || {}
+  const handleSave = (data) => {
+    if (data.id) {
+      setCourses(prev => prev.map(c => c.id === data.id ? data : c))
+    } else {
+      const newId = Math.max(0, ...courses.map(c => c.id)) + 1
+      setCourses(prev => [...prev, { ...data, id: newId }])
+    }
+    setModal(null)
+  }
+
+  const remove = (id) => {
+    if (!confirm('Delete this course? This cannot be undone.')) return
+    setCourses(prev => prev.filter(c => c.id !== id))
+  }
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-bold text-slate-900">{t('admin.courses.title')}</h1>
+      {modal && <CourseModal course={modal} onSave={handleSave} onClose={() => setModal(null)} />}
 
-      <div className="flex gap-2 flex-wrap">
-        {courses.map((course, i) => (
-          <button
-            key={course.id}
-            onClick={() => setActive(i)}
-            className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${active === i ? 'bg-blue-700 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:border-blue-300'}`}
-          >
-            {course.title}
-          </button>
-        ))}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Courses</h1>
+          <p className="text-sm text-slate-500 mt-0.5">{courses.length} course{courses.length !== 1 ? 's' : ''}</p>
+        </div>
+        <button
+          onClick={() => setModal({})}
+          className="flex items-center gap-2 px-4 py-2.5 bg-blue-700 hover:bg-blue-800 text-white rounded-xl text-sm font-semibold transition-colors shadow-sm"
+        >
+          <Plus className="w-4 h-4" /> Add Course
+        </button>
       </div>
 
-      <LangTabs lang={lang} setLang={setLang} />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {courses.map(course => (
+          <div
+            key={course.id}
+            className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:border-slate-300 transition-colors"
+          >
+            {/* Color stripe */}
+            <div className="h-1.5 w-full" style={{ backgroundColor: course.accent || '#2563eb' }} />
 
-      {lang === 'en' ? (
-        <>
-          <Card title={t('admin.courses.courseInfo')}>
-            <div className="grid grid-cols-2 gap-4">
-              <Field label={t('admin.hero.titleLabel')} value={c.title} onChange={v => update(active, 'title', v)} />
-              <Field label={t('admin.courses.badge')} value={c.badge} onChange={v => update(active, 'badge', v)} />
-              <Field label={t('admin.courses.level')} value={c.level} onChange={v => update(active, 'level', v)} placeholder="e.g. A1 – A2" />
-              <Field label={t('admin.courses.slug')} value={c.slug} onChange={v => update(active, 'slug', v)} hint="Used in URL: /courses/[slug]" />
+            <div className="p-5">
+              <div className="flex items-start justify-between gap-3 mb-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: (course.accent || '#2563eb') + '18' }}>
+                    <BookOpen className="w-4 h-4" style={{ color: course.accent || '#2563eb' }} />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-slate-900 text-sm leading-tight">{course.title}</div>
+                    <div className="text-xs text-slate-400 mt-0.5">{course.level}</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1 shrink-0">
+                  {course.popular && (
+                    <span className="px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-semibold rounded-full">Popular</span>
+                  )}
+                  <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${course.badgeColor || 'bg-blue-100 text-blue-700'}`}>
+                    {course.badge}
+                  </span>
+                </div>
+              </div>
+
+              <p className="text-xs text-slate-500 line-clamp-2 mb-4 leading-relaxed">{course.description}</p>
+
+              <div className="flex items-center gap-3 mb-4 text-xs text-slate-500">
+                <span className="flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-300" />
+                  {course.price} {course.priceNote}
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-300" />
+                  {course.duration}
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-300" />
+                  {course.features?.length || 0} outcomes
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2 pt-3 border-t border-slate-100">
+                <button
+                  onClick={() => setModal(course)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-600 bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors border border-slate-200"
+                >
+                  <Edit3 className="w-3.5 h-3.5" /> Edit
+                </button>
+                <button
+                  onClick={() => remove(course.id)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-rose-500 bg-rose-50 hover:bg-rose-100 rounded-lg transition-colors border border-rose-200"
+                >
+                  <Trash2 className="w-3.5 h-3.5" /> Delete
+                </button>
+              </div>
             </div>
-            <Field label={t('admin.courses.description')} value={c.description} onChange={v => update(active, 'description', v)} rows={3} />
-          </Card>
-          <Card title={t('admin.courses.pricingSchedule')}>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              <Field label={t('admin.courses.price')} value={c.price} onChange={v => update(active, 'price', v)} placeholder="₾180" />
-              <Field label={t('admin.courses.priceNote')} value={c.priceNote} onChange={v => update(active, 'priceNote', v)} placeholder="per month" />
-              <Field label={t('admin.courses.duration')} value={c.duration} onChange={v => update(active, 'duration', v)} placeholder="3 months" />
-              <Field label={t('admin.courses.sessionsWeek')} value={c.sessionsPerWeek} onChange={v => update(active, 'sessionsPerWeek', v)} placeholder="3× per week" />
-            </div>
-            <Field label={t('admin.courses.groupSize')} value={c.groupSize} onChange={v => update(active, 'groupSize', v)} placeholder="Up to 8 students" />
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={c.popular}
-                onChange={e => update(active, 'popular', e.target.checked)}
-                className="w-4 h-4 rounded accent-blue-700"
-              />
-              <span className="text-sm font-medium text-slate-700">{t('admin.courses.mostPopular')}</span>
-            </label>
-          </Card>
-          <Card title={t('admin.courses.features')}>
-            <ArrayField label="" items={c.features} onChange={v => update(active, 'features', v)} placeholder="Add learning outcome…" />
-          </Card>
-        </>
-      ) : (
-        <Card title={t('admin.courses.georgianContent')}>
-          <div className="grid grid-cols-2 gap-4">
-            <Field label={t('admin.hero.titleLabel')} value={ka.title || kaT.courses.items[active]?.title || ''} onChange={v => updateKa(active, 'title', v)} />
-            <Field label={t('admin.courses.badge')} value={ka.badge || kaT.courses.items[active]?.badge || ''} onChange={v => updateKa(active, 'badge', v)} />
-            <Field label={t('admin.courses.level')} value={ka.level || kaT.courses.items[active]?.level || ''} onChange={v => updateKa(active, 'level', v)} />
           </div>
-          <Field label={t('admin.courses.description')} value={ka.description || kaT.courses.items[active]?.description || ''} onChange={v => updateKa(active, 'description', v)} rows={3} />
-          <div className="grid grid-cols-2 gap-4">
-            <Field label={t('admin.courses.duration')} value={ka.duration || kaT.courses.items[active]?.duration || ''} onChange={v => updateKa(active, 'duration', v)} />
-            <Field label={t('admin.courses.sessionsWeek')} value={ka.sessionsPerWeek || kaT.courses.items[active]?.sessionsPerWeek || ''} onChange={v => updateKa(active, 'sessionsPerWeek', v)} />
+        ))}
+
+        {courses.length === 0 && (
+          <div className="col-span-2 flex flex-col items-center justify-center py-16 bg-white rounded-2xl border border-dashed border-slate-300 text-center">
+            <BookOpen className="w-10 h-10 text-slate-300 mb-3" />
+            <p className="text-sm font-medium text-slate-500">No courses yet</p>
+            <p className="text-xs text-slate-400 mt-1">Click "Add Course" to create your first one</p>
           </div>
-          <Field label={t('admin.courses.groupSize')} value={ka.groupSize || kaT.courses.items[active]?.groupSize || ''} onChange={v => updateKa(active, 'groupSize', v)} />
-          <ArrayField label={t('admin.courses.features')} items={ka.features || kaT.courses.items[active]?.features || []} onChange={v => updateKa(active, 'features', v)} />
-        </Card>
-      )}
+        )}
+      </div>
 
       <SaveBar onSave={save} onReset={reset} saved={saved} />
     </div>
@@ -1063,15 +1304,23 @@ function SettingsSection({ onLogout }) {
   const [confirmPw, setConfirmPw] = useState('')
   const [msg, setMsg] = useState('')
 
-  const changePw = (e) => {
+  const changePw = async (e) => {
     e.preventDefault()
     if (newPw.length < 6) { setMsg(t('admin.settings.tooShort')); return }
     if (newPw !== confirmPw) { setMsg(t('admin.settings.noMatch')); return }
-    localStorage.setItem(ADMIN_PW_KEY, newPw)
-    setMsg(t('admin.settings.updated'))
-    setNewPw('')
-    setConfirmPw('')
-    setTimeout(() => setMsg(''), 3000)
+    try {
+      await updatePassword(auth.currentUser, newPw)
+      setMsg(t('admin.settings.updated'))
+      setNewPw('')
+      setConfirmPw('')
+      setTimeout(() => setMsg(''), 3000)
+    } catch (err) {
+      if (err.code === 'auth/requires-recent-login') {
+        setMsg('Please sign out and sign in again before changing your password.')
+      } else {
+        setMsg('Error: ' + err.message)
+      }
+    }
   }
 
   const handleResetAll = () => {
@@ -1549,62 +1798,222 @@ function CoursesPageSection() {
 
 // ─── Page: Course Detail ──────────────────────────────────────────────────────
 
-const COURSE_SLUGS = ['foundation', 'progressive', 'mastery', 'business']
-const COURSE_LABELS = { foundation: 'Foundation English', progressive: 'Progressive English', mastery: 'Mastery English', business: 'Business English' }
+// ─── Course Detail Sub-Editors ────────────────────────────────────────────────
+
+function CurriculumEditor({ modules, onChange }) {
+  const add = () => onChange([...modules, { module: `Module ${modules.length + 1}`, title: '', weeks: '', topics: [] }])
+  const remove = (i) => onChange(modules.filter((_, idx) => idx !== i))
+  const update = (i, key, val) => onChange(modules.map((m, idx) => idx === i ? { ...m, [key]: val } : m))
+
+  return (
+    <div className="flex flex-col gap-3">
+      {modules.map((mod, i) => (
+        <div key={i} className="border border-slate-200 rounded-xl overflow-hidden">
+          <div className="flex items-center gap-2 px-4 py-3 bg-slate-50 border-b border-slate-200">
+            <span className="text-xs font-bold text-slate-400 shrink-0">M{i + 1}</span>
+            <input
+              value={mod.title}
+              onChange={e => update(i, 'title', e.target.value)}
+              placeholder="Module title…"
+              className="flex-1 px-2 py-1 text-sm rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500"
+            />
+            <input
+              value={mod.weeks}
+              onChange={e => update(i, 'weeks', e.target.value)}
+              placeholder="Weeks 1–3"
+              className="w-28 px-2 py-1 text-sm rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500"
+            />
+            <button onClick={() => remove(i)} className="p-1.5 text-slate-400 hover:text-rose-500 transition-colors">
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
+          </div>
+          <div className="p-4">
+            <ArrayField label="Topics" items={mod.topics || []} onChange={v => update(i, 'topics', v)} placeholder="Add topic…" />
+          </div>
+        </div>
+      ))}
+      <button onClick={add} className="flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-700 font-medium">
+        <Plus className="w-3.5 h-3.5" /> Add Module
+      </button>
+    </div>
+  )
+}
+
+function ScheduleEditor({ slots, onChange }) {
+  const add = () => onChange([...slots, { label: '', time: '', days: '' }])
+  const remove = (i) => onChange(slots.filter((_, idx) => idx !== i))
+  const update = (i, key, val) => onChange(slots.map((s, idx) => idx === i ? { ...s, [key]: val } : s))
+
+  return (
+    <div className="flex flex-col gap-3">
+      {slots.map((slot, i) => (
+        <div key={i} className="grid grid-cols-3 gap-2 items-center">
+          <input value={slot.label} onChange={e => update(i, 'label', e.target.value)} placeholder="Morning"
+            className="px-3 py-2 text-sm rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500" />
+          <input value={slot.time} onChange={e => update(i, 'time', e.target.value)} placeholder="09:00–11:00"
+            className="px-3 py-2 text-sm rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500" />
+          <div className="flex gap-2">
+            <input value={slot.days} onChange={e => update(i, 'days', e.target.value)} placeholder="Mon / Wed / Fri"
+              className="flex-1 px-3 py-2 text-sm rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500" />
+            <button onClick={() => remove(i)} className="p-2 text-slate-400 hover:text-rose-500 transition-colors">
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+      ))}
+      <button onClick={add} className="flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-700 font-medium">
+        <Plus className="w-3.5 h-3.5" /> Add Time Slot
+      </button>
+    </div>
+  )
+}
+
+function FaqEditor({ items, onChange }) {
+  const add = () => onChange([...items, { q: '', a: '' }])
+  const remove = (i) => onChange(items.filter((_, idx) => idx !== i))
+  const update = (i, key, val) => onChange(items.map((f, idx) => idx === i ? { ...f, [key]: val } : f))
+
+  return (
+    <div className="flex flex-col gap-3">
+      {items.map((item, i) => (
+        <div key={i} className="border border-slate-200 rounded-xl p-4 flex flex-col gap-3">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full shrink-0">Q{i + 1}</span>
+            <input value={item.q} onChange={e => update(i, 'q', e.target.value)} placeholder="Question…"
+              className="flex-1 px-3 py-2 text-sm rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500" />
+            <button onClick={() => remove(i)} className="p-1.5 text-slate-400 hover:text-rose-500 transition-colors">
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
+          </div>
+          <textarea value={item.a} onChange={e => update(i, 'a', e.target.value)} placeholder="Answer…" rows={2}
+            className="w-full px-3 py-2 text-sm rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 resize-y" />
+        </div>
+      ))}
+      <button onClick={add} className="flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-700 font-medium">
+        <Plus className="w-3.5 h-3.5" /> Add FAQ
+      </button>
+    </div>
+  )
+}
 
 function CourseDetailSection() {
-  const { t } = useTranslation()
   const { siteData, updateSection } = useSiteData()
+  const courses = siteData.courses
+  const firstSlug = courses[0]?.slug || ''
   const [lang, setLang] = useState('en')
-  const [activeSlug, setActiveSlug] = useState('foundation')
+  const [activeSlug, setActiveSlug] = useState(firstSlug)
   const [saved, setSaved] = useState(false)
 
-  const courseData = siteData.pages?.courseDetail || DEFAULT_SITE_DATA.pages.courseDetail
-  const [data, setData] = useState(courseData)
+  const [data, setData] = useState(siteData.pages?.courseDetail || DEFAULT_SITE_DATA.pages.courseDetail)
 
-  const save = () => {
-    updateSection('pages', { ...(siteData.pages || {}), courseDetail: data })
-    setSaved(true)
-    setTimeout(() => setSaved(false), 2000)
-  }
-  const reset = () => {
-    const next = { ...(siteData.pages || {}) }
-    delete next.courseDetail
-    updateSection('pages', next)
-    setData(DEFAULT_SITE_DATA.pages.courseDetail)
-  }
-
-  const isKaLang = lang === 'ka'
+  const isKa = lang === 'ka'
   const course = data[activeSlug] || {}
-  const kaT_course = kaT.courseDetail?.courses?.[activeSlug] || {}
-  const enCourse = isKaLang ? (course.ka || {}) : course
+  const kaData = course.ka || {}
+  const enCourse = isKa ? kaData : course
 
-  const setCourse = (key, val) => {
-    if (isKaLang) {
+  const set = (key, val) => {
+    if (isKa) {
       setData(prev => ({ ...prev, [activeSlug]: { ...(prev[activeSlug] || {}), ka: { ...(prev[activeSlug]?.ka || {}), [key]: val } } }))
     } else {
       setData(prev => ({ ...prev, [activeSlug]: { ...(prev[activeSlug] || {}), [key]: val } }))
     }
   }
 
+  // Curriculum, schedule, faq are language-neutral (stored under EN)
+  const setEn = (key, val) =>
+    setData(prev => ({ ...prev, [activeSlug]: { ...(prev[activeSlug] || {}), [key]: val } }))
+
+  const save = () => {
+    updateSection('pages', { ...(siteData.pages || {}), courseDetail: data })
+    setSaved(true)
+    setTimeout(() => setSaved(false), 2000)
+  }
+
+  const activeCourse = courses.find(c => c.slug === activeSlug)
+
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-bold text-slate-900">{t('admin.nav.pageCourseDetail')}</h1>
+      <div>
+        <h1 className="text-2xl font-bold text-slate-900">Course Detail Pages</h1>
+        <p className="text-sm text-slate-500 mt-1">Edit the full detail page content for each course.</p>
+      </div>
+
+      {/* Course tabs */}
       <div className="flex flex-wrap gap-2">
-        {COURSE_SLUGS.map(slug => (
-          <button key={slug} onClick={() => setActiveSlug(slug)}
-            className={`px-4 py-2 rounded-xl text-sm font-semibold transition-colors ${activeSlug === slug ? 'bg-blue-700 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
-          >{COURSE_LABELS[slug]}</button>
+        {courses.map(c => (
+          <button
+            key={c.slug}
+            onClick={() => setActiveSlug(c.slug)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-colors ${activeSlug === c.slug ? 'bg-blue-700 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+          >
+            <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: c.accent || '#2563eb' }} />
+            {c.title}
+          </button>
         ))}
       </div>
+
       <LangTabs lang={lang} setLang={setLang} />
-      <Card title={COURSE_LABELS[activeSlug]}>
-        <Field label={t('admin.tagline')} value={enCourse.tagline || (isKaLang ? kaT_course.tagline : '') || ''} onChange={v => setCourse('tagline', v)} />
-        <Field label={t('admin.description')} value={enCourse.description || (isKaLang ? kaT_course.description : '') || ''} onChange={v => setCourse('description', v)} rows={4} />
-        <ArrayField label={t('admin.whoIsItFor')} items={enCourse.whoIsItFor || (isKaLang ? kaT_course.whoIsItFor : []) || []} onChange={v => setCourse('whoIsItFor', v)} />
-        <ArrayField label={t('admin.courseFeatures')} items={enCourse.features || (isKaLang ? kaT_course.features : []) || []} onChange={v => setCourse('features', v)} />
+
+      {/* Hero text */}
+      <Card title="Page Hero">
+        <Field
+          label="Tagline"
+          value={enCourse.tagline || ''}
+          onChange={v => set('tagline', v)}
+          placeholder={activeCourse?.description || 'Short tagline shown under the title…'}
+        />
+        <Field
+          label="Description"
+          value={enCourse.description || ''}
+          onChange={v => set('description', v)}
+          rows={4}
+          placeholder="Full course description…"
+        />
       </Card>
-      <SaveBar onSave={save} onReset={reset} saved={saved} />
+
+      {/* Who is it for + features */}
+      <Card title="Audience & Features">
+        <ArrayField label="Who Is It For" items={enCourse.whoIsItFor || []} onChange={v => set('whoIsItFor', v)} placeholder="Add audience description…" />
+        <ArrayField label="What Students Learn" items={enCourse.features || []} onChange={v => set('features', v)} placeholder="Add learning outcome…" />
+      </Card>
+
+      {/* Curriculum — language-neutral structure */}
+      {!isKa && (
+        <Card title="Curriculum">
+          <p className="text-xs text-slate-400 -mt-2">Add modules with topics. Each module appears as a numbered section on the course page.</p>
+          <CurriculumEditor
+            modules={course.curriculum || []}
+            onChange={v => setEn('curriculum', v)}
+          />
+        </Card>
+      )}
+
+      {/* Schedule — language-neutral */}
+      {!isKa && (
+        <Card title="Class Schedule">
+          <div className="grid grid-cols-3 gap-2 mb-2">
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Label</span>
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Time</span>
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Days</span>
+          </div>
+          <ScheduleEditor
+            slots={course.schedule || []}
+            onChange={v => setEn('schedule', v)}
+          />
+        </Card>
+      )}
+
+      {/* FAQ */}
+      {!isKa && (
+        <Card title="FAQ">
+          <FaqEditor
+            items={course.faq || []}
+            onChange={v => setEn('faq', v)}
+          />
+        </Card>
+      )}
+
+      <SaveBar onSave={save} onReset={() => {}} saved={saved} />
     </div>
   )
 }
@@ -1619,11 +2028,13 @@ export function AdminPage() {
     i18n.changeLanguage(lang)
     document.documentElement.lang = lang
   }
-  const [loggedIn, setLoggedIn] = useState(() => {
-    return sessionStorage.getItem('kea-admin-session') === '1'
-  })
+  const [firebaseUser, setFirebaseUser] = useState(undefined)
   const [active, setActive] = useState('dashboard')
   const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  useEffect(() => {
+    return onAuthStateChanged(auth, u => setFirebaseUser(u ?? null))
+  }, [])
 
   const NAV = [
     { id: 'dashboard',        label: t('admin.nav.dashboard'),        Icon: LayoutDashboard },
@@ -1642,25 +2053,24 @@ export function AdminPage() {
     { id: 'page_testimonials',label: t('admin.nav.pageTestimonials'), Icon: MessageCircle },
     { id: 'page_courses',     label: t('admin.nav.pageCourses'),      Icon: Layers },
     { id: 'page_coursedetail',label: t('admin.nav.pageCourseDetail'), Icon: BookMarked },
+    { id: 'blog',             label: 'Blog Posts',                    Icon: Newspaper },
     { id: 'settings',         label: t('admin.nav.settings'),         Icon: Settings },
   ]
 
-  const handleLogin = () => {
-    sessionStorage.setItem('kea-admin-session', '1')
-    setLoggedIn(true)
-  }
-
-  const handleLogout = () => {
-    sessionStorage.removeItem('kea-admin-session')
-    setLoggedIn(false)
-  }
+  const handleLogout = () => signOut(auth)
 
   const navigate = (id) => {
     setActive(id)
     setSidebarOpen(false)
   }
 
-  if (!loggedIn) return <LoginPage onLogin={handleLogin} />
+  if (firebaseUser === undefined) return (
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="w-8 h-8 border-4 border-blue-700 border-t-transparent rounded-full animate-spin" />
+    </div>
+  )
+
+  if (!firebaseUser) return <LoginPage />
 
   const sectionMap = {
     dashboard:          <DashboardSection />,
@@ -1679,6 +2089,7 @@ export function AdminPage() {
     page_testimonials:  <TestimonialsPageSection />,
     page_courses:       <CoursesPageSection />,
     page_coursedetail:  <CourseDetailSection />,
+    blog:               <AdminBlogSection />,
     settings:           <SettingsSection onLogout={handleLogout} />,
   }
 

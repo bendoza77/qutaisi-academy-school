@@ -6,6 +6,8 @@ import { SectionTitle } from "../ui/SectionTitle";
 import { useSiteData } from "../../context/SiteDataContext";
 import { cn } from "../../utils/cn";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+
 const INITIAL_FORM = { name: "", phone: "", email: "", course: "", message: "" };
 
 function InputField({ label, error, className, ...props }) {
@@ -102,9 +104,24 @@ export function Contact() {
     const errs = validate();
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
     setStatus("submitting");
-    await new Promise((r) => setTimeout(r, 1500));
-    setStatus("success");
-    setForm(INITIAL_FORM);
+    try {
+      const res = await fetch(`${API_URL}/api/contact`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          from_name: form.name,
+          from_phone: form.phone,
+          from_email: form.email,
+          course: form.course,
+          message: form.message || "No message",
+        }),
+      });
+      if (!res.ok) throw new Error("Server error");
+      setStatus("success");
+      setForm(INITIAL_FORM);
+    } catch {
+      setStatus("error");
+    }
   };
 
   const contactMeta = [
@@ -208,7 +225,30 @@ export function Contact() {
             className="lg:col-span-8"
           >
             <div className="bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 lg:p-8 shadow-sm">
-              {status === "success" ? (
+              {status === "error" ? (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.4 }}
+                  className="flex flex-col items-center justify-center gap-4 py-16 text-center"
+                >
+                  <div className="w-16 h-16 rounded-full bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center">
+                    <AlertCircle className="w-8 h-8 text-rose-600 dark:text-rose-400" />
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white">
+                    {t("contact.form.errorTitle")}
+                  </h3>
+                  <p className="text-slate-500 dark:text-slate-400 max-w-sm">
+                    {t("contact.form.errorDesc")}
+                  </p>
+                  <button
+                    onClick={() => setStatus("idle")}
+                    className="mt-2 text-sm text-primary-600 dark:text-primary-400 hover:underline font-medium cursor-pointer"
+                  >
+                    {t("contact.form.errorRetry")}
+                  </button>
+                </motion.div>
+              ) : status === "success" ? (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
