@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import {
   CheckCircle2, ChevronRight, BookOpen, TrendingUp, Award, Briefcase,
   Star, Zap, Target, Globe, GraduationCap, Layers,
-  Copy, Check, AlertCircle, CreditCard, ChevronDown,
+  Check, AlertCircle,
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { PageLayout } from '../components/layout/PageLayout'
@@ -13,22 +13,6 @@ import { cn } from '../utils/cn'
 import { useSiteData } from '../context/SiteDataContext'
 
 const iconMap = { BookOpen, TrendingUp, Award, Briefcase, Star, Zap, Target, Globe, GraduationCap, Layers }
-
-// ─── Payment Links ────────────────────────────────────────────────────────────
-// Add entries here for any course slug. Unknown slugs default to '#'.
-const PAYMENT_LINKS = {
-  foundation:  '#',
-  progressive: '#',
-  mastery:     '#',
-  business:    '#',
-}
-
-const BANK_DETAILS = {
-  bank: 'TBC Bank',
-  accountName: 'Kutaisi English Academy LLC',
-  iban: 'GE29TB7522345678901234',
-  currency: 'GEL (₾)',
-}
 
 function StepIndicator({ current, steps }) {
   return (
@@ -90,24 +74,6 @@ function InputField({ label, error, required, ...props }) {
         </span>
       )}
     </div>
-  )
-}
-
-function CopyButton({ text }) {
-  const [copied, setCopied] = useState(false)
-  const handleCopy = () => {
-    navigator.clipboard.writeText(text)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
-  return (
-    <button
-      onClick={handleCopy}
-      className="p-1.5 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors cursor-pointer"
-      aria-label="Copy to clipboard"
-    >
-      {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5 text-slate-400" />}
-    </button>
   )
 }
 
@@ -181,8 +147,6 @@ export function EnrollPage() {
     setSubmitted(true)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
-
-  const bankLabels = s2.bankLabels || {}
 
   if (submitted) {
     return (
@@ -407,29 +371,7 @@ export function EnrollPage() {
                   </div>
                 </div>
 
-                {/* Bank transfer */}
-                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 mb-6">
-                  <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-4">{s2.bankTitle}</h3>
-                  <div className="flex flex-col gap-3 text-sm">
-                    {[
-                      ['Bank', BANK_DETAILS.bank],
-                      ['Account Name', BANK_DETAILS.accountName],
-                      ['IBAN', BANK_DETAILS.iban],
-                      ['Currency', BANK_DETAILS.currency],
-                    ].map(([key, value]) => (
-                      <div key={key} className="flex items-center justify-between gap-2">
-                        <span className="text-slate-500 dark:text-slate-400 shrink-0">{bankLabels[key] || key}</span>
-                        <div className="flex items-center gap-1 min-w-0">
-                          <span className="font-mono font-semibold text-slate-900 dark:text-white truncate">{value}</span>
-                          <CopyButton text={value} />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <p className="mt-4 text-xs text-slate-400 dark:text-slate-500 leading-relaxed">{s2.bankRef}</p>
-                </div>
-
-                {/* Or pay in person */}
+                {/* Pay in person */}
                 <div className="bg-primary-50 dark:bg-primary-950/20 rounded-xl border border-primary-100 dark:border-primary-900/30 p-4 mb-6 text-sm text-slate-600 dark:text-slate-400">
                   <span className="font-semibold text-primary-800 dark:text-primary-300">{s2.payInPerson}</span>{' '}
                   {s2.payInPersonDesc}
