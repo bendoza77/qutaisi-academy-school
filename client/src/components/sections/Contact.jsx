@@ -104,6 +104,8 @@ export function Contact() {
     const errs = validate();
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
     setStatus("submitting");
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
     try {
       const res = await fetch(`${API_URL}/api/contact`, {
         method: "POST",
@@ -115,11 +117,14 @@ export function Contact() {
           course: form.course,
           message: form.message || "No message",
         }),
+        signal: controller.signal,
       });
+      clearTimeout(timeoutId);
       if (!res.ok) throw new Error("Server error");
       setStatus("success");
       setForm(INITIAL_FORM);
     } catch {
+      clearTimeout(timeoutId);
       setStatus("error");
     }
   };

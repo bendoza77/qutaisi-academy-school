@@ -17,11 +17,25 @@ const logoBase64 = fs.readFileSync(
 
 // ─── Security ────────────────────────────────────────────────────────────────
 
-// Sets secure HTTP headers (XSS protection, no-sniff, HSTS, etc.)
-app.use(helmet());
+// CORS must come before Helmet so preflight OPTIONS responses have the right headers
+const allowedOrigins = (process.env.CLIENT_ORIGIN || "http://localhost:5173")
+  .split(",")
+  .map((o) => o.trim())
+  .filter(Boolean);
 
-// CORS — only allow the client origin
-app.use(cors({ origin: process.env.CLIENT_ORIGIN || "http://localhost:5173" }));
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) callback(null, true);
+      else callback(null, false);
+    },
+    methods: ["GET", "POST", "OPTIONS"],
+    allowedHeaders: ["Content-Type"],
+  })
+);
+
+// Sets secure HTTP headers; disable CORP so cross-origin API responses aren't blocked
+app.use(helmet({ crossOriginResourcePolicy: false }));
 
 app.use(express.json({ limit: "10kb" }));
 
@@ -298,65 +312,77 @@ function buildAutoReplyEmail({ from_name, course }) {
 
 // ─── ROUTE ────────────────────────────────────────────────────────────────
 app.post("/api/contact", contactLimiter, async (req, res) => {
-  const { from_name, from_phone, from_email, course, message } = req.body;
+  try {
+    const { from_name, from_phone, from_email, course, message } = req.body;
 
-  if (!from_name || !from_phone || !course) {
-    return res.status(400).json({ error: "Missing required fields." });
-  }
-
-  const date = new Date().toLocaleString("en-GB", {
-    day: "2-digit", month: "long", year: "numeric",
-    hour: "2-digit", minute: "2-digit",
-  });
-
-  const logoAttachment = {
-    filename: "logo.png",
-    content: logoBase64,
-    content_id: "logo",
-  };
-
-  const FROM = `Kutaisi English Academy <${process.env.SENDER_EMAIL}>`;
-  const validEmail = from_email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(from_email.trim());
-
-  // Admin notification → CONTACT_EMAIL in .env
-  const adminResult = await resend.emails.send({
-    from: FROM,
-    to: [process.env.CONTACT_EMAIL],
-    subject: `📩 New inquiry from ${from_name} — ${course}`,
-    html: buildAdminEmail({
-      from_name,
-      from_phone,
-      from_email: validEmail ? from_email.trim() : null,
-      course,
-      message: message || "No message",
-      date,
-    }),
-    attachments: [logoAttachment],
-  });
-
-  if (adminResult.error) {
-    console.error("[Admin email error]", JSON.stringify(adminResult.error));
-    return res.status(500).json({ error: adminResult.error.message });
-  }
-  console.log("[Admin email sent] id:", adminResult.data?.id);
-
-  // Auto-reply → user's form email
-  if (validEmail) {
-    const replyResult = await resend.emails.send({
-      from: FROM,
-      to: [from_email.trim()],
-      subject: `✅ We received your inquiry, ${from_name}!`,
-      html: buildAutoReplyEmail({ from_name, course }),
-      attachments: [logoAttachment],
-    });
-    if (replyResult.error) {
-      console.error("[Auto-reply error]", JSON.stringify(replyResult.error));
-    } else {
-      console.log(`[Auto-reply sent] → ${from_email.trim()} id:`, replyResult.data?.id);
+    if (!from_name || !from_phone || !course) {
+      return res.status(400).json({ error: "Missing required fields." });
     }
-  }
 
-  res.json({ success: true });
+    const date = new Date().toLocaleString("en-GB", {
+      day: "2-digit", month: "long", year: "numeric",
+      hour: "2-digit", minute: "2-digit",
+    });
+
+    const logoAttachment = {
+      filename: "logo.png",
+      content: logoBase64,
+      content_id: "logo",
+    };
+
+    const FROM = `Kutaisi English Academy <${process.env.SENDER_EMAIL}>`;
+    const validEmail = from_email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(from_email.trim());
+
+    // Admin notification — best-effort, never block the user response
+    try {
+      const adminResult = await resend.emails.send({
+        from: FROM,
+        to: [process.env.CONTACT_EMAIL],
+        subject: `📩 New inquiry from ${from_name} — ${course}`,
+        html: buildAdminEmail({
+          from_name,
+          from_phone,
+          from_email: validEmail ? from_email.trim() : null,
+          course,
+          message: message || "No message",
+          date,
+        }),
+        attachments: [logoAttachment],
+      });
+      if (adminResult.error) {
+        console.error("[Admin email error]", JSON.stringify(adminResult.error));
+      } else {
+        console.log("[Admin email sent] id:", adminResult.data?.id);
+      }
+    } catch (emailErr) {
+      console.error("[Admin email exception]", emailErr?.message);
+    }
+
+    // Auto-reply — best-effort
+    if (validEmail) {
+      try {
+        const replyResult = await resend.emails.send({
+          from: FROM,
+          to: [from_email.trim()],
+          subject: `✅ We received your inquiry, ${from_name}!`,
+          html: buildAutoReplyEmail({ from_name, course }),
+          attachments: [logoAttachment],
+        });
+        if (replyResult.error) {
+          console.error("[Auto-reply error]", JSON.stringify(replyResult.error));
+        } else {
+          console.log(`[Auto-reply sent] → ${from_email.trim()} id:`, replyResult.data?.id);
+        }
+      } catch (replyErr) {
+        console.error("[Auto-reply exception]", replyErr?.message);
+      }
+    }
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error("[Contact route error]", err);
+    res.status(500).json({ error: "An unexpected error occurred." });
+  }
 });
 
 // Quick test route — visit http://localhost:3000/test-email in browser

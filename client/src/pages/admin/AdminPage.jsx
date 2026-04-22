@@ -12,8 +12,7 @@ import {
   signOut,
   updatePassword,
 } from 'firebase/auth'
-import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage'
-import { auth, storage } from '../../firebase'
+import { auth } from '../../firebase'
 import { AdminBlogSection } from './AdminBlogSection'
 import { useSiteData, DEFAULT_SITE_DATA } from '../../context/SiteDataContext'
 import kaT from '../../i18n/locales/ka/translation.json'
@@ -786,17 +785,17 @@ function TeacherModal({ teacher, onSave, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-2xl my-8">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-2xl my-8 max-h-[90vh] flex flex-col overflow-hidden">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 shrink-0">
           <h3 className="font-bold text-slate-900">{teacher.id ? t('admin.teachers.editTeacher') : t('admin.teachers.addTeacher')}</h3>
           <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100">
             <X className="w-4 h-4" />
           </button>
         </div>
-        <div className="px-6 pt-4">
+        <div className="px-6 pt-4 shrink-0">
           <LangTabs lang={lang} setLang={setLang} />
         </div>
-        <div className="p-6 flex flex-col gap-5">
+        <div className="p-6 flex flex-col gap-5 overflow-y-auto flex-1">
           {lang === 'en' ? (
             <>
               <div className="grid grid-cols-2 gap-4">
@@ -834,7 +833,7 @@ function TeacherModal({ teacher, onSave, onClose }) {
             </>
           )}
         </div>
-        <div className="flex gap-3 px-6 py-4 border-t border-slate-100">
+        <div className="flex gap-3 px-6 py-4 border-t border-slate-100 shrink-0">
           <button
             onClick={() => onSave(data)}
             className="flex items-center gap-2 px-5 py-2.5 bg-blue-700 hover:bg-blue-800 text-white rounded-xl text-sm font-semibold transition-colors"
@@ -960,30 +959,29 @@ function TestimonialModal({ item, onSave, onClose }) {
   const handlePhotoUpload = (e) => {
     const file = e.target.files[0]
     if (!file) return
-    const ext = file.name.split('.').pop()
-    const storageRef = ref(storage, `testimonials/${Date.now()}.${ext}`)
     setUploading(true)
     setUploadProgress(0)
-    const task = uploadBytesResumable(storageRef, file)
-    task.on(
-      'state_changed',
-      (snap) => setUploadProgress(Math.round((snap.bytesTransferred / snap.totalBytes) * 100)),
-      (err) => { console.error(err); setUploading(false) },
-      async () => {
-        const url = await getDownloadURL(task.snapshot.ref)
-        set('photoUrl', url)
+    const reader = new FileReader()
+    reader.onload = (ev) => {
+      const img = new Image()
+      img.onload = () => {
+        const MAX = 300
+        const ratio = Math.min(MAX / img.width, MAX / img.height, 1)
+        const canvas = document.createElement('canvas')
+        canvas.width = Math.round(img.width * ratio)
+        canvas.height = Math.round(img.height * ratio)
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height)
+        set('photoUrl', canvas.toDataURL('image/jpeg', 0.82))
+        setUploadProgress(100)
         setUploading(false)
       }
-    )
+      img.src = ev.target.result
+    }
+    reader.readAsDataURL(file)
   }
 
-  const handleRemovePhoto = async () => {
-    if (data.photoUrl) {
-      try {
-        await deleteObject(ref(storage, data.photoUrl))
-      } catch {}
-      set('photoUrl', '')
-    }
+  const handleRemovePhoto = () => {
+    set('photoUrl', '')
   }
 
   return (
@@ -2092,6 +2090,168 @@ function CourseDetailSection() {
   )
 }
 
+// ─── English Test Section ─────────────────────────────────────────────────────
+
+const QUESTION_LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']
+const QUESTION_CATEGORIES = ['Grammar', 'Vocabulary', 'Reading', 'Listening']
+
+const EMPTY_QUESTION = { level: 'A1', category: 'Grammar', text: '', options: ['', '', '', ''], correct: 0 }
+
+function QuestionEditor({ q, idx, onChange, onRemove }) {
+  const set = (key, val) => onChange({ ...q, [key]: val })
+  const setOption = (i, val) => {
+    const opts = [...q.options]
+    opts[i] = val
+    onChange({ ...q, options: opts })
+  }
+  return (
+    <div className="border border-slate-200 rounded-xl p-4 flex flex-col gap-3 bg-slate-50">
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">Q{idx + 1}</span>
+        <button onClick={onRemove} className="p-1 text-slate-400 hover:text-rose-500 transition-colors">
+          <Trash2 className="w-4 h-4" />
+        </button>
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="flex flex-col gap-1.5">
+          <label className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Level</label>
+          <select
+            value={q.level}
+            onChange={e => set('level', e.target.value)}
+            className="px-3 py-2 rounded-lg border border-slate-200 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 bg-white"
+          >
+            {QUESTION_LEVELS.map(l => <option key={l} value={l}>{l}</option>)}
+          </select>
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <label className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Category</label>
+          <select
+            value={q.category}
+            onChange={e => set('category', e.target.value)}
+            className="px-3 py-2 rounded-lg border border-slate-200 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 bg-white"
+          >
+            {QUESTION_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
+        </div>
+      </div>
+      <Field label="Question Text" value={q.text} onChange={v => set('text', v)} rows={2} placeholder="e.g. Choose the correct form: She ___ to school every day." />
+      <div className="flex flex-col gap-2">
+        <label className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Options (mark correct)</label>
+        {q.options.map((opt, i) => (
+          <div key={i} className="flex items-center gap-2">
+            <button
+              onClick={() => set('correct', i)}
+              className={`w-6 h-6 rounded-full border-2 shrink-0 transition-colors ${q.correct === i ? 'border-emerald-500 bg-emerald-500' : 'border-slate-300 hover:border-emerald-400'}`}
+              title="Mark as correct"
+            >
+              {q.correct === i && <span className="flex items-center justify-center w-full h-full text-white text-xs font-bold">✓</span>}
+            </button>
+            <input
+              value={opt}
+              onChange={e => setOption(i, e.target.value)}
+              placeholder={`Option ${['A', 'B', 'C', 'D'][i]}`}
+              className={`flex-1 px-3 py-2 rounded-lg border text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 ${q.correct === i ? 'border-emerald-300 bg-emerald-50' : 'border-slate-200 bg-white'}`}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function EnglishTestSection() {
+  const { siteData, updateSection, resetSection } = useSiteData()
+  const [data, setData] = useState(() => siteData.englishTest || {})
+  const [saved, setSaved] = useState(false)
+  const [filter, setFilter] = useState('all')
+
+  const set = (key, val) => setData(prev => ({ ...prev, [key]: val }))
+
+  const save = () => {
+    updateSection('englishTest', data)
+    setSaved(true)
+    setTimeout(() => setSaved(false), 2000)
+  }
+
+  const reset = () => {
+    resetSection('englishTest')
+    setData({})
+  }
+
+  const questions = data.questions || []
+
+  const addQuestion = () => {
+    const nextId = questions.length ? Math.max(...questions.map(q => q.id || 0)) + 1 : 1
+    set('questions', [...questions, { ...EMPTY_QUESTION, id: nextId }])
+  }
+
+  const updateQuestion = (idx, updated) => {
+    const next = [...questions]
+    next[idx] = { ...updated, id: questions[idx].id }
+    set('questions', next)
+  }
+
+  const removeQuestion = (idx) => {
+    set('questions', questions.filter((_, i) => i !== idx))
+  }
+
+  const filtered = filter === 'all' ? questions : questions.filter(q => q.level === filter)
+
+  return (
+    <div className="flex flex-col gap-6">
+      <h1 className="text-2xl font-bold text-slate-900">English Level Test</h1>
+
+      <Card title="Test Info">
+        <Field label="Title" value={data.title || ''} onChange={v => set('title', v)} placeholder="Find Your English Level" />
+        <Field label="Description" value={data.description || ''} onChange={v => set('description', v)} rows={3} placeholder="Answer 20 questions to discover your CEFR level…" />
+        <Field label="Instructions" value={data.instructions || ''} onChange={v => set('instructions', v)} rows={2} placeholder="Read each question carefully and choose the best answer." />
+      </Card>
+
+      <Card title={`Questions (${questions.length} total)`}>
+        <div className="flex items-center gap-2 flex-wrap mb-2">
+          {['all', ...QUESTION_LEVELS].map(lvl => (
+            <button
+              key={lvl}
+              onClick={() => setFilter(lvl)}
+              className={`px-3 py-1 rounded-lg text-xs font-semibold transition-colors ${filter === lvl ? 'bg-blue-700 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+            >
+              {lvl === 'all' ? `All (${questions.length})` : `${lvl} (${questions.filter(q => q.level === lvl).length})`}
+            </button>
+          ))}
+        </div>
+
+        {filter !== 'all' && (
+          <p className="text-xs text-slate-400 mb-3">Showing {filter} questions only. Switch to "All" to see everything.</p>
+        )}
+
+        <div className="flex flex-col gap-4">
+          {filtered.map((q, i) => {
+            const realIdx = questions.indexOf(q)
+            return (
+              <QuestionEditor
+                key={q.id ?? i}
+                q={q}
+                idx={realIdx}
+                onChange={updated => updateQuestion(realIdx, updated)}
+                onRemove={() => removeQuestion(realIdx)}
+              />
+            )
+          })}
+        </div>
+
+        <button
+          onClick={addQuestion}
+          className="mt-4 flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 font-medium"
+        >
+          <Plus className="w-4 h-4" /> Add Question
+        </button>
+      </Card>
+
+      <SaveBar onSave={save} onReset={reset} saved={saved} />
+    </div>
+  )
+}
+
 // ─── Main Admin Page ──────────────────────────────────────────────────────────
 
 export function AdminPage() {
@@ -2127,6 +2287,7 @@ export function AdminPage() {
     { id: 'page_testimonials',label: t('admin.nav.pageTestimonials'), Icon: MessageCircle },
     { id: 'page_courses',     label: t('admin.nav.pageCourses'),      Icon: Layers },
     { id: 'page_coursedetail',label: t('admin.nav.pageCourseDetail'), Icon: BookMarked },
+    { id: 'english_test',     label: 'English Test',                  Icon: BookOpen },
     { id: 'blog',             label: 'Blog Posts',                    Icon: Newspaper },
     { id: 'settings',         label: t('admin.nav.settings'),         Icon: Settings },
   ]
@@ -2163,6 +2324,7 @@ export function AdminPage() {
     page_testimonials:  <TestimonialsPageSection />,
     page_courses:       <CoursesPageSection />,
     page_coursedetail:  <CourseDetailSection />,
+    english_test:       <EnglishTestSection />,
     blog:               <AdminBlogSection />,
     settings:           <SettingsSection onLogout={handleLogout} />,
   }
