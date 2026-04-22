@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Image, Info, BarChart2, BookOpen, Users, MessageSquare,
   Star, Phone, Megaphone, LogOut, Menu, X, Save, RotateCcw, Plus, Trash2,
   Edit3, Eye, Settings, Shield, FileText, HelpCircle, GraduationCap,
-  MessageCircle, Layers, BookMarked, Newspaper
+  MessageCircle, Layers, BookMarked, Newspaper, Upload, Trash
 } from 'lucide-react'
 import {
   onAuthStateChanged,
@@ -12,7 +12,8 @@ import {
   signOut,
   updatePassword,
 } from 'firebase/auth'
-import { auth } from '../../firebase'
+import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage'
+import { auth, storage } from '../../firebase'
 import { AdminBlogSection } from './AdminBlogSection'
 import { useSiteData, DEFAULT_SITE_DATA } from '../../context/SiteDataContext'
 import kaT from '../../i18n/locales/ka/translation.json'
@@ -943,16 +944,47 @@ const TESTIMONIAL_COLORS = [
 ]
 
 const EMPTY_TESTIMONIAL = {
-  avatar: '', color: 'bg-blue-600', rating: 5, name: '', role: '', location: '', text: '',
+  avatar: '', color: 'bg-blue-600', rating: 5, name: '', role: '', location: '', text: '', photoUrl: '',
 }
 
 function TestimonialModal({ item, onSave, onClose }) {
   const { t } = useTranslation()
   const [data, setData] = useState({ ...EMPTY_TESTIMONIAL, ...item })
   const [lang, setLang] = useState('en')
+  const [uploading, setUploading] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState(0)
   const set = (key, val) => setData(prev => ({ ...prev, [key]: val }))
   const setKa = (key, val) => setData(prev => ({ ...prev, ka: { ...(prev.ka || {}), [key]: val } }))
   const ka = data.ka || {}
+
+  const handlePhotoUpload = (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+    const ext = file.name.split('.').pop()
+    const storageRef = ref(storage, `testimonials/${Date.now()}.${ext}`)
+    setUploading(true)
+    setUploadProgress(0)
+    const task = uploadBytesResumable(storageRef, file)
+    task.on(
+      'state_changed',
+      (snap) => setUploadProgress(Math.round((snap.bytesTransferred / snap.totalBytes) * 100)),
+      (err) => { console.error(err); setUploading(false) },
+      async () => {
+        const url = await getDownloadURL(task.snapshot.ref)
+        set('photoUrl', url)
+        setUploading(false)
+      }
+    )
+  }
+
+  const handleRemovePhoto = async () => {
+    if (data.photoUrl) {
+      try {
+        await deleteObject(ref(storage, data.photoUrl))
+      } catch {}
+      set('photoUrl', '')
+    }
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
@@ -969,9 +1001,47 @@ function TestimonialModal({ item, onSave, onClose }) {
         <div className="p-6 flex flex-col gap-4">
           {lang === 'en' ? (
             <>
+              {/* Photo Upload */}
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Profile Photo</label>
+                <div className="flex items-center gap-4">
+                  <div className="relative shrink-0">
+                    {data.photoUrl ? (
+                      <img src={data.photoUrl} alt="preview" className="w-16 h-16 rounded-full object-cover border-2 border-slate-200" />
+                    ) : (
+                      <div className={`w-16 h-16 rounded-full flex items-center justify-center text-white font-bold text-lg ${data.color}`}>
+                        {data.avatar || '?'}
+                      </div>
+                    )}
+                    {uploading && (
+                      <div className="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center">
+                        <span className="text-white text-xs font-bold">{uploadProgress}%</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex flex-col gap-2 flex-1">
+                    <label className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-medium cursor-pointer transition-colors ${uploading ? 'opacity-50 cursor-not-allowed border-slate-200 text-slate-400' : 'border-slate-200 text-slate-600 hover:border-blue-300 hover:text-blue-600 hover:bg-blue-50'}`}>
+                      <Upload className="w-4 h-4" />
+                      {uploading ? `Uploading… ${uploadProgress}%` : 'Upload Photo'}
+                      <input type="file" accept="image/*" className="hidden" disabled={uploading} onChange={handlePhotoUpload} />
+                    </label>
+                    {data.photoUrl && !uploading && (
+                      <button onClick={handleRemovePhoto} className="flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 text-slate-500 hover:border-rose-300 hover:text-rose-500 hover:bg-rose-50 text-sm font-medium transition-colors">
+                        <Trash className="w-4 h-4" /> Remove Photo
+                      </button>
+                    )}
+                  </div>
+                </div>
+                {uploading && (
+                  <div className="w-full bg-slate-100 rounded-full h-1.5">
+                    <div className="bg-blue-600 h-1.5 rounded-full transition-all duration-200" style={{ width: `${uploadProgress}%` }} />
+                  </div>
+                )}
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <Field label={t('admin.testimonials.studentName')} value={data.name} onChange={v => set('name', v)} />
-                <Field label={t('admin.testimonials.avatar')} value={data.avatar} onChange={v => set('avatar', v.toUpperCase().slice(0, 2))} />
+                <Field label={t('admin.testimonials.avatar')} value={data.avatar} onChange={v => set('avatar', v.toUpperCase().slice(0, 2))} hint="2 letters — shown if no photo" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <Field label={t('admin.testimonials.role')} value={data.role} onChange={v => set('role', v)} placeholder="University Student" />
@@ -1007,8 +1077,8 @@ function TestimonialModal({ item, onSave, onClose }) {
           )}
         </div>
         <div className="flex gap-3 px-6 py-4 border-t border-slate-100">
-          <button onClick={() => onSave(data)}
-            className="flex items-center gap-2 px-5 py-2.5 bg-blue-700 hover:bg-blue-800 text-white rounded-xl text-sm font-semibold transition-colors"
+          <button onClick={() => onSave(data)} disabled={uploading}
+            className="flex items-center gap-2 px-5 py-2.5 bg-blue-700 hover:bg-blue-800 disabled:opacity-50 text-white rounded-xl text-sm font-semibold transition-colors"
           >
             <Save className="w-4 h-4" /> {t('admin.testimonials.save')}
           </button>
@@ -1069,9 +1139,13 @@ function TestimonialsSection() {
         {items.map((item) => (
           <div key={item.id} className="bg-white rounded-2xl border border-slate-200 p-5">
             <div className="flex items-start gap-4">
-              <div className={`w-10 h-10 rounded-full ${item.color} flex items-center justify-center text-white font-bold text-sm shrink-0`}>
-                {item.avatar}
-              </div>
+              {item.photoUrl ? (
+                <img src={item.photoUrl} alt={item.name} className="w-10 h-10 rounded-full object-cover shrink-0 border border-slate-200" />
+              ) : (
+                <div className={`w-10 h-10 rounded-full ${item.color} flex items-center justify-center text-white font-bold text-sm shrink-0`}>
+                  {item.avatar}
+                </div>
+              )}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="font-semibold text-slate-900 text-sm">{item.name}</span>

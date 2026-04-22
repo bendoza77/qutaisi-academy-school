@@ -35,9 +35,13 @@ function TestimonialCard({ meta, text, index }) {
         "{text.text}"
       </p>
       <div className="flex items-center gap-3 mt-6 pt-5 border-t border-slate-100 dark:border-slate-700">
-        <div className={`w-11 h-11 rounded-full flex items-center justify-center text-white font-bold text-sm shrink-0 ${meta.color}`}>
-          {meta.avatar}
-        </div>
+        {meta.photoUrl ? (
+          <img src={meta.photoUrl} alt={text.name} className="w-11 h-11 rounded-full object-cover shrink-0" />
+        ) : (
+          <div className={`w-11 h-11 rounded-full flex items-center justify-center text-white font-bold text-sm shrink-0 ${meta.color}`}>
+            {meta.avatar}
+          </div>
+        )}
         <div>
           <div className="font-semibold text-slate-900 dark:text-white text-sm">{text.name}</div>
           <div className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">{text.role} · {text.location}</div>

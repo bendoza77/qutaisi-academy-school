@@ -4,6 +4,9 @@ const cors = require("cors");
 const fs = require("fs");
 const path = require("path");
 const { Resend } = require("resend");
+const helmet = require("helmet");
+const mongoSanitize = require("express-mongo-sanitize");
+const rateLimit = require("express-rate-limit");
 
 const app = express();
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -12,8 +15,36 @@ const logoBase64 = fs.readFileSync(
   path.join(__dirname, "../client/public/logo.png")
 ).toString("base64");
 
+// ─── Security ────────────────────────────────────────────────────────────────
+
+// Sets secure HTTP headers (XSS protection, no-sniff, HSTS, etc.)
+app.use(helmet());
+
+// CORS — only allow the client origin
 app.use(cors({ origin: process.env.CLIENT_ORIGIN || "http://localhost:5173" }));
-app.use(express.json());
+
+app.use(express.json({ limit: "10kb" }));
+
+// Strip $ and . from request body/query/params to block NoSQL injection
+app.use(mongoSanitize());
+
+// Contact form: max 5 requests per 15 minutes per IP
+const contactLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Too many requests. Please try again in 15 minutes." },
+});
+
+// Test-email route: max 3 requests per hour per IP (dev tool, low limit)
+const testLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 3,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Too many test requests." },
+});
 
 // ─── EMAIL 1: Admin notification — original card design ───────────────────
 function buildAdminEmail({ from_name, from_phone, from_email, course, message, date }) {
@@ -266,7 +297,7 @@ function buildAutoReplyEmail({ from_name, course }) {
 }
 
 // ─── ROUTE ────────────────────────────────────────────────────────────────
-app.post("/api/contact", async (req, res) => {
+app.post("/api/contact", contactLimiter, async (req, res) => {
   const { from_name, from_phone, from_email, course, message } = req.body;
 
   if (!from_name || !from_phone || !course) {
@@ -329,7 +360,7 @@ app.post("/api/contact", async (req, res) => {
 });
 
 // Quick test route — visit http://localhost:3000/test-email in browser
-app.get("/test-email", async (req, res) => {
+app.get("/test-email", testLimiter, async (req, res) => {
   const result = await resend.emails.send({
     from: `Kutaisi English Academy <${process.env.SENDER_EMAIL}>`,
     to: [process.env.CONTACT_EMAIL],

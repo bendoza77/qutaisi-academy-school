@@ -41,9 +41,13 @@ function TestimonialCard({ meta, text, direction }) {
           </p>
         </div>
         <div className="flex items-center gap-3 mt-4 pt-4 border-t border-slate-100 dark:border-slate-700 shrink-0">
-          <div className={`w-11 h-11 rounded-full flex items-center justify-center text-white font-bold text-sm shrink-0 ${meta.color}`}>
-            {meta.avatar}
-          </div>
+          {meta.photoUrl ? (
+            <img src={meta.photoUrl} alt={text.name} className="w-11 h-11 rounded-full object-cover shrink-0" />
+          ) : (
+            <div className={`w-11 h-11 rounded-full flex items-center justify-center text-white font-bold text-sm shrink-0 ${meta.color}`}>
+              {meta.avatar}
+            </div>
+          )}
           <div className="min-w-0">
             <div className="font-semibold text-slate-900 dark:text-white text-sm leading-tight">{text.name}</div>
             <div className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
@@ -188,9 +192,13 @@ export function Testimonials() {
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className={`w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-xs shrink-0 ${item.color}`}>
-                      {item.avatar}
-                    </div>
+                    {item.photoUrl ? (
+                      <img src={item.photoUrl} alt={item.name} className="w-9 h-9 rounded-full object-cover shrink-0" />
+                    ) : (
+                      <div className={`w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-xs shrink-0 ${item.color}`}>
+                        {item.avatar}
+                      </div>
+                    )}
                     <div className="min-w-0">
                       <div className="text-sm font-semibold text-slate-900 dark:text-white truncate">
                         {item.name}
