@@ -963,7 +963,7 @@ function TestimonialModal({ item, onSave, onClose }) {
     setUploadProgress(0)
     const reader = new FileReader()
     reader.onload = (ev) => {
-      const img = new Image()
+      const img = new window.Image()
       img.onload = () => {
         const MAX = 300
         const ratio = Math.min(MAX / img.width, MAX / img.height, 1)
