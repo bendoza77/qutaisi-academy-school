@@ -5,6 +5,8 @@ import { Phone, Mail, MapPin, Clock, Send, CheckCircle2, AlertCircle } from "luc
 import { SectionTitle } from "../ui/SectionTitle";
 import { useSiteData } from "../../context/SiteDataContext";
 import { cn } from "../../utils/cn";
+import { db } from "../../firebase";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 const API_URL = import.meta.env.VITE_API_URL || "";
 
@@ -104,10 +106,19 @@ export function Contact() {
     const errs = validate();
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
     setStatus("submitting");
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000);
     try {
-      const res = await fetch(`${API_URL}/api/contact`, {
+      // Save to Firestore — this is the source of truth, always works
+      await addDoc(collection(db, "contacts"), {
+        name: form.name,
+        phone: form.phone,
+        email: form.email || "",
+        course: form.course,
+        message: form.message || "",
+        submittedAt: serverTimestamp(),
+      });
+
+      // Fire email notification in the background — doesn't affect the user
+      fetch(`${API_URL}/api/contact`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -117,14 +128,11 @@ export function Contact() {
           course: form.course,
           message: form.message || "No message",
         }),
-        signal: controller.signal,
-      });
-      clearTimeout(timeoutId);
-      if (!res.ok) throw new Error("Server error");
+      }).catch(() => {});
+
       setStatus("success");
       setForm(INITIAL_FORM);
     } catch {
-      clearTimeout(timeoutId);
       setStatus("error");
     }
   };

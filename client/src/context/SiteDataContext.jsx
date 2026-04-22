@@ -1,4 +1,6 @@
 import { createContext, useContext, useState, useCallback, useEffect } from 'react'
+import { doc, setDoc, onSnapshot } from 'firebase/firestore'
+import { db } from '../firebase'
 
 export const DEFAULT_SITE_DATA = {
   hero: {
@@ -264,53 +266,65 @@ export const DEFAULT_SITE_DATA = {
   ],
 }
 
-const STORAGE_KEY = 'kea-site-data'
+const CACHE_KEY = 'kea-site-data'
+const SITE_DOC = doc(db, 'siteData', 'main')
 
 const SiteDataContext = createContext(null)
 
 export function SiteDataProvider({ children }) {
+  // Seed from localStorage cache so the page renders instantly while Firestore loads
   const [siteData, setSiteData] = useState(() => {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY)
-      if (saved) {
-        const parsed = JSON.parse(saved)
-        return { ...DEFAULT_SITE_DATA, ...parsed }
-      }
+      const cached = localStorage.getItem(CACHE_KEY)
+      if (cached) return { ...DEFAULT_SITE_DATA, ...JSON.parse(cached) }
     } catch {}
     return DEFAULT_SITE_DATA
   })
 
+  // Real-time listener: any admin save on any device propagates to all visitors
   useEffect(() => {
-    const handler = (e) => {
-      if (e.key !== STORAGE_KEY) return
-      try {
-        const parsed = e.newValue ? JSON.parse(e.newValue) : null
-        setSiteData(parsed ? { ...DEFAULT_SITE_DATA, ...parsed } : DEFAULT_SITE_DATA)
-      } catch {}
+    const unsub = onSnapshot(
+      SITE_DOC,
+      (snap) => {
+        const data = snap.exists()
+          ? { ...DEFAULT_SITE_DATA, ...snap.data() }
+          : DEFAULT_SITE_DATA
+        setSiteData(data)
+        try { localStorage.setItem(CACHE_KEY, JSON.stringify(data)) } catch {}
+      },
+      (err) => console.error('[SiteData] Firestore read error:', err)
+    )
+    return unsub
+  }, [])
+
+  const updateSection = useCallback(async (key, value) => {
+    // Optimistic local update so the admin UI feels instant
+    setSiteData(prev => ({ ...prev, [key]: value }))
+    try {
+      await setDoc(SITE_DOC, { [key]: value }, { merge: true })
+    } catch (err) {
+      console.error('[SiteData] write error:', err)
     }
-    window.addEventListener('storage', handler)
-    return () => window.removeEventListener('storage', handler)
   }, [])
 
-  const updateSection = useCallback((key, value) => {
-    setSiteData(prev => {
-      const next = { ...prev, [key]: value }
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
-      return next
-    })
+  const resetSection = useCallback(async (key) => {
+    const def = DEFAULT_SITE_DATA[key]
+    setSiteData(prev => ({ ...prev, [key]: def }))
+    try {
+      await setDoc(SITE_DOC, { [key]: def }, { merge: true })
+    } catch (err) {
+      console.error('[SiteData] write error:', err)
+    }
   }, [])
 
-  const resetSection = useCallback((key) => {
-    setSiteData(prev => {
-      const next = { ...prev, [key]: DEFAULT_SITE_DATA[key] }
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
-      return next
-    })
-  }, [])
-
-  const resetAll = useCallback(() => {
-    localStorage.removeItem(STORAGE_KEY)
+  const resetAll = useCallback(async () => {
     setSiteData(DEFAULT_SITE_DATA)
+    localStorage.removeItem(CACHE_KEY)
+    try {
+      await setDoc(SITE_DOC, DEFAULT_SITE_DATA)
+    } catch (err) {
+      console.error('[SiteData] write error:', err)
+    }
   }, [])
 
   return (
