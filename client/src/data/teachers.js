@@ -1,14 +1,14 @@
 export const TEACHERS = [
   {
     id: 1,
-    name: 'Davit Gorgodze',
+    name: 'ლანა ჩხარტიშვილი',
     title: 'Founder & Academic Director',
-    avatar: 'DG',
+    avatar: 'ლჩ',
     color: 'bg-primary-700',
     credentials: ['DELTA', 'MA Applied Linguistics'],
     experience: '15+ years',
     specialties: ['Academic English', 'IELTS Preparation', 'Teacher Training'],
-    bio: 'Davit founded Kutaisi English Academy in 2017 with a vision to bring world-class English education to Georgia. Holder of the prestigious DELTA qualification, he has guided hundreds of students to achieve their language goals and built a team that sets the standard for English teaching in the region.',
+    bio: 'ლანა ჩხარტიშვილი founded Kutaisi English Academy with a vision to bring world-class English education to Georgia. Holder of the prestigious DELTA qualification, she has guided hundreds of students to achieve their language goals and built a team that sets the standard for English teaching in the region.',
     languages: ['Georgian', 'English', 'Russian'],
   },
   {

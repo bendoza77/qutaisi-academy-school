@@ -70,7 +70,7 @@ export function AboutPage() {
             >
               <div className="absolute left-6 top-0 bottom-0 w-px bg-primary-100 dark:bg-primary-900" />
               <div className="flex flex-col gap-8">
-                {['2017', '2019', '2021', '2024'].map((year, i) => (
+                {['2022', '2023', '2024', '2025'].map((year, i) => (
                   <motion.div
                     key={year}
                     initial={{ opacity: 0, x: 16 }}

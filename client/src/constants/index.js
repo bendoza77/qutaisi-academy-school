@@ -85,10 +85,10 @@ export const STATS_META = [
 
 /** Static contact data that doesn't need translation */
 export const CONTACT_INFO = {
-  phone: "+995 599 123 456",
-  email: "info@kutaisi-english.ge",
+  phone: "+995 511 236 890",
+  email: "2022theenglishacademy@gmail.com",
   social: {
-    facebook: "#",
+    facebook: "https://www.facebook.com/profile.php?id=100078710533510",
     instagram: "#",
     youtube: "#",
     linkedin: "#",

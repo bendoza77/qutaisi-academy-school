@@ -2368,7 +2368,16 @@ export function AdminPage() {
           ))}
         </nav>
 
-        <div className="px-3 py-4 border-t border-slate-800">
+        <div className="px-3 py-4 border-t border-slate-800 flex flex-col gap-1">
+          <div className="flex items-center gap-3 px-3 py-2.5">
+            <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
+              ლ
+            </div>
+            <div className="min-w-0">
+              <div className="text-white text-xs font-semibold truncate">ლანა ჩხარტიშვილი</div>
+              <div className="text-slate-500 text-xs">Admin</div>
+            </div>
+          </div>
           <a
             href="/"
             target="_blank"

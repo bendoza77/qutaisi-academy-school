@@ -19,7 +19,7 @@
     "subtitle": "Kutaisi English Academy offers internationally-aligned courses taught by certified educators. Whether you're a beginner or preparing for IELTS — we'll get you there.",
     "enrollBtn": "Enroll Now",
     "discoverBtn": "Discover More",
-    "trustBadges": ["1200+ Students", "CEFR Aligned", "8 Years of Excellence", "96% Success Rate"],
+    "trustBadges": ["1200+ Students", "CEFR Aligned", "3+ Years of Excellence", "96% Success Rate"],
     "floatingCards": [
       { "title": "Expert Teachers", "sub": "CELTA Certified" },
       { "title": "All Levels", "sub": "A1 to C2" },
@@ -37,9 +37,9 @@
     "eyebrow": "About the Academy",
     "title": "Trusted English Education in the Heart of ",
     "titleHighlight": "Kutaisi",
-    "description": "For over eight years, Kutaisi English Academy has been the city's leading destination for professional English language education — from complete beginners to advanced speakers.",
+    "description": "For over three years, Kutaisi English Academy has been the city's leading destination for professional English language education — from complete beginners to advanced speakers.",
     "highlights": [
-      "Founded in 2017 with a mission to make quality English education accessible",
+      "Founded in 2022 with a mission to make quality English education accessible",
       "Curriculum fully aligned with the Common European Framework of Reference (CEFR)",
       "Small group sizes ensure personalized attention for every learner",
       "Modern, communicative teaching methodology backed by research"
@@ -270,7 +270,7 @@
   "footer": {
     "brand": "Kutaisi",
     "brandSub": "English Academy",
-    "tagline": "Empowering students across Kutaisi to master English and open doors to global opportunities since 2017.",
+    "tagline": "Empowering students across Kutaisi to master English and open doors to global opportunities since 2022.",
     "navigation": "Navigation",
     "courses": "Our Courses",
     "contact": "Contact",
@@ -292,11 +292,11 @@
   "aboutPage": {
     "story": {
       "eyebrow": "Our Story",
-      "title": "Eight years of shaping",
+      "title": "Three years of shaping",
       "titleHighlight": "English fluency in Georgia",
-      "p1": "Founded in 2017 by Davit Gorgodze, Kutaisi English Academy was born from a simple but powerful belief: every student in Kutaisi deserves access to world-class English education. What started as a small classroom has grown into the city's most trusted language institution.",
+      "p1": "Founded in 2022 by ლანა ჩხარტიშვილი, Kutaisi English Academy was born from a simple but powerful belief: every student in Kutaisi deserves access to world-class English education. What started as a small classroom has grown into the city's most trusted language institution.",
       "p2": "Today we offer four CEFR-aligned programmes, taught by 15+ CELTA/DELTA-certified educators, with a 96% student satisfaction rate and over 1,200 graduates who have transformed their careers, studies, and lives through English.",
-      "badges": ["CEFR Aligned", "15+ Teachers", "96% Satisfaction", "8 Years"]
+      "badges": ["CEFR Aligned", "15+ Teachers", "96% Satisfaction", "3+ Years"]
     },
     "values": {
       "eyebrow": "What We Stand For",
@@ -317,7 +317,7 @@
       "eyebrow": "Why Students Choose Us",
       "title": "Built around what actually works",
       "points": [
-        "Founded in 2017 with a mission to make quality English education accessible to all",
+        "Founded in 2022 with a mission to make quality English education accessible to all",
         "Curriculum fully aligned with the Common European Framework of Reference (CEFR)",
         "Small group sizes ensure personalized attention for every learner",
         "Modern, communicative teaching methodology backed by research",
@@ -327,7 +327,7 @@
         { "label": "Student Satisfaction", "value": "96%" },
         { "label": "Average Rating", "value": "4.9★" },
         { "label": "Total Graduates", "value": "1,200+" },
-        { "label": "Years of Excellence", "value": "8+" }
+        { "label": "Years of Excellence", "value": "3+" }
       ],
       "viewCourses": "View Our Courses",
       "getInTouch": "Get in Touch"
@@ -336,10 +336,10 @@
       "eyebrow": "About the Academy",
       "title": "Trusted English Education in the Heart of",
       "highlight": "Kutaisi",
-      "subtitle": "For over eight years we have been Kutaisi's leading destination for professional English language education — from complete beginners to advanced speakers."
+      "subtitle": "For over three years we have been Kutaisi's leading destination for professional English language education — from complete beginners to advanced speakers."
     },
     "timeline": [
-      { "title": "Academy Founded", "desc": "Davit Gorgodze opens Kutaisi English Academy with a vision to make quality English education accessible to all." },
+      { "title": "Academy Founded", "desc": "ლანა ჩხარტიშვილი opens Kutaisi English Academy with a vision to make quality English education accessible to all." },
       { "title": "CEFR Accreditation", "desc": "Curriculum fully aligned with the Common European Framework of Reference, recognised across Europe." },
       { "title": "500 Graduates", "desc": "Over 500 students successfully complete our courses and go on to achieve their personal and professional goals." },
       { "title": "1,200+ Students", "desc": "The academy grows to become Kutaisi's leading English language institution with 15+ certified educators." }
@@ -541,7 +541,7 @@
       { "value": "4.9 / 5", "label": "Average Rating", "stars": true },
       { "value": "96%", "label": "Student Satisfaction" },
       { "value": "1,200+", "label": "Total Students" },
-      { "value": "8+ Years", "label": "Trusted Since 2017" }
+      { "value": "3+ Years", "label": "Trusted Since 2022" }
     ],
     "ctaText": "Ready to write your own success story?",
     "ctaBtn": "Book Your Free Assessment"
@@ -564,9 +564,9 @@
         "id": "general",
         "label": "General",
         "items": [
-          { "q": "What is Kutaisi English Academy?", "a": "Kutaisi English Academy is a professional English language school founded in 2017. We offer CEFR-aligned courses for all levels from complete beginners (A1) to advanced speakers (C2), as well as a dedicated Business English programme." },
-          { "q": "Where are you located?", "a": "We are located at 12 Rustaveli Avenue, Kutaisi, Georgia. Our academy is easy to reach by public transport and has nearby parking. Open Monday–Friday 9:00–20:00, Saturday 10:00–17:00." },
-          { "q": "How long has the academy been running?", "a": "We opened our doors in 2017 and have been teaching English continuously since then — that's over 8 years of experience. In that time we have helped more than 1,200 students reach their English language goals." },
+          { "q": "What is Kutaisi English Academy?", "a": "Kutaisi English Academy is a professional English language school founded in 2022. We offer CEFR-aligned courses for all levels from complete beginners (A1) to advanced speakers (C2), as well as a dedicated Business English programme." },
+          { "q": "Where are you located?", "a": "We are located at Javakhishvili street 24, Kutaisi, Georgia. Our academy is easy to reach by public transport and has nearby parking. Open Monday–Friday 9:00–20:00, Saturday 10:00–17:00." },
+          { "q": "How long has the academy been running?", "a": "We opened our doors in 2022 and have been teaching English continuously since then — that's over 3 years of experience. In that time we have helped more than 1,200 students reach their English language goals." },
           { "q": "Are your teachers qualified?", "a": "Every teacher at the academy holds a CELTA or DELTA qualification — the internationally recognised standard for English language teaching. Many also hold additional post-graduate degrees in Applied Linguistics, TESOL, or Education." },
           { "q": "Do you offer online classes?", "a": "Our main programme is in-person, which we believe produces the best results for most learners. In exceptional circumstances (illness, travel) we can accommodate a limited number of online sessions. Please contact us to discuss your situation." }
         ]

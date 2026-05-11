@@ -218,7 +218,7 @@ export function Contact() {
             <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 h-52">
               <iframe
                 title="Kutaisi English Academy location"
-                src="https://maps.google.com/maps?q=Rustaveli+Avenue+Kutaisi+Georgia&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                src="https://maps.google.com/maps?q=Javakhishvili+street+24+Kutaisi+Georgia&t=&z=15&ie=UTF8&iwloc=&output=embed"
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}

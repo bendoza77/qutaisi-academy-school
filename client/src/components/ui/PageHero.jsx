@@ -1,8 +1,19 @@
 import { motion } from 'framer-motion'
 
-export function PageHero({ eyebrow, title, highlight, subtitle }) {
+export function PageHero({ eyebrow, title, highlight, subtitle, bgImage }) {
   return (
     <section className="relative pt-32 pb-20 bg-gradient-to-br from-primary-950 via-primary-900 to-primary-800 overflow-hidden">
+      {/* Background cover image */}
+      {bgImage && (
+        <img
+          src={bgImage}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover opacity-25"
+        />
+      )}
+      {/* Dark overlay to keep text readable */}
+      {bgImage && <div className="absolute inset-0 bg-primary-950/60" />}
+
       {/* Ambient blobs */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <motion.div

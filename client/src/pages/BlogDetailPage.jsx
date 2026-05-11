@@ -44,8 +44,9 @@ export function BlogDetailPage() {
       <div className="relative bg-gradient-to-br from-primary-900 via-primary-800 to-blue-700 py-20 lg:py-28 overflow-hidden">
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-400 via-transparent to-transparent" />
         {post.coverImage && (
-          <img src={post.coverImage} alt="" className="absolute inset-0 w-full h-full object-cover opacity-15" />
+          <img src={post.coverImage} alt="" className="absolute inset-0 w-full h-full object-cover opacity-35" />
         )}
+        {post.coverImage && <div className="absolute inset-0 bg-primary-950/55" />}
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
