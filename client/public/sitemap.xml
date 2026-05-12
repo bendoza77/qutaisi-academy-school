@@ -4,84 +4,84 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml"
 >
   <url>
-    <loc>https://qutaisi-academy-school.vercel.app/</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://qutaisi-academy-school.vercel.app/"/>
-    <xhtml:link rel="alternate" hreflang="ka" href="https://qutaisi-academy-school.vercel.app/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://qutaisi-academy-school.vercel.app/"/>
+    <loc>https://www.kutaisi-english-academy.ge/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.kutaisi-english-academy.ge/"/>
+    <xhtml:link rel="alternate" hreflang="ka" href="https://www.kutaisi-english-academy.ge/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.kutaisi-english-academy.ge/"/>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://qutaisi-academy-school.vercel.app/about</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://qutaisi-academy-school.vercel.app/about"/>
-    <xhtml:link rel="alternate" hreflang="ka" href="https://qutaisi-academy-school.vercel.app/about"/>
+    <loc>https://www.kutaisi-english-academy.ge/about</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.kutaisi-english-academy.ge/about"/>
+    <xhtml:link rel="alternate" hreflang="ka" href="https://www.kutaisi-english-academy.ge/about"/>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qutaisi-academy-school.vercel.app/courses</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://qutaisi-academy-school.vercel.app/courses"/>
-    <xhtml:link rel="alternate" hreflang="ka" href="https://qutaisi-academy-school.vercel.app/courses"/>
+    <loc>https://www.kutaisi-english-academy.ge/courses</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.kutaisi-english-academy.ge/courses"/>
+    <xhtml:link rel="alternate" hreflang="ka" href="https://www.kutaisi-english-academy.ge/courses"/>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://qutaisi-academy-school.vercel.app/courses/foundation</loc>
+    <loc>https://www.kutaisi-english-academy.ge/courses/foundation</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://qutaisi-academy-school.vercel.app/courses/progressive</loc>
+    <loc>https://www.kutaisi-english-academy.ge/courses/progressive</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://qutaisi-academy-school.vercel.app/courses/mastery</loc>
+    <loc>https://www.kutaisi-english-academy.ge/courses/mastery</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://qutaisi-academy-school.vercel.app/courses/business</loc>
+    <loc>https://www.kutaisi-english-academy.ge/courses/business</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://qutaisi-academy-school.vercel.app/why-us</loc>
+    <loc>https://www.kutaisi-english-academy.ge/why-us</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://qutaisi-academy-school.vercel.app/teachers</loc>
+    <loc>https://www.kutaisi-english-academy.ge/teachers</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://qutaisi-academy-school.vercel.app/testimonials</loc>
+    <loc>https://www.kutaisi-english-academy.ge/testimonials</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://qutaisi-academy-school.vercel.app/faq</loc>
+    <loc>https://www.kutaisi-english-academy.ge/faq</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://qutaisi-academy-school.vercel.app/contact</loc>
+    <loc>https://www.kutaisi-english-academy.ge/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qutaisi-academy-school.vercel.app/enroll</loc>
+    <loc>https://www.kutaisi-english-academy.ge/enroll</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://qutaisi-academy-school.vercel.app/privacy</loc>
+    <loc>https://www.kutaisi-english-academy.ge/privacy</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://qutaisi-academy-school.vercel.app/terms</loc>
+    <loc>https://www.kutaisi-english-academy.ge/terms</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
