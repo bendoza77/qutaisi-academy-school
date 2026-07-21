@@ -11,9 +11,16 @@ import logoSrc from "../../assets/Screenshot_2026-04-16_211914-removebg-preview.
 
 export function Navbar() {
   const { isDark, toggle } = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
+
+  /**
+   * Georgian labels are ~40% wider than their English counterparts, so the
+   * desktop row only fits from `xl` up. Below that we fall back to the drawer
+   * instead of letting nav items wrap onto a second line.
+   */
+  const isKa = i18n.language?.startsWith("ka");
 
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -52,12 +59,21 @@ export function Navbar() {
         )}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 lg:h-20">
+          <div
+            className={cn(
+              "flex items-center justify-between h-16 lg:h-20 gap-4"
+            )}
+          >
 
             {/* Logo */}
             <Link
               to="/"
-              className="flex items-center gap-2 group"
+              className={cn(
+                "flex items-center gap-2 group shrink-0",
+                // ka brand text is wide — pull the logo block left into the
+                // container padding so the nav gets breathing room
+                isKa && "xl:-ml-6 2xl:-ml-8"
+              )}
               aria-label="Kutaisi English Academy home"
             >
               <img
@@ -68,7 +84,7 @@ export function Navbar() {
               <div className="flex flex-col leading-none">
                 <span
                   className={cn(
-                    "font-bold text-sm tracking-tight transition-colors duration-300",
+                    "font-bold text-sm tracking-tight whitespace-nowrap transition-colors duration-300",
                     scrolled ? "text-primary-900 dark:text-white" : "text-white"
                   )}
                 >
@@ -76,7 +92,9 @@ export function Navbar() {
                 </span>
                 <span
                   className={cn(
-                    "font-medium text-xs tracking-widest uppercase transition-colors duration-300",
+                    "font-medium text-xs whitespace-nowrap transition-colors duration-300",
+                    // Georgian has no uppercase form and wide tracking overflows the row
+                    isKa ? "tracking-normal" : "tracking-widest uppercase",
                     scrolled ? "text-primary-600 dark:text-primary-400" : "text-blue-200"
                   )}
                 >
@@ -86,7 +104,14 @@ export function Navbar() {
             </Link>
 
             {/* Desktop nav */}
-            <nav className="hidden lg:flex items-center gap-1" role="navigation" aria-label="Main navigation">
+            <nav
+              className={cn(
+                "items-center",
+                isKa ? "hidden xl:flex gap-0 2xl:gap-1" : "hidden lg:flex gap-1"
+              )}
+              role="navigation"
+              aria-label="Main navigation"
+            >
               {NAV_LINK_KEYS.map((link) => {
                 const isActive = location.pathname === link.path ||
                   (link.path !== "/" && location.pathname.startsWith(link.path));
@@ -95,7 +120,8 @@ export function Navbar() {
                     key={link.path}
                     to={link.path}
                     className={cn(
-                      "px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200",
+                      "py-2 rounded-lg font-medium whitespace-nowrap transition-all duration-200",
+                      isKa ? "px-2 2xl:px-3.5 text-[13px]" : "px-4 text-sm",
                       scrolled
                         ? isActive
                           ? "text-primary-900 bg-primary-50 dark:text-primary-400 dark:bg-primary-900/20"
@@ -111,8 +137,8 @@ export function Navbar() {
               })}
             </nav>
 
-            {/* Right actions */}
-            <div className="flex items-center gap-2">
+            {/* Right actions — shrink-0 so the CTA is never clipped by a wide ka nav */}
+            <div className={cn("flex items-center shrink-0", isKa ? "gap-1.5" : "gap-2")}>
 
               {/* Language switcher — desktop */}
               <div className="hidden sm:block">
@@ -124,7 +150,7 @@ export function Navbar() {
                 onClick={toggle}
                 aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
                 className={cn(
-                  "w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-200",
+                  "w-9 h-9 shrink-0 rounded-lg flex items-center justify-center transition-all duration-200",
                   scrolled
                     ? "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
                     : "text-blue-100 hover:bg-white/10 hover:text-white"
@@ -137,7 +163,8 @@ export function Navbar() {
               <button
                 onClick={handleEnroll}
                 className={cn(
-                  "hidden sm:inline-flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold transition-all duration-200 cursor-pointer",
+                  "hidden sm:inline-flex items-center gap-2 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer",
+                  isKa ? "px-3.5 2xl:px-5" : "px-5",
                   scrolled
                     ? "bg-primary-900 text-white hover:bg-primary-800 shadow-md shadow-primary-900/20"
                     : "bg-white text-primary-900 hover:bg-blue-50 shadow-md"
@@ -152,7 +179,8 @@ export function Navbar() {
                 aria-label="Toggle mobile menu"
                 aria-expanded={mobileOpen}
                 className={cn(
-                  "lg:hidden w-9 h-9 rounded-lg flex items-center justify-center transition-colors duration-200 cursor-pointer",
+                  "w-9 h-9 rounded-lg flex items-center justify-center transition-colors duration-200 cursor-pointer",
+                  isKa ? "xl:hidden" : "lg:hidden",
                   scrolled
                     ? "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-white/10"
                     : "text-white hover:bg-white/10"
@@ -173,7 +201,11 @@ export function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="fixed top-16 left-0 right-0 z-40 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 shadow-lg lg:hidden"
+            className={cn(
+              // header is h-16 / lg:h-20 — the ka drawer stays open into the lg range
+              "fixed top-16 left-0 right-0 z-40 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 shadow-lg",
+              isKa ? "lg:top-20 xl:hidden" : "lg:hidden"
+            )}
           >
             <nav
               className="max-w-7xl mx-auto px-4 py-4 flex flex-col gap-1"
