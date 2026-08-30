@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { ArrowRight, BadgeCheck, ExternalLink, Globe2, QrCode, ShieldCheck } from "lucide-react";
+import { ArrowRight, BadgeCheck, Globe2, QrCode, ShieldCheck } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Container } from "../ui/Container";
 import { Eyebrow } from "../ui/Eyebrow";
@@ -13,7 +13,6 @@ import { fadeUp, fadeLeft, stagger, inView } from "../../utils/motion";
 import icefBadgeWebp from "../../assets/icef-accredited.webp";
 import icefBadgePng from "../../assets/icef-accredited.png";
 
-const ICEF_URL = "https://www.icef.com/";
 const POINT_ICONS = [ShieldCheck, Globe2, QrCode, BadgeCheck];
 const listVariants = stagger(0.08, 0.1);
 
@@ -22,9 +21,8 @@ const listVariants = stagger(0.08, 0.1);
  *
  * The academy's strongest external proof point, so it gets its own band rather
  * than a line in a list of features: the awarded seal at full size, what the
- * status actually means, and a route out to ICEF for anyone who wants to
- * verify it. The globe behind the copy is the same idea in another register —
- * a network the academy is now part of.
+ * status actually means. The globe behind the copy is the same idea in
+ * another register — a network the academy is now part of.
  */
 export function Icef() {
   const { t } = useTranslation();
@@ -106,19 +104,7 @@ export function Icef() {
             </motion.ul>
 
             <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
-              <Button
-                as="a"
-                href={ICEF_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                variant="accent"
-                size="lg"
-                className="w-full sm:w-auto"
-              >
-                {t("icef.cta")}
-                <ExternalLink className="h-4 w-4" aria-hidden="true" />
-              </Button>
-              <Button as={Link} to="/contact" variant="outline" size="lg" className="group w-full sm:w-auto">
+              <Button as={Link} to="/contact" variant="accent" size="lg" className="group w-full sm:w-auto">
                 {t("icef.secondaryCta")}
                 <ArrowRight
                   className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1"
