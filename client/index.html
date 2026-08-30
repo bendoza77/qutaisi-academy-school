@@ -22,8 +22,8 @@
          CORE
     ════════════════════════════════════════════ -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#1e3a5f" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#12233f" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#08111f" media="(prefers-color-scheme: dark)" />
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="/logo.png" />
@@ -49,7 +49,7 @@
     <meta property="og:site_name" content="Kutaisi English Academy" />
     <meta property="og:title" content="Kutaisi English Academy — Professional English Courses" />
     <meta property="og:description" content="Professional English courses for all levels in Kutaisi, Georgia. CELTA-certified teachers, small groups, flexible schedule. Free placement test." />
-    <meta property="og:image" content="https://www.kutaisi-english-academy.ge/Screenshot_2026-04-16_211914-removebg-preview.png" />
+    <meta property="og:image" content="https://www.kutaisi-english-academy.ge/og-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="Kutaisi English Academy — Learn English with Confidence" />
@@ -62,7 +62,7 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Kutaisi English Academy — Professional English Courses" />
     <meta name="twitter:description" content="Professional English courses for all levels in Kutaisi, Georgia. CELTA-certified teachers, small groups, flexible schedule." />
-    <meta name="twitter:image" content="https://www.kutaisi-english-academy.ge/Screenshot_2026-04-16_211914-removebg-preview.png" />
+    <meta name="twitter:image" content="https://www.kutaisi-english-academy.ge/og-image.png" />
 
     <!-- ═══════════════════════════════════════════
          GEO / LOCAL SEO
@@ -76,6 +76,10 @@
          FONT LOADING — only needed weights
     ════════════════════════════════════════════ -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="https://firestore.googleapis.com" />
+    <!-- Editorial photography (see src/constants/media.js). Warming the
+         connection here saves a DNS + TLS round trip on the first image. -->
+    <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Georgian:wght@400;500;600;700&display=swap"
@@ -100,13 +104,31 @@
             "@type": "ImageObject",
             "url": "https://www.kutaisi-english-academy.ge/logo.png"
           },
-          "image": "https://www.kutaisi-english-academy.ge/Screenshot_2026-04-16_211914-removebg-preview.png",
+          "image": "https://www.kutaisi-english-academy.ge/og-image.png",
+          "telephone": "+995511236890",
+          "email": "2022theenglishacademy@gmail.com",
+          "foundingDate": "2022",
           "address": {
             "@type": "PostalAddress",
+            "streetAddress": "Javakhishvili Street 24",
             "addressLocality": "Kutaisi",
             "addressRegion": "Imereti",
             "addressCountry": "GE"
           },
+          "openingHoursSpecification": [
+            {
+              "@type": "OpeningHoursSpecification",
+              "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+              "opens": "09:00",
+              "closes": "20:00"
+            },
+            {
+              "@type": "OpeningHoursSpecification",
+              "dayOfWeek": "Saturday",
+              "opens": "10:00",
+              "closes": "17:00"
+            }
+          ],
           "geo": {
             "@type": "GeoCoordinates",
             "latitude": 42.2679,
@@ -147,7 +169,7 @@
             ]
           },
           "inLanguage": ["en", "ka"],
-          "sameAs": []
+          "sameAs": ["https://www.facebook.com/profile.php?id=100078710533510"]
         },
         {
           "@type": "WebSite",

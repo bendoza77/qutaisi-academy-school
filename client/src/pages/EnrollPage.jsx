@@ -10,7 +10,9 @@ import { useTranslation } from 'react-i18next'
 import { PageLayout } from '../components/layout/PageLayout'
 import { PageHero } from '../components/ui/PageHero'
 import { cn } from '../utils/cn'
+import { PhotoStrip } from '../components/sections/PhotoStrip'
 import { useSiteData } from '../context/SiteDataContext'
+import { HERO_BACKDROPS } from '../constants/media'
 
 const iconMap = { BookOpen, TrendingUp, Award, Briefcase, Star, Zap, Target, Globe, GraduationCap, Layers }
 
@@ -188,6 +190,7 @@ export function EnrollPage() {
         title={hero.title}
         highlight={hero.highlight}
         subtitle={hero.subtitle}
+        bgImage={HERO_BACKDROPS.enroll}
       />
 
       <section className="py-16 lg:py-24 bg-white dark:bg-slate-900">
@@ -412,6 +415,10 @@ export function EnrollPage() {
           </AnimatePresence>
         </div>
       </section>
+
+      {/* What the form leads to, in pictures — the last thing a hesitant
+          visitor sees before they commit. */}
+      <PhotoStrip photos={['studyGroup', 'youngLearners', 'loveToLearn']} />
     </PageLayout>
   )
 }

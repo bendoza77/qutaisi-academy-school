@@ -4,9 +4,10 @@ import { Quote, Star, ArrowRight } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { PageLayout } from '../components/layout/PageLayout'
 import { PageHero } from '../components/ui/PageHero'
-import { TESTIMONIALS_META } from '../constants'
 import { CTA } from '../components/sections/CTA'
+import { PhotoStrip } from '../components/sections/PhotoStrip'
 import { useSiteData } from '../context/SiteDataContext'
+import { HERO_BACKDROPS } from '../constants/media'
 
 function StarRow({ rating }) {
   return (
@@ -69,6 +70,7 @@ export function TestimonialsPage() {
         title={hero.title}
         highlight={hero.highlight}
         subtitle={hero.subtitle}
+        bgImage={HERO_BACKDROPS.testimonials}
       />
 
       {/* Overall rating */}
@@ -115,6 +117,8 @@ export function TestimonialsPage() {
           </motion.div>
         </div>
       </section>
+
+      <PhotoStrip photos={['readingAtSunset', 'graduation', 'loveToLearn']} />
 
       <CTA />
     </PageLayout>

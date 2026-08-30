@@ -1,15 +1,31 @@
 import { motion } from "framer-motion";
 import { cn } from "../../utils/cn";
+import { Eyebrow } from "./Eyebrow";
+import { fadeUp } from "../../utils/motion";
+
+const alignment = {
+  left: "items-start text-left",
+  center: "items-center text-center mx-auto",
+  right: "items-end text-right",
+};
 
 /**
+ * Section header: eyebrow → heading → description, with one fixed rhythm.
+ *
+ * `highlight` is rendered in the accent colour. If the word already appears in
+ * `title` it is emphasised in place; otherwise it is appended — the CMS stores
+ * some titles as a stem plus a highlight word.
+ *
  * @param {{
  *   eyebrow?: string,
  *   title: string,
  *   highlight?: string,
  *   description?: string,
- *   align?: 'left'|'center'|'right',
+ *   align?: keyof typeof alignment,
  *   light?: boolean,
- *   className?: string
+ *   as?: 'h1'|'h2'|'h3',
+ *   className?: string,
+ *   id?: string
  * }} props
  */
 export function SectionTitle({
@@ -19,65 +35,55 @@ export function SectionTitle({
   description,
   align = "center",
   light = false,
+  as: Heading = "h2",
   className,
+  id,
 }) {
-  const alignment = {
-    left: "items-start text-left",
-    center: "items-center text-center",
-    right: "items-end text-right",
-  };
-
-  // Replace highlight word in title
   const renderTitle = () => {
     if (!highlight) return title;
-    const parts = title.split(highlight);
+    const idx = title.indexOf(highlight);
+    const mark = <span className={light ? "gradient-text-light" : "gradient-text"}>{highlight}</span>;
+    if (idx === -1) {
+      return (
+        <>
+          {title.trimEnd()} {mark}
+        </>
+      );
+    }
     return (
       <>
-        {parts[0]}
-        <span className="gradient-text">{highlight}</span>
-        {parts[1]}
+        {title.slice(0, idx)}
+        {mark}
+        {title.slice(idx + highlight.length)}
       </>
     );
   };
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      variants={fadeUp}
+      initial="hidden"
+      whileInView="visible"
       viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className={cn("flex flex-col gap-3 max-w-2xl", alignment[align], className)}
+      className={cn("flex max-w-2xl flex-col gap-4", alignment[align], className)}
     >
-      {eyebrow && (
-        <span
-          className={cn(
-            "text-xs font-semibold uppercase tracking-widest px-3 py-1 rounded-full w-fit",
-            light
-              ? "bg-white/15 text-blue-100"
-              : "bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300"
-          )}
-        >
-          {eyebrow}
-        </span>
-      )}
-      <h2
-        className={cn(
-          "text-3xl sm:text-4xl md:text-5xl font-bold leading-tight tracking-tight",
-          light ? "text-white" : "text-slate-900 dark:text-white"
-        )}
+      {eyebrow && <Eyebrow light={light}>{eyebrow}</Eyebrow>}
+
+      <Heading
+        id={id}
+        className={cn("text-h2", light ? "text-white" : "text-fg")}
       >
         {renderTitle()}
-      </h2>
+      </Heading>
+
       {description && (
-        <p
-          className={cn(
-            "text-base sm:text-lg leading-relaxed max-w-xl",
-            light ? "text-blue-100/80" : "text-slate-500 dark:text-slate-400"
-          )}
-        >
+        <p className={cn("max-w-xl text-body-lg", light ? "text-primary-100/85" : "text-fg-muted")}>
           {description}
         </p>
       )}
     </motion.div>
   );
 }
+
+/** Preferred name going forward; `SectionTitle` is kept for existing imports. */
+export const SectionHeader = SectionTitle;

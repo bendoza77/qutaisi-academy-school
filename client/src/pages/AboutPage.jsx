@@ -6,7 +6,9 @@ import { PageLayout } from '../components/layout/PageLayout'
 import { PageHero } from '../components/ui/PageHero'
 import { Stats } from '../components/sections/Stats'
 import { CTA } from '../components/sections/CTA'
+import { PhotoStrip } from '../components/sections/PhotoStrip'
 import { useSiteData } from '../context/SiteDataContext'
+import { HERO_BACKDROPS } from '../constants/media'
 
 const VALUE_ICONS = [Users, BookOpen, Award, Globe]
 
@@ -31,6 +33,7 @@ export function AboutPage() {
         title={hero.title}
         highlight={hero.highlight}
         subtitle={hero.subtitle}
+        bgImage={HERO_BACKDROPS.about}
       />
 
       {/* Story */}
@@ -132,6 +135,8 @@ export function AboutPage() {
           </div>
         </div>
       </section>
+
+      <PhotoStrip photos={['libraryStudy', 'discussion', 'graduation']} />
 
       {/* Mission quote */}
       <section className="py-20 bg-white dark:bg-slate-900">

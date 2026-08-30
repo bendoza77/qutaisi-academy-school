@@ -7,7 +7,9 @@ import {
   ChevronDown, ChevronUp, Copy, Check,
 } from 'lucide-react'
 import { PageLayout } from '../components/layout/PageLayout'
+import { StockImage } from '../components/ui/StockImage'
 import { useSiteData } from '../context/SiteDataContext'
+import { PHOTOS } from '../constants/media'
 
 // ─── CEFR Configuration ───────────────────────────────────────────────────────
 
@@ -200,6 +202,16 @@ function StartScreen({ data, onStart }) {
         Start the Test
         <ArrowRight className="w-5 h-5" />
       </button>
+
+      {/* Sets the scene for what the test leads to without competing with the
+          call to action above it. */}
+      <StockImage
+        id={PHOTOS.writingByHand}
+        alt=""
+        ratio="21/9"
+        sizes="(min-width: 768px) 48rem, 92vw"
+        className="mt-14"
+      />
     </motion.div>
   )
 }

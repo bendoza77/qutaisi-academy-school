@@ -6,7 +6,9 @@ import { useTranslation } from 'react-i18next'
 import { PageLayout } from '../components/layout/PageLayout'
 import { PageHero } from '../components/ui/PageHero'
 import { CTA } from '../components/sections/CTA'
+import { PhotoStrip } from '../components/sections/PhotoStrip'
 import { useSiteData } from '../context/SiteDataContext'
+import { HERO_BACKDROPS } from '../constants/media'
 
 const CATEGORY_COLORS = {
   general:    'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400',
@@ -75,6 +77,7 @@ export function FAQPage() {
         title={hero.title}
         highlight={hero.highlight}
         subtitle={hero.subtitle}
+        bgImage={HERO_BACKDROPS.faq}
       />
 
       <section className="py-20 lg:py-28 bg-white dark:bg-slate-900">
@@ -137,6 +140,8 @@ export function FAQPage() {
           </motion.div>
         </div>
       </section>
+
+      <PhotoStrip photos={['openBooks', 'writingByHand', 'studyGroup']} />
 
       <CTA />
     </PageLayout>

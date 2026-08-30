@@ -1,13 +1,14 @@
 import { lazy, Suspense, useEffect } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { MotionConfig } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { ThemeProvider } from "./context/ThemeContext";
 import { SiteDataProvider } from "./context/SiteDataContext";
 import { Navbar } from "./components/layout/Navbar";
 import { Footer } from "./components/layout/Footer";
 import { Home } from "./pages/Home";
-import { WhatsAppButton } from "./components/ui/WhatsAppButton";
-import { AIChatWidget } from "./components/ui/AIChatWidget";
+import { Seo } from "./components/Seo";
+import { FloatingHelpers } from "./components/ui/FloatingHelpers";
 
 // Lazy-load every route except the home page shell
 const AdminPage        = lazy(() => import("./pages/admin/AdminPage").then(m => ({ default: m.AdminPage })));
@@ -29,25 +30,42 @@ const NotFoundPage     = lazy(() => import("./pages/NotFoundPage").then(m => ({ 
 
 function PageLoader() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white dark:bg-slate-900">
-      <div className="w-8 h-8 border-2 border-primary-200 border-t-primary-600 rounded-full animate-spin" />
+    <div className="flex min-h-screen items-center justify-center bg-canvas" role="status" aria-live="polite">
+      <span className="sr-only">Loading</span>
+      <span className="h-8 w-8 animate-spin rounded-full border-2 border-primary-200 border-t-primary-700 dark:border-white/20 dark:border-t-accent-300" />
     </div>
   );
 }
 
-function HomeShell() {
-  const { i18n } = useTranslation();
-  const lang = i18n.language.startsWith("ka") ? "ka" : "en";
+/** New route, top of the page — matches what a full page load would do. */
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }, [pathname]);
+  return null;
+}
 
+/** Keeps <html lang> in step with the active locale. */
+function useDocumentLanguage() {
+  const { i18n } = useTranslation();
+  const lang = i18n.language?.startsWith("ka") ? "ka" : "en";
   useEffect(() => {
     document.documentElement.lang = lang;
   }, [lang]);
+  return lang;
+}
+
+function HomeShell() {
+  const lang = useDocumentLanguage();
+  const { t } = useTranslation();
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-900 transition-colors duration-300">
+    <div className="min-h-screen bg-canvas">
+      <Seo description={t("footer.tagline")} />
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-white focus:text-primary-900 focus:rounded-lg focus:shadow-lg focus:font-medium text-sm"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-control focus:bg-white focus:px-4 focus:py-2 focus:text-btn focus:font-semibold focus:text-primary-900 focus:shadow-lg"
       >
         {lang === "ka" ? "მთავარ კონტენტზე გადასვლა" : "Skip to main content"}
       </a>
@@ -56,69 +74,42 @@ function HomeShell() {
         <Home />
       </main>
       <Footer />
-      <WhatsAppButton />
-      <AIChatWidget />
+      <FloatingHelpers />
     </div>
   );
 }
+
+const lazyRoute = (element) => <Suspense fallback={<PageLoader />}>{element}</Suspense>;
 
 function App() {
   return (
     <SiteDataProvider>
       <ThemeProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<HomeShell />} />
-            <Route path="/academy-panel" element={
-              <Suspense fallback={<PageLoader />}><AdminPage /></Suspense>
-            } />
-            <Route path="/about" element={
-              <Suspense fallback={<PageLoader />}><AboutPage /></Suspense>
-            } />
-            <Route path="/courses" element={
-              <Suspense fallback={<PageLoader />}><CoursesPage /></Suspense>
-            } />
-            <Route path="/courses/:courseSlug" element={
-              <Suspense fallback={<PageLoader />}><CourseDetailPage /></Suspense>
-            } />
-            <Route path="/why-us" element={
-              <Suspense fallback={<PageLoader />}><WhyUsPage /></Suspense>
-            } />
-            <Route path="/testimonials" element={
-              <Suspense fallback={<PageLoader />}><TestimonialsPage /></Suspense>
-            } />
-            <Route path="/contact" element={
-              <Suspense fallback={<PageLoader />}><ContactPage /></Suspense>
-            } />
-            <Route path="/teachers" element={
-              <Suspense fallback={<PageLoader />}><TeachersPage /></Suspense>
-            } />
-            <Route path="/faq" element={
-              <Suspense fallback={<PageLoader />}><FAQPage /></Suspense>
-            } />
-            <Route path="/enroll" element={
-              <Suspense fallback={<PageLoader />}><EnrollPage /></Suspense>
-            } />
-            <Route path="/blog" element={
-              <Suspense fallback={<PageLoader />}><BlogPage /></Suspense>
-            } />
-            <Route path="/english-test" element={
-              <Suspense fallback={<PageLoader />}><EnglishTestPage /></Suspense>
-            } />
-            <Route path="/blog/:slug" element={
-              <Suspense fallback={<PageLoader />}><BlogDetailPage /></Suspense>
-            } />
-            <Route path="/privacy" element={
-              <Suspense fallback={<PageLoader />}><PrivacyPage /></Suspense>
-            } />
-            <Route path="/terms" element={
-              <Suspense fallback={<PageLoader />}><TermsPage /></Suspense>
-            } />
-            <Route path="*" element={
-              <Suspense fallback={<PageLoader />}><NotFoundPage /></Suspense>
-            } />
-          </Routes>
-        </BrowserRouter>
+        {/* Honours prefers-reduced-motion for every Framer Motion animation. */}
+        <MotionConfig reducedMotion="user">
+          <BrowserRouter>
+            <ScrollToTop />
+            <Routes>
+              <Route path="/"                  element={<HomeShell />} />
+              <Route path="/academy-panel"     element={lazyRoute(<AdminPage />)} />
+              <Route path="/about"             element={lazyRoute(<AboutPage />)} />
+              <Route path="/courses"           element={lazyRoute(<CoursesPage />)} />
+              <Route path="/courses/:courseSlug" element={lazyRoute(<CourseDetailPage />)} />
+              <Route path="/why-us"            element={lazyRoute(<WhyUsPage />)} />
+              <Route path="/testimonials"      element={lazyRoute(<TestimonialsPage />)} />
+              <Route path="/contact"           element={lazyRoute(<ContactPage />)} />
+              <Route path="/teachers"          element={lazyRoute(<TeachersPage />)} />
+              <Route path="/faq"               element={lazyRoute(<FAQPage />)} />
+              <Route path="/enroll"            element={lazyRoute(<EnrollPage />)} />
+              <Route path="/blog"              element={lazyRoute(<BlogPage />)} />
+              <Route path="/blog/:slug"        element={lazyRoute(<BlogDetailPage />)} />
+              <Route path="/english-test"      element={lazyRoute(<EnglishTestPage />)} />
+              <Route path="/privacy"           element={lazyRoute(<PrivacyPage />)} />
+              <Route path="/terms"             element={lazyRoute(<TermsPage />)} />
+              <Route path="*"                  element={lazyRoute(<NotFoundPage />)} />
+            </Routes>
+          </BrowserRouter>
+        </MotionConfig>
       </ThemeProvider>
     </SiteDataProvider>
   );

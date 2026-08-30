@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { PageLayout } from '../components/layout/PageLayout'
+import { HERO_BACKDROPS } from '../constants/media'
 
 export function PrivacyPage() {
   const { t } = useTranslation()
@@ -8,7 +9,11 @@ export function PrivacyPage() {
 
   return (
     <PageLayout pageTitle="Privacy Policy">
-      <section className="relative pt-32 pb-12 bg-gradient-to-br from-primary-950 via-primary-900 to-primary-800">
+      <section className="relative isolate overflow-hidden pt-32 pb-12 bg-gradient-to-br from-primary-950 via-primary-900 to-primary-800">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
+          <img src={HERO_BACKDROPS.faq} alt="" fetchPriority="low" decoding="async" className="h-full w-full object-cover opacity-15" />
+          <div className="absolute inset-0 bg-primary-950/70" />
+        </div>
         <div className="max-w-3xl mx-auto px-4 sm:px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

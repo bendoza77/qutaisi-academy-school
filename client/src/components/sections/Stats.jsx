@@ -3,69 +3,61 @@ import { motion, useInView } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { useCounter } from "../../hooks/useCounter";
 import { useSiteData } from "../../context/SiteDataContext";
+import { Container } from "../ui/Container";
+import { EASE } from "../../utils/motion";
 
 const STAT_KEYS = ["students", "teachers", "years", "success"];
 
-function StatItem({ stat, isActive, index, total, isKa }) {
+function StatItem({ stat, isActive, index, isKa }) {
   const { t } = useTranslation();
-  const count = useCounter(stat.value, 2200, isActive);
-  const label = isKa
-    ? (stat.labelKa || t(`stats.${STAT_KEYS[index] || "students"}`))
-    : stat.label;
+  const count = useCounter(stat.value, 1800, isActive);
+  const label = isKa ? stat.labelKa || t(`stats.${STAT_KEYS[index] || "students"}`) : stat.label;
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.6, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
-      className="text-center px-6 py-8 relative group"
+      transition={{ duration: 0.5, delay: index * 0.08, ease: EASE }}
+      className="flex flex-col items-center px-2 text-center sm:items-start sm:text-left"
     >
-      {index < total - 1 && (
-        <div className="absolute right-0 top-1/2 -translate-y-1/2 w-px h-12 bg-white/10" />
-      )}
-      <div className="flex items-end justify-center gap-0.5 mb-1">
-        <span className="text-4xl lg:text-5xl font-bold text-white tabular-nums">
-          {isActive ? count.toLocaleString() : 0}
-        </span>
-        <span className="text-2xl lg:text-3xl font-bold text-accent-400 mb-0.5">
-          {stat.suffix}
-        </span>
-      </div>
-      <p className="text-blue-200/70 text-sm font-medium">{label}</p>
-      <div className="absolute inset-0 rounded-xl bg-white/0 group-hover:bg-white/5 transition-colors duration-300" />
+      <p className="flex items-baseline gap-0.5 text-h1 tabular text-fg">
+        <span>{(isActive ? count : 0).toLocaleString()}</span>
+        <span className="text-accent-600 dark:text-accent-300">{stat.suffix}</span>
+      </p>
+      <p className="mt-1 text-body-sm text-fg-muted">{label}</p>
     </motion.div>
   );
 }
 
+/**
+ * Credibility band. Values come straight from the CMS — nothing here is
+ * hard-coded, so the numbers can never contradict the admin's figures.
+ */
 export function Stats() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const isInView = useInView(ref, { once: true, margin: "-80px" });
   const { i18n } = useTranslation();
   const { siteData } = useSiteData();
-  const stats = siteData.stats;
+  const stats = siteData.stats || [];
   const isKa = i18n.language === "ka";
 
+  if (stats.length === 0) return null;
+
   return (
-    <section
-      ref={ref}
-      aria-label="Academy statistics"
-      className="relative bg-gradient-to-r from-primary-950 via-primary-900 to-primary-950 border-y border-white/10"
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 lg:grid-cols-4">
+    <section ref={ref} aria-label="Academy in numbers" className="border-b border-line bg-canvas">
+      <Container>
+        <div className="grid grid-cols-2 gap-y-10 py-12 sm:gap-x-8 lg:grid-cols-4 lg:py-14">
           {stats.map((stat, i) => (
-            <StatItem
-              key={stat.id}
-              stat={stat}
-              isActive={isInView}
-              index={i}
-              total={stats.length}
-              isKa={isKa}
-            />
+            <div
+              key={stat.id ?? i}
+              className={i > 0 ? "sm:border-l sm:border-line sm:pl-8 lg:pl-10" : ""}
+            >
+              <StatItem stat={stat} isActive={isInView} index={i} isKa={isKa} />
+            </div>
           ))}
         </div>
-      </div>
+      </Container>
     </section>
   );
 }

@@ -6,7 +6,7 @@ const CATEGORIES = ["Tips", "Grammar", "Business", "Vocabulary", "News"];
 
 const CATEGORY_COLORS = {
   Tips:       "bg-emerald-100 text-emerald-700",
-  Grammar:    "bg-blue-100 text-blue-700",
+  Grammar:    "bg-primary-100 text-primary-800",
   Business:   "bg-amber-100 text-amber-700",
   Vocabulary: "bg-purple-100 text-purple-700",
   News:       "bg-rose-100 text-rose-700",
@@ -27,10 +27,10 @@ function Field({ label, value, onChange, type = "text", rows, placeholder, hint 
       <label className="text-xs font-semibold text-slate-600 uppercase tracking-wide">{label}</label>
       {rows ? (
         <textarea rows={rows} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
-          className="w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 resize-y" />
+          className="w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm text-slate-900 focus:outline-none focus:ring-4 focus:ring-accent-600/12 focus:border-accent-600 resize-y" />
       ) : (
         <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
-          className="w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500" />
+          className="w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm text-slate-900 focus:outline-none focus:ring-4 focus:ring-accent-600/12 focus:border-accent-600" />
       )}
       {hint && <p className="text-xs text-slate-400">{hint}</p>}
     </div>
@@ -48,7 +48,7 @@ function PostModal({ post, onSave, onClose }) {
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-blue-700 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-primary-900 rounded-lg flex items-center justify-center">
               <FileText className="w-4 h-4 text-white" />
             </div>
             <h2 className="font-bold text-slate-900 text-base">{isEdit ? "Edit Post" : "New Post"}</h2>
@@ -62,11 +62,11 @@ function PostModal({ post, onSave, onClose }) {
         <div className="overflow-y-auto flex-1 px-6 py-5 flex flex-col gap-4">
           <Field label="Title *" value={form.title} onChange={v => set("title", v)} placeholder="Enter post title..." />
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Category</label>
               <select value={form.category} onChange={e => set("category", e.target.value)}
-                className="w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 cursor-pointer">
+                className="w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm text-slate-900 focus:outline-none focus:ring-4 focus:ring-accent-600/12 focus:border-accent-600 cursor-pointer">
                 {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
@@ -83,7 +83,7 @@ function PostModal({ post, onSave, onClose }) {
           <Field label="Cover Image URL" value={form.coverImage} onChange={v => set("coverImage", v)}
             placeholder="https://..." hint="Optional — leave empty for the default gradient." />
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Field label="Author Name" value={form.author} onChange={v => set("author", v)} placeholder="John Smith" />
             <Field label="Author Role" value={form.authorRole} onChange={v => set("authorRole", v)} placeholder="English Instructor" />
           </div>
@@ -95,7 +95,7 @@ function PostModal({ post, onSave, onClose }) {
               <p className="text-xs text-slate-400 mt-0.5">Visible to visitors on the blog page</p>
             </div>
             <button onClick={() => set("published", !form.published)}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${form.published ? "bg-blue-600" : "bg-slate-300"}`}>
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${form.published ? "bg-primary-900" : "bg-slate-300"}`}>
               <span className={`inline-block h-4 w-4 rounded-full bg-white shadow transition-transform ${form.published ? "translate-x-6" : "translate-x-1"}`} />
             </button>
           </div>
@@ -104,7 +104,7 @@ function PostModal({ post, onSave, onClose }) {
         {/* Footer */}
         <div className="flex items-center gap-3 px-6 py-4 border-t border-slate-100">
           <button onClick={() => onSave(form)} disabled={!form.title.trim()}
-            className="flex items-center gap-2 px-5 py-2.5 bg-blue-700 hover:bg-blue-800 disabled:bg-blue-400 text-white rounded-xl text-sm font-semibold transition-colors">
+            className="flex items-center gap-2 px-5 py-2.5 bg-primary-900 hover:bg-primary-800 disabled:bg-accent-400 text-white rounded-[0.625rem] text-sm font-semibold transition-colors">
             <Save className="w-4 h-4" />
             {isEdit ? "Save Changes" : "Publish Post"}
           </button>
@@ -158,7 +158,7 @@ export function AdminBlogSection() {
           <p className="text-sm text-slate-500 mt-0.5">{posts.length} total · {posts.filter(p => p.published).length} published</p>
         </div>
         <button onClick={() => setModal({})}
-          className="flex items-center gap-2 px-4 py-2.5 bg-blue-700 hover:bg-blue-800 text-white rounded-xl text-sm font-semibold transition-colors shadow-sm">
+          className="flex items-center gap-2 px-4 py-2.5 bg-primary-900 hover:bg-primary-800 text-white rounded-[0.625rem] text-sm font-semibold transition-colors shadow-sm">
           <Plus className="w-4 h-4" /> New Post
         </button>
       </div>
@@ -170,7 +170,7 @@ export function AdminBlogSection() {
           <p className="font-semibold text-slate-900 mb-1">No blog posts yet</p>
           <p className="text-sm text-slate-400 mb-4">Click "New Post" to write your first article.</p>
           <button onClick={() => setModal({})}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-700 text-white rounded-xl text-sm font-semibold hover:bg-blue-800 transition-colors">
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary-900 text-white rounded-[0.625rem] text-sm font-semibold hover:bg-primary-800 transition-colors">
             <Plus className="w-4 h-4" /> Create first post
           </button>
         </div>
@@ -179,7 +179,7 @@ export function AdminBlogSection() {
           {posts.map(post => (
             <div key={post.id} className="bg-white rounded-2xl border border-slate-200 p-5 flex items-start gap-4 hover:border-slate-300 transition-colors">
               {/* Thumbnail */}
-              <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-primary-900 to-blue-700 flex items-center justify-center shrink-0 overflow-hidden">
+              <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-primary-900 to-primary-800 flex items-center justify-center shrink-0 overflow-hidden">
                 {post.coverImage
                   ? <img src={post.coverImage} alt="" className="w-full h-full object-cover" />
                   : <FileText className="w-6 h-6 text-white/40" />}
@@ -212,7 +212,7 @@ export function AdminBlogSection() {
                   {post.published ? <Globe className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
                   {post.published ? "Live" : "Draft"}
                 </button>
-                <button onClick={() => setModal(post)} className="p-2 text-slate-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors" title="Edit">
+                <button onClick={() => setModal(post)} className="p-2 text-slate-400 hover:text-accent-700 rounded-lg hover:bg-primary-50 transition-colors" title="Edit">
                   <Edit3 className="w-4 h-4" />
                 </button>
                 <a href={`/blog/${post.slug}`} target="_blank" rel="noreferrer"

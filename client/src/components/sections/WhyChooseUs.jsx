@@ -1,119 +1,98 @@
 import { motion } from "framer-motion";
-import {
-  GraduationCap, Users, Lightbulb, Calendar, Globe, Shield,
-} from "lucide-react";
+import { Link } from "react-router-dom";
+import { GraduationCap, Users, Lightbulb, Calendar, Globe, Shield, ArrowRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { SectionTitle } from "../ui/SectionTitle";
+import { Section } from "../ui/Section";
 import { useSiteData } from "../../context/SiteDataContext";
-import { BENEFIT_ICONS, BENEFIT_COLORS } from "../../constants";
+import { BENEFIT_ICONS } from "../../constants";
+import { stagger, fadeUp, inView } from "../../utils/motion";
 
 const iconMap = { GraduationCap, Users, Lightbulb, Calendar, Globe, Shield };
+const gridVariants = stagger(0.07);
 
-const containerVariants = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.08 } },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] } },
-};
-
-function BenefitCard({ iconKey, colors, title, description }) {
+function BenefitCard({ iconKey, title, description }) {
   const Icon = iconMap[iconKey] || GraduationCap;
 
   return (
-    <motion.div
-      variants={itemVariants}
-      whileHover={{ y: -4, transition: { duration: 0.2 } }}
-      className="group relative bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700 hover:border-primary-200 dark:hover:border-primary-700 shadow-sm hover:shadow-md transition-all duration-300"
+    <motion.li
+      variants={fadeUp}
+      className="group relative flex flex-col rounded-card border border-line bg-surface p-6 transition-[border-color,box-shadow,transform] duration-300 ease-[var(--ease-out-soft)] hover:-translate-y-1 hover:border-primary-200 hover:shadow-lg dark:hover:border-primary-600"
     >
-      <div className={`w-11 h-11 rounded-xl flex items-center justify-center mb-4 ${colors.bg} transition-transform duration-300 group-hover:scale-110`}>
-        <Icon className={`w-5 h-5 ${colors.icon}`} strokeWidth={2} />
-      </div>
-      <h3 className="font-bold text-slate-900 dark:text-white mb-2 text-base">{title}</h3>
-      <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">{description}</p>
-      <div className="absolute bottom-0 left-6 right-6 h-0.5 bg-primary-600 dark:bg-primary-500 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded-full" />
-    </motion.div>
+      <span className="mb-5 flex h-12 w-12 items-center justify-center rounded-control bg-primary-50 text-primary-700 transition-colors duration-300 group-hover:bg-accent-600 group-hover:text-white dark:bg-white/8 dark:text-accent-300 dark:group-hover:bg-accent-600 dark:group-hover:text-white">
+        <Icon className="h-5 w-5" strokeWidth={2} aria-hidden="true" />
+      </span>
+      <h3 className="text-h4 text-fg">{title}</h3>
+      <p className="mt-2 text-body-sm leading-relaxed text-fg-muted">{description}</p>
+    </motion.li>
   );
 }
 
 export function WhyChooseUs() {
   const { t, i18n } = useTranslation();
   const { siteData } = useSiteData();
-  const benefitItems = siteData.benefits;
+  const benefits = siteData.benefits || [];
   const isKa = i18n.language === "ka";
 
   return (
-    <section
-      id="why-us"
-      className="relative py-20 lg:py-32 bg-white dark:bg-slate-900 overflow-hidden"
-      aria-label="Why choose us"
-    >
-      <div className="absolute top-1/2 left-0 -translate-y-1/2 -translate-x-1/2 w-96 h-96 bg-primary-50 dark:bg-primary-950/20 rounded-full blur-3xl pointer-events-none" />
+    <Section id="why-us" tone="canvas" aria-label={t("benefits.eyebrow")}>
+      <SectionTitle
+        eyebrow={t("benefits.eyebrow")}
+        title={t("benefits.title")}
+        highlight={t("benefits.titleHighlight")}
+        description={t("benefits.description")}
+        align="center"
+        className="mb-12 lg:mb-14"
+      />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col items-center mb-14">
-          <SectionTitle
-            eyebrow={t("benefits.eyebrow")}
-            title={t("benefits.title")}
-            highlight={t("benefits.titleHighlight")}
-            description={t("benefits.description")}
-            align="center"
-            className="mx-auto"
-          />
+      <motion.ul
+        variants={gridVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={inView}
+        className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6"
+      >
+        {benefits.map((item, i) => {
+          const ka = item.ka || {};
+          return (
+            <BenefitCard
+              key={i}
+              iconKey={BENEFIT_ICONS[i % BENEFIT_ICONS.length]}
+              title={isKa ? ka.title || t(`benefits.items.${i}.title`, { defaultValue: item.title }) : item.title}
+              description={
+                isKa
+                  ? ka.description ||
+                    t(`benefits.items.${i}.description`, { defaultValue: item.description })
+                  : item.description
+              }
+            />
+          );
+        })}
+      </motion.ul>
+
+      {/* Conversion strip */}
+      <motion.div
+        variants={fadeUp}
+        initial="hidden"
+        whileInView="visible"
+        viewport={inView}
+        className="mt-12 flex flex-col items-start justify-between gap-6 rounded-card border border-line bg-canvas-subtle p-6 sm:p-8 lg:mt-14 lg:flex-row lg:items-center"
+      >
+        <div className="max-w-xl">
+          <h3 className="text-h3 text-fg">{t("benefits.ctaTitle")}</h3>
+          <p className="mt-2 text-body-sm text-fg-muted">{t("benefits.ctaDesc")}</p>
         </div>
-
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-80px" }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6"
+        <Link
+          to="/english-test"
+          className="group inline-flex h-12 shrink-0 items-center gap-2 rounded-control bg-primary-900 px-6 text-btn font-semibold text-white transition-colors duration-200 hover:bg-primary-800 dark:bg-white dark:text-primary-950 dark:hover:bg-primary-100"
         >
-          {Array.isArray(benefitItems) &&
-            benefitItems.map((item, i) => {
-              const kaData = item.ka || {};
-              const title = isKa
-                ? (kaData.title || t(`benefits.items.${i}.title`))
-                : item.title;
-              const description = isKa
-                ? (kaData.description || t(`benefits.items.${i}.description`))
-                : item.description;
-              return (
-                <BenefitCard
-                  key={i}
-                  iconKey={BENEFIT_ICONS[i]}
-                  colors={BENEFIT_COLORS[i]}
-                  title={title}
-                  description={description}
-                />
-              );
-            })}
-        </motion.div>
-
-        {/* CTA strip */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.5, duration: 0.6 }}
-          className="mt-14 bg-gradient-to-r from-primary-50 to-blue-50 dark:from-primary-950/40 dark:to-slate-800/40 rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between gap-6 border border-primary-100 dark:border-primary-900/40"
-        >
-          <div>
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-1">
-              {t("benefits.ctaTitle")}
-            </h3>
-            <p className="text-slate-500 dark:text-slate-400 text-sm">{t("benefits.ctaDesc")}</p>
-          </div>
-          <button
-            onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
-            className="shrink-0 inline-flex items-center gap-2 px-7 py-3.5 bg-primary-900 text-white rounded-xl text-sm font-semibold hover:bg-primary-800 transition-colors duration-200 shadow-md shadow-primary-900/20 cursor-pointer whitespace-nowrap"
-          >
-            {t("benefits.ctaBtn")}
-          </button>
-        </motion.div>
-      </div>
-    </section>
+          {t("benefits.ctaBtn")}
+          <ArrowRight
+            className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1"
+            aria-hidden="true"
+          />
+        </Link>
+      </motion.div>
+    </Section>
   );
 }

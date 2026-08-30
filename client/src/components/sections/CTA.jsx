@@ -1,109 +1,89 @@
-import { lazy, Suspense } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { Link } from "react-router-dom";
+import { ArrowRight, Check } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { Container } from "../ui/Container";
+import { Button } from "../ui/Button";
+import { Lazy3D } from "../3d/Lazy3D";
 import { useSiteData } from "../../context/SiteDataContext";
-
-const CTABackground3D = lazy(() =>
-  import("../3d/CTABackground3D").then(m => ({ default: m.CTABackground3D }))
-);
+import { fadeUp, inView } from "../../utils/motion";
 
 export function CTA() {
   const { t, i18n } = useTranslation();
   const { siteData } = useSiteData();
-  const cta = siteData.cta;
+  const cta = siteData.cta || {};
   const isKa = i18n.language === "ka";
-  const kaData = cta.ka || {};
+  const ka = cta.ka || {};
 
-  const badge         = isKa ? (kaData.badge         || t("cta.badge"))         : cta.badge;
-  const title         = isKa ? (kaData.title         || t("cta.title"))         : cta.title;
-  const titleHighlight= isKa ? (kaData.titleHighlight|| t("cta.titleHighlight"))  : cta.titleHighlight;
-  const description   = isKa ? (kaData.description   || t("cta.description"))   : cta.description;
-  const benefits      = isKa
-    ? (kaData.benefits || t("cta.benefits", { returnObjects: true }))
+  const pick = (field, key) => (isKa ? ka[field] || t(key, { defaultValue: cta[field] }) : cta[field]);
+
+  const badge = pick("badge", "cta.badge");
+  const title = pick("title", "cta.title");
+  const titleHighlight = pick("titleHighlight", "cta.titleHighlight");
+  const description = pick("description", "cta.description");
+  const rawBenefits = isKa
+    ? ka.benefits || t("cta.benefits", { returnObjects: true, defaultValue: cta.benefits })
     : cta.benefits;
-
-  const scrollTo = (id) =>
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  const benefits = Array.isArray(rawBenefits) ? rawBenefits : [];
 
   return (
-    <section
-      aria-label="Call to action"
-      className="relative py-20 lg:py-28 overflow-hidden"
-    >
-      <div className="absolute inset-0 bg-gradient-to-br from-primary-950 via-primary-900 to-primary-800" />
-
-      {/* 3D sphere + rings */}
-      <Suspense fallback={null}><CTABackground3D /></Suspense>
-
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-0 left-1/4 w-96 h-96 rounded-full bg-blue-600/20 blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 rounded-full bg-primary-700/30 blur-3xl" />
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] border border-white/5 rounded-full"
-        />
-        <motion.div
-          animate={{ rotate: -360 }}
-          transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] border border-white/5 rounded-full"
-        />
+    <section aria-label={badge} className="relative isolate overflow-hidden bg-primary-950 py-20 lg:py-28">
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
+        <div className="absolute inset-0 bg-[radial-gradient(90%_120%_at_50%_0%,#1b3153_0%,#0d1c33_55%,#0a1526_100%)]" />
+        <div className="bg-grid absolute inset-0 opacity-60" />
+        <Lazy3D variant="shapes" cameraZ={7} opacity={0.7} />
+        <div className="absolute left-1/2 top-0 h-96 w-[42rem] -translate-x-1/2 rounded-full bg-accent-500/12 blur-[130px]" />
       </div>
 
-      <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <Container size="narrow">
         <motion.div
-          initial={{ opacity: 0, y: 32 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="flex flex-col items-center gap-6"
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={inView}
+          className="flex flex-col items-center text-center"
         >
-          <span className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/15 text-blue-100 text-xs font-semibold uppercase tracking-widest px-4 py-2 rounded-full">
-            <Sparkles className="w-3.5 h-3.5 text-accent-400" />
-            {badge}
-          </span>
+          {badge && (
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/8 px-3.5 py-1.5 text-caption font-semibold text-primary-100 backdrop-blur-sm">
+              <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-accent-300" />
+              {badge}
+            </span>
+          )}
 
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-[1.1] tracking-tight">
+          <h2 className="mt-6 max-w-3xl text-h1 text-white">
             {title}{" "}
-            <span className="gradient-text-light">{titleHighlight}</span>
+            <span className="text-accent-300">{titleHighlight}</span>
           </h2>
 
-          <p className="text-blue-100/75 text-lg leading-relaxed max-w-2xl">
-            {description}
-          </p>
+          {description && (
+            <p className="mt-5 max-w-2xl text-body-lg text-primary-100/80">{description}</p>
+          )}
 
-          <div className="flex flex-wrap items-center justify-center gap-6 text-blue-200/70 text-sm">
-            {Array.isArray(benefits) &&
-              benefits.map((item, i) => (
-                <span key={i} className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-accent-400" />
+          {benefits.length > 0 && (
+            <ul className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
+              {benefits.map((item, i) => (
+                <li key={i} className="flex items-center gap-2 text-body-sm text-primary-100/75">
+                  <Check className="h-4 w-4 shrink-0 text-accent-300" aria-hidden="true" />
                   {item}
-                </span>
+                </li>
               ))}
-          </div>
+            </ul>
+          )}
 
-          <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
-            <motion.button
-              onClick={() => scrollTo("contact")}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.98 }}
-              className="inline-flex items-center gap-2 px-8 py-4 bg-accent-500 hover:bg-accent-600 text-white rounded-xl font-bold text-base shadow-xl shadow-accent-500/30 hover:shadow-accent-600/40 transition-all duration-200 cursor-pointer group"
-            >
+          <div className="mt-10 flex w-full flex-col items-center gap-3 sm:w-auto sm:flex-row">
+            <Button as={Link} to="/enroll" variant="accent" size="lg" className="group w-full sm:w-auto">
               {t("cta.enrollBtn")}
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-200" />
-            </motion.button>
-            <motion.button
-              onClick={() => scrollTo("courses")}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="inline-flex items-center gap-2 px-8 py-4 border border-white/25 hover:bg-white/10 text-white rounded-xl font-semibold text-base backdrop-blur-sm transition-all duration-200 cursor-pointer"
-            >
+              <ArrowRight
+                className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1"
+                aria-hidden="true"
+              />
+            </Button>
+            <Button as={Link} to="/courses" variant="outline" size="lg" className="w-full sm:w-auto">
               {t("cta.browseBtn")}
-            </motion.button>
+            </Button>
           </div>
         </motion.div>
-      </div>
+      </Container>
     </section>
   );
 }

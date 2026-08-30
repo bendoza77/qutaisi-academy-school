@@ -6,6 +6,7 @@ import { PageLayout } from "../components/layout/PageLayout";
 import { PageHero } from "../components/ui/PageHero";
 import { CTA } from "../components/sections/CTA";
 import { useSiteData } from "../context/SiteDataContext";
+import { HERO_BACKDROPS } from "../constants/media";
 
 const POSTS_PER_PAGE = 4;
 
@@ -144,7 +145,7 @@ export function BlogPage() {
         title="English Learning"
         highlight="Insights & Tips"
         subtitle="Expert advice, grammar guides, and language learning strategies from our team of professional English instructors."
-        bgImage="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=1920&q=80"
+        bgImage={HERO_BACKDROPS.blog}
       />
 
       <section className="py-16 lg:py-24 bg-gradient-to-b from-primary-950 to-slate-900">

@@ -3,81 +3,57 @@ import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { Phone, Mail, MapPin, Clock, Send, CheckCircle2, AlertCircle } from "lucide-react";
 import { SectionTitle } from "../ui/SectionTitle";
+import { Section } from "../ui/Section";
+import { Field } from "../ui/Field";
+import { Button } from "../ui/Button";
 import { useSiteData } from "../../context/SiteDataContext";
-import { cn } from "../../utils/cn";
-import { db } from "../../firebase";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { fadeUp, inView } from "../../utils/motion";
 
 const API_URL = import.meta.env.VITE_API_URL || "";
 
 const INITIAL_FORM = { name: "", phone: "", email: "", course: "", message: "" };
 
-function InputField({ label, error, className, ...props }) {
+/** Success / failure panel shown in place of the form. */
+function FormResult({ tone, title, description, actionLabel, onAction }) {
+  const isSuccess = tone === "success";
   return (
-    <div className="flex flex-col gap-1.5">
-      <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
-        {label}
-        {props.required && <span className="text-rose-500 ml-0.5">*</span>}
-      </label>
-      <input
-        className={cn(
-          "w-full px-4 py-3 rounded-xl border text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white",
-          "placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-all duration-200",
-          "focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500",
-          error
-            ? "border-rose-400 dark:border-rose-500"
-            : "border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600",
-          className
-        )}
-        {...props}
-      />
-      {error && (
-        <span className="flex items-center gap-1.5 text-xs text-rose-500">
-          <AlertCircle className="w-3 h-3" />
-          {error}
-        </span>
-      )}
-    </div>
-  );
-}
-
-function SelectField({ label, error, children, ...props }) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
-        {label}
-        {props.required && <span className="text-rose-500 ml-0.5">*</span>}
-      </label>
-      <select
-        className={cn(
-          "w-full px-4 py-3 rounded-xl border text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white",
-          "transition-all duration-200 cursor-pointer",
-          "focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500",
-          error
-            ? "border-rose-400 dark:border-rose-500"
-            : "border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600"
-        )}
-        {...props}
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35 }}
+      role={isSuccess ? "status" : "alert"}
+      className="flex flex-col items-center justify-center gap-4 py-16 text-center"
+    >
+      <span
+        className={`flex h-14 w-14 items-center justify-center rounded-full ${
+          isSuccess
+            ? "bg-success-50 text-success-600 dark:bg-success-500/12"
+            : "bg-danger-50 text-danger-600 dark:bg-danger-500/12"
+        }`}
       >
-        {children}
-      </select>
-      {error && (
-        <span className="flex items-center gap-1.5 text-xs text-rose-500">
-          <AlertCircle className="w-3 h-3" />
-          {error}
-        </span>
-      )}
-    </div>
+        {isSuccess ? (
+          <CheckCircle2 className="h-7 w-7" aria-hidden="true" />
+        ) : (
+          <AlertCircle className="h-7 w-7" aria-hidden="true" />
+        )}
+      </span>
+      <h3 className="text-h3 text-fg">{title}</h3>
+      <p className="max-w-sm text-body-sm text-fg-muted">{description}</p>
+      <Button variant="secondary" size="sm" onClick={onAction} className="mt-1">
+        {actionLabel}
+      </Button>
+    </motion.div>
   );
 }
 
 export function Contact() {
   const { t, i18n } = useTranslation();
   const { siteData } = useSiteData();
-  const contactInfo = siteData.contact;
-  const isKa = i18n.language.startsWith('ka');
+  const contactInfo = siteData.contact || {};
+  const isKa = i18n.language.startsWith("ka");
   const address = (isKa && contactInfo.ka?.address) || contactInfo.address;
   const hours = (isKa && contactInfo.ka?.hours) || contactInfo.hours;
+
   const [form, setForm] = useState(INITIAL_FORM);
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState("idle");
@@ -104,9 +80,21 @@ export function Contact() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const errs = validate();
-    if (Object.keys(errs).length > 0) { setErrors(errs); return; }
+    if (Object.keys(errs).length > 0) {
+      setErrors(errs);
+      // Move focus to the first problem so keyboard users aren't stranded.
+      const first = Object.keys(errs)[0];
+      document.querySelector(`[name="${first}"]`)?.focus();
+      return;
+    }
     setStatus("submitting");
     try {
+      // Firestore is only needed at submit time, so it is fetched on demand.
+      const [{ collection, addDoc, serverTimestamp }, { db }] = await Promise.all([
+        import("firebase/firestore"),
+        import("../../firebase"),
+      ]);
+
       // Save to Firestore — this is the source of truth, always works
       await addDoc(collection(db, "contacts"), {
         name: form.name,
@@ -139,251 +127,194 @@ export function Contact() {
 
   const contactMeta = [
     {
-      Icon: Phone, label: t("contact.labels.phone"),
-      value: contactInfo.phone, href: `tel:${contactInfo.phone.replace(/\s/g, "")}`,
-      color: "bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400",
+      Icon: Phone,
+      label: t("contact.labels.phone"),
+      value: contactInfo.phone,
+      href: contactInfo.phone ? `tel:${contactInfo.phone.replace(/\s/g, "")}` : null,
     },
     {
-      Icon: Mail, label: t("contact.labels.email"),
-      value: contactInfo.email, href: `mailto:${contactInfo.email}`,
-      color: "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400",
+      Icon: Mail,
+      label: t("contact.labels.email"),
+      value: contactInfo.email,
+      href: contactInfo.email ? `mailto:${contactInfo.email}` : null,
     },
-    {
-      Icon: MapPin, label: t("contact.labels.address"),
-      value: address, href: null,
-      color: "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400",
-    },
-    {
-      Icon: Clock, label: t("contact.labels.hours"),
-      value: hours, href: null,
-      color: "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400",
-    },
-  ];
+    { Icon: MapPin, label: t("contact.labels.address"), value: address, href: null },
+    { Icon: Clock, label: t("contact.labels.hours"), value: hours, href: null },
+  ].filter((entry) => entry.value);
 
   return (
-    <section
-      id="contact"
-      className="relative py-20 lg:py-32 bg-white dark:bg-slate-900 overflow-hidden"
-      aria-label="Contact us"
-    >
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-primary-50 dark:bg-primary-950/20 rounded-full blur-3xl pointer-events-none translate-x-1/2 translate-y-1/2" />
+    <Section id="contact" tone="subtle" aria-label={t("contact.eyebrow")}>
+      <SectionTitle
+        eyebrow={t("contact.eyebrow")}
+        title={t("contact.title")}
+        highlight={t("contact.titleHighlight")}
+        description={t("contact.description")}
+        align="center"
+        className="mb-12 lg:mb-14"
+      />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col items-center mb-14">
-          <SectionTitle
-            eyebrow={t("contact.eyebrow")}
-            title={t("contact.title")}
-            highlight={t("contact.titleHighlight")}
-            description={t("contact.description")}
-            align="center"
-            className="mx-auto"
-          />
-        </div>
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-10">
+        {/* Details */}
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={inView}
+          className="flex flex-col gap-5 lg:col-span-5"
+        >
+          <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-1">
+            {contactMeta.map(({ Icon, label, value, href }) => (
+              <li
+                key={label}
+                className="flex items-start gap-3.5 rounded-card border border-line bg-surface p-4"
+              >
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-control bg-primary-50 text-primary-700 dark:bg-white/8 dark:text-accent-300">
+                  <Icon className="h-4 w-4" aria-hidden="true" />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-caption font-semibold uppercase tracking-[0.1em] text-fg-subtle">
+                    {label}
+                  </p>
+                  {href ? (
+                    <a
+                      href={href}
+                      className="mt-0.5 block break-words text-body-sm font-medium text-fg transition-colors hover:text-accent-700 dark:hover:text-accent-300"
+                    >
+                      {value}
+                    </a>
+                  ) : (
+                    <p className="mt-0.5 break-words text-body-sm font-medium text-fg">{value}</p>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
-          {/* Contact info */}
-          <motion.div
-            initial={{ opacity: 0, x: -24 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            className="lg:col-span-4 flex flex-col gap-8"
-          >
-            <div className="flex flex-col gap-4">
-              {contactMeta.map(({ Icon, label, value, href, color }) => (
-                  <div
-                    key={label}
-                    className="flex items-start gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700"
-                  >
-                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${color}`}>
-                      <Icon className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <div className="text-xs font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-0.5">
-                        {label}
-                      </div>
-                      {href ? (
-                        <a href={href} className="text-sm font-medium text-slate-900 dark:text-white hover:text-primary-700 dark:hover:text-primary-400 transition-colors duration-150">
-                          {value}
-                        </a>
-                      ) : (
-                        <p className="text-sm font-medium text-slate-900 dark:text-white">{value}</p>
-                      )}
-                    </div>
-                  </div>
-              ))}
-            </div>
+          <div className="overflow-hidden rounded-card border border-line">
+            <iframe
+              title="Kutaisi English Academy location"
+              src="https://maps.google.com/maps?q=Javakhishvili+street+24+Kutaisi+Georgia&t=&z=15&ie=UTF8&iwloc=&output=embed"
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="block h-56 w-full"
+            />
+          </div>
+        </motion.div>
 
-            {/* Google Maps embed */}
-            <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 h-52">
-              <iframe
-                title="Kutaisi English Academy location"
-                src="https://maps.google.com/maps?q=Javakhishvili+street+24+Kutaisi+Georgia&t=&z=15&ie=UTF8&iwloc=&output=embed"
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
+        {/* Form */}
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={inView}
+          className="lg:col-span-7"
+        >
+          <div className="rounded-card border border-line bg-surface p-6 shadow-sm sm:p-8">
+            {status === "error" ? (
+              <FormResult
+                tone="error"
+                title={t("contact.form.errorTitle")}
+                description={t("contact.form.errorDesc")}
+                actionLabel={t("contact.form.errorRetry")}
+                onAction={() => setStatus("idle")}
               />
-            </div>
-          </motion.div>
-
-          {/* Form */}
-          <motion.div
-            initial={{ opacity: 0, x: 24 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
-            className="lg:col-span-8"
-          >
-            <div className="bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 lg:p-8 shadow-sm">
-              {status === "error" ? (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.4 }}
-                  className="flex flex-col items-center justify-center gap-4 py-16 text-center"
-                >
-                  <div className="w-16 h-16 rounded-full bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center">
-                    <AlertCircle className="w-8 h-8 text-rose-600 dark:text-rose-400" />
-                  </div>
-                  <h3 className="text-xl font-bold text-slate-900 dark:text-white">
-                    {t("contact.form.errorTitle")}
-                  </h3>
-                  <p className="text-slate-500 dark:text-slate-400 max-w-sm">
-                    {t("contact.form.errorDesc")}
-                  </p>
-                  <button
-                    onClick={() => setStatus("idle")}
-                    className="mt-2 text-sm text-primary-600 dark:text-primary-400 hover:underline font-medium cursor-pointer"
-                  >
-                    {t("contact.form.errorRetry")}
-                  </button>
-                </motion.div>
-              ) : status === "success" ? (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.4 }}
-                  className="flex flex-col items-center justify-center gap-4 py-16 text-center"
-                >
-                  <div className="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
-                    <CheckCircle2 className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
-                  </div>
-                  <h3 className="text-xl font-bold text-slate-900 dark:text-white">
-                    {t("contact.form.successTitle")}
-                  </h3>
-                  <p className="text-slate-500 dark:text-slate-400 max-w-sm">
-                    {t("contact.form.successDesc")}
-                  </p>
-                  <button
-                    onClick={() => setStatus("idle")}
-                    className="mt-2 text-sm text-primary-600 dark:text-primary-400 hover:underline font-medium cursor-pointer"
-                  >
-                    {t("contact.form.successLink")}
-                  </button>
-                </motion.div>
-              ) : (
-                <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    <InputField
-                      label={t("contact.form.name")}
-                      name="name"
-                      type="text"
-                      placeholder={t("contact.form.namePlaceholder")}
-                      value={form.name}
-                      onChange={handleChange}
-                      error={errors.name}
-                      required
-                    />
-                    <InputField
-                      label={t("contact.form.phone")}
-                      name="phone"
-                      type="tel"
-                      placeholder={t("contact.form.phonePlaceholder")}
-                      value={form.phone}
-                      onChange={handleChange}
-                      error={errors.phone}
-                      required
-                    />
-                  </div>
-
-                  <InputField
-                    label={t("contact.form.email")}
-                    name="email"
-                    type="email"
-                    placeholder={t("contact.form.emailPlaceholder")}
-                    value={form.email}
+            ) : status === "success" ? (
+              <FormResult
+                tone="success"
+                title={t("contact.form.successTitle")}
+                description={t("contact.form.successDesc")}
+                actionLabel={t("contact.form.successLink")}
+                onAction={() => setStatus("idle")}
+              />
+            ) : (
+              <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                  <Field
+                    label={t("contact.form.name")}
+                    name="name"
+                    type="text"
+                    autoComplete="name"
+                    placeholder={t("contact.form.namePlaceholder")}
+                    value={form.name}
                     onChange={handleChange}
-                    error={errors.email}
-                  />
-
-                  <SelectField
-                    label={t("contact.form.course")}
-                    name="course"
-                    value={form.course}
-                    onChange={handleChange}
-                    error={errors.course}
+                    error={errors.name}
                     required
-                  >
-                    <option value="">{t("contact.form.courseDefault")}</option>
-                    {Array.isArray(courseOptions) &&
-                      courseOptions.map((c) => (
-                        <option key={c} value={c}>{c}</option>
-                      ))}
-                  </SelectField>
+                  />
+                  <Field
+                    label={t("contact.form.phone")}
+                    name="phone"
+                    type="tel"
+                    inputMode="tel"
+                    autoComplete="tel"
+                    placeholder={t("contact.form.phonePlaceholder")}
+                    value={form.phone}
+                    onChange={handleChange}
+                    error={errors.phone}
+                    required
+                  />
+                </div>
 
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                      {t("contact.form.message")}{" "}
-                      <span className="text-slate-400 dark:text-slate-500 font-normal">
-                        {t("contact.form.messageOptional")}
-                      </span>
-                    </label>
-                    <textarea
-                      name="message"
-                      rows={4}
-                      placeholder={t("contact.form.messagePlaceholder")}
-                      value={form.message}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 resize-none focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-200"
-                    />
-                  </div>
+                <Field
+                  label={t("contact.form.email")}
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  placeholder={t("contact.form.emailPlaceholder")}
+                  value={form.email}
+                  onChange={handleChange}
+                  error={errors.email}
+                />
 
-                  <motion.button
+                <Field
+                  as="select"
+                  label={t("contact.form.course")}
+                  name="course"
+                  value={form.course}
+                  onChange={handleChange}
+                  error={errors.course}
+                  required
+                >
+                  <option value="">{t("contact.form.courseDefault")}</option>
+                  {Array.isArray(courseOptions) &&
+                    courseOptions.map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                </Field>
+
+                <Field
+                  as="textarea"
+                  label={t("contact.form.message")}
+                  optionalLabel={t("contact.form.messageOptional")}
+                  name="message"
+                  rows={4}
+                  placeholder={t("contact.form.messagePlaceholder")}
+                  value={form.message}
+                  onChange={handleChange}
+                />
+
+                <div className="flex flex-col gap-3 pt-1 sm:flex-row sm:items-center">
+                  <Button
                     type="submit"
-                    disabled={status === "submitting"}
-                    whileHover={{ scale: status !== "submitting" ? 1.01 : 1 }}
-                    whileTap={{ scale: status !== "submitting" ? 0.99 : 1 }}
-                    className="w-full sm:w-auto self-start inline-flex items-center gap-2 px-8 py-3.5 bg-primary-900 hover:bg-primary-800 disabled:bg-primary-700 text-white rounded-xl font-semibold text-sm shadow-lg shadow-primary-900/20 transition-all duration-200 cursor-pointer disabled:cursor-wait"
+                    size="lg"
+                    loading={status === "submitting"}
+                    className="w-full sm:w-auto"
                   >
-                    {status === "submitting" ? (
-                      <>
-                        <motion.div
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                          className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full"
-                        />
-                        {t("contact.form.sending")}
-                      </>
-                    ) : (
-                      <>
-                        <Send className="w-4 h-4" />
-                        {t("contact.form.sendBtn")}
-                      </>
-                    )}
-                  </motion.button>
-
-                  <p className="text-xs text-slate-400 dark:text-slate-500">
-                    {t("contact.form.privacy")}
-                  </p>
-                </form>
-              )}
-            </div>
-          </motion.div>
-        </div>
+                    <Send className="h-4 w-4" aria-hidden="true" />
+                    {status === "submitting" ? t("contact.form.sending") : t("contact.form.sendBtn")}
+                  </Button>
+                  <p className="text-caption text-fg-subtle">{t("contact.form.privacy")}</p>
+                </div>
+              </form>
+            )}
+          </div>
+        </motion.div>
       </div>
-    </section>
+    </Section>
   );
 }

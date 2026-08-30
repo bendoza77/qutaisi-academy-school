@@ -5,7 +5,9 @@ import { useTranslation } from 'react-i18next'
 import { PageLayout } from '../components/layout/PageLayout'
 import { PageHero } from '../components/ui/PageHero'
 import { CTA } from '../components/sections/CTA'
+import { PhotoStrip } from '../components/sections/PhotoStrip'
 import { useSiteData } from '../context/SiteDataContext'
+import { HERO_BACKDROPS } from '../constants/media'
 
 function TeacherCard({ teacher, index, experienceLabel }) {
   return (
@@ -79,6 +81,7 @@ export function TeachersPage() {
         title={hero.title}
         highlight={hero.highlight}
         subtitle={hero.subtitle}
+        bgImage={HERO_BACKDROPS.teachers}
       />
 
       {/* Stats bar */}
@@ -128,6 +131,8 @@ export function TeachersPage() {
           </motion.div>
         </div>
       </section>
+
+      <PhotoStrip photos={['planning', 'libraryStudy', 'youngLearners']} />
 
       <CTA />
     </PageLayout>

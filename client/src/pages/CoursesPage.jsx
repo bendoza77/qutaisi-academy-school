@@ -6,7 +6,9 @@ import { PageLayout } from '../components/layout/PageLayout'
 import { PageHero } from '../components/ui/PageHero'
 import { CTA } from '../components/sections/CTA'
 import { COURSE_DETAILS } from '../data/courseDetails'
+import { PhotoStrip } from '../components/sections/PhotoStrip'
 import { useSiteData } from '../context/SiteDataContext'
+import { HERO_BACKDROPS } from '../constants/media'
 
 const LEVEL_COLORS = ['bg-emerald-500', 'bg-blue-500', 'bg-purple-500', 'bg-amber-500']
 
@@ -111,6 +113,7 @@ export function CoursesPage() {
         title={hero.title}
         highlight={hero.highlight}
         subtitle={hero.subtitle}
+        bgImage={HERO_BACKDROPS.courses}
       />
 
       {/* Level guide */}
@@ -163,6 +166,8 @@ export function CoursesPage() {
           </motion.p>
         </div>
       </section>
+
+      <PhotoStrip photos={['classroom', 'onlineLesson', 'writingClass']} />
 
       <CTA />
     </PageLayout>

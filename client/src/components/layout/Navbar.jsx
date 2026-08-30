@@ -1,248 +1,274 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Moon, Sun, Menu, X } from "lucide-react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Moon, Sun, Menu, X, ArrowRight, Phone } from "lucide-react";
+import { Link, useLocation, NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../../context/ThemeContext";
+import { useSiteData } from "../../context/SiteDataContext";
+import { useDialogBehavior } from "../../hooks/useDialogBehavior";
 import { LanguageSwitcher } from "../ui/LanguageSwitcher";
-import { NAV_LINK_KEYS } from "../../constants";
+import { Container } from "../ui/Container";
+import { PRIMARY_NAV, SECONDARY_NAV } from "../../constants";
 import { cn } from "../../utils/cn";
 import logoSrc from "../../assets/Screenshot_2026-04-16_211914-removebg-preview.png";
 
+function Wordmark({ onDark }) {
+  const { t } = useTranslation();
+  return (
+    <Link
+      to="/"
+      className="group flex shrink-0 items-center gap-2.5 rounded-lg"
+      aria-label={`${t("footer.brand")} ${t("footer.brandSub")} — home`}
+    >
+      <img
+        src={logoSrc}
+        alt=""
+        width={40}
+        height={40}
+        className="h-9 w-9 shrink-0 object-contain transition-transform duration-300 group-hover:scale-105 sm:h-10 sm:w-10"
+      />
+      <span className="flex min-w-0 flex-col leading-none">
+        <span
+          className={cn(
+            "truncate text-[0.9375rem] font-bold tracking-[-0.02em]",
+            onDark ? "text-white" : "text-fg"
+          )}
+        >
+          {t("footer.brand")}
+        </span>
+        <span
+          className={cn(
+            "mt-0.5 truncate text-[0.6875rem] font-semibold uppercase tracking-[0.16em]",
+            onDark ? "text-accent-300" : "text-accent-700 dark:text-accent-300"
+          )}
+        >
+          {t("footer.brandSub")}
+        </span>
+      </span>
+    </Link>
+  );
+}
+
+function IconButton({ onDark, className, ...props }) {
+  return (
+    <button
+      type="button"
+      className={cn(
+        "flex h-9 w-9 shrink-0 items-center justify-center rounded-control transition-colors duration-200",
+        onDark
+          ? "text-primary-100 hover:bg-white/15 hover:text-white"
+          : "text-fg-muted hover:bg-primary-50 hover:text-primary-800 dark:hover:bg-white/10 dark:hover:text-white",
+        className
+      )}
+      {...props}
+    />
+  );
+}
+
 export function Navbar() {
   const { isDark, toggle } = useTheme();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const { siteData } = useSiteData();
   const location = useLocation();
-  const navigate = useNavigate();
-
-  /**
-   * Georgian labels are ~40% wider than their English counterparts, so the
-   * desktop row only fits from `xl` up. Below that we fall back to the drawer
-   * instead of letting nav items wrap onto a second line.
-   */
-  const isKa = i18n.language?.startsWith("ka");
 
   const [scrolled, setScrolled] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const panelRef = useRef(null);
 
+  /* The home hero is a dark full-bleed panel, so the header floats over it
+     until the visitor scrolls. Every other route opens on a light surface and
+     gets the solid header immediately — no invisible white-on-white logo. */
   const isHome = location.pathname === "/";
+  const onDark = isHome && !scrolled;
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    const onScroll = () => setScrolled(window.scrollY > 16);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  useEffect(() => {
-    setMobileOpen(false);
-  }, [location.pathname]);
+  useEffect(() => setMenuOpen(false), [location.pathname]);
 
-  const handleEnroll = () => {
-    if (isHome) {
-      document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
-    } else {
-      navigate("/contact");
-    }
-  };
+  const closeMenu = useCallback(() => setMenuOpen(false), []);
+  useDialogBehavior({ open: menuOpen, onClose: closeMenu, ref: panelRef });
+
+  const navLinkClass = ({ isActive }) =>
+    cn(
+      "relative rounded-lg px-3 py-2 text-nav transition-colors duration-200",
+      "after:absolute after:inset-x-3 after:-bottom-0.5 after:h-0.5 after:rounded-full after:transition-transform after:duration-300 after:content-['']",
+      isActive ? "after:scale-x-100" : "after:scale-x-0",
+      onDark
+        ? cn("after:bg-accent-300", isActive ? "text-white" : "text-primary-100 hover:text-white")
+        : cn(
+            "after:bg-accent-600 dark:after:bg-accent-300",
+            isActive ? "text-fg" : "text-fg-muted hover:text-fg"
+          )
+    );
 
   return (
     <>
-      <motion.header
-        initial={{ y: -80, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      <header
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-          scrolled
-            ? "bg-white/95 dark:bg-slate-900/95 backdrop-blur-md shadow-sm border-b border-slate-200/60 dark:border-slate-700/60"
-            : "bg-transparent"
+          "fixed inset-x-0 top-0 z-50 transition-[background-color,box-shadow,border-color] duration-300",
+          onDark
+            ? "border-b border-transparent bg-transparent"
+            : "border-b border-line bg-canvas/85 shadow-nav backdrop-blur-xl supports-[not(backdrop-filter:blur(0))]:bg-canvas"
         )}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div
-            className={cn(
-              "flex items-center justify-between h-16 lg:h-20 gap-4"
-            )}
-          >
+        <Container className="flex h-16 items-center justify-between gap-3 lg:h-[4.5rem]">
+          <Wordmark onDark={onDark} />
 
-            {/* Logo */}
-            <Link
-              to="/"
-              className={cn(
-                "flex items-center gap-2 group shrink-0",
-                // ka brand text is wide — pull the logo block left into the
-                // container padding so the nav gets breathing room
-                isKa && "xl:-ml-6 2xl:-ml-8"
-              )}
-              aria-label="Kutaisi English Academy home"
+          <nav
+            className="hidden items-center gap-0.5 lg:flex"
+            aria-label={t("footer.navigation")}
+          >
+            {PRIMARY_NAV.map((link) => (
+              <NavLink key={link.path} to={link.path} className={navLinkClass} end={link.path === "/"}>
+                {t(link.key)}
+              </NavLink>
+            ))}
+          </nav>
+
+          <div className="flex shrink-0 items-center gap-1.5">
+            <div className="hidden sm:block">
+              <LanguageSwitcher onDark={onDark} />
+            </div>
+
+            <IconButton
+              onDark={onDark}
+              onClick={toggle}
+              aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
             >
-              <img
-                src={logoSrc}
-                alt="Kutaisi English Academy"
-                className="h-10 w-10 object-contain drop-shadow-md transition-transform duration-300 group-hover:scale-105"
-              />
-              <div className="flex flex-col leading-none">
-                <span
-                  className={cn(
-                    "font-bold text-sm tracking-tight whitespace-nowrap transition-colors duration-300",
-                    scrolled ? "text-primary-900 dark:text-white" : "text-white"
-                  )}
-                >
-                  {t("footer.brand")}
-                </span>
-                <span
-                  className={cn(
-                    "font-medium text-xs whitespace-nowrap transition-colors duration-300",
-                    // Georgian has no uppercase form and wide tracking overflows the row
-                    isKa ? "tracking-normal" : "tracking-widest uppercase",
-                    scrolled ? "text-primary-600 dark:text-primary-400" : "text-blue-200"
-                  )}
-                >
-                  {t("footer.brandSub")}
-                </span>
-              </div>
+              {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </IconButton>
+
+            <Link
+              to="/enroll"
+              className={cn(
+                "hidden h-10 items-center gap-2 rounded-control px-5 text-btn font-semibold transition-all duration-200 sm:inline-flex",
+                onDark
+                  ? "bg-white text-primary-900 shadow-sm hover:bg-primary-50"
+                  : "bg-primary-900 text-white shadow-sm hover:bg-primary-800 dark:bg-white dark:text-primary-950 dark:hover:bg-primary-100"
+              )}
+            >
+              {t("nav.enrollNow")}
             </Link>
 
-            {/* Desktop nav */}
-            <nav
-              className={cn(
-                "items-center",
-                isKa ? "hidden xl:flex gap-0 2xl:gap-1" : "hidden lg:flex gap-1"
-              )}
-              role="navigation"
-              aria-label="Main navigation"
+            <IconButton
+              onDark={onDark}
+              className="lg:hidden"
+              onClick={() => setMenuOpen(true)}
+              aria-label={t("footer.navigation")}
+              aria-expanded={menuOpen}
+              aria-controls="mobile-menu"
             >
-              {NAV_LINK_KEYS.map((link) => {
-                const isActive = location.pathname === link.path ||
-                  (link.path !== "/" && location.pathname.startsWith(link.path));
-                return (
-                  <Link
-                    key={link.path}
-                    to={link.path}
-                    className={cn(
-                      "py-2 rounded-lg font-medium whitespace-nowrap transition-all duration-200",
-                      isKa ? "px-2 2xl:px-3.5 text-[13px]" : "px-4 text-sm",
-                      scrolled
-                        ? isActive
-                          ? "text-primary-900 bg-primary-50 dark:text-primary-400 dark:bg-primary-900/20"
-                          : "text-slate-600 hover:text-primary-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-white dark:hover:bg-white/10"
-                        : isActive
-                        ? "text-white bg-white/15"
-                        : "text-blue-100 hover:text-white hover:bg-white/10"
-                    )}
-                  >
-                    {t(link.key)}
-                  </Link>
-                );
-              })}
-            </nav>
-
-            {/* Right actions — shrink-0 so the CTA is never clipped by a wide ka nav */}
-            <div className={cn("flex items-center shrink-0", isKa ? "gap-1.5" : "gap-2")}>
-
-              {/* Language switcher — desktop */}
-              <div className="hidden sm:block">
-                <LanguageSwitcher scrolled={scrolled} />
-              </div>
-
-              {/* Dark mode toggle */}
-              <button
-                onClick={toggle}
-                aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-                className={cn(
-                  "w-9 h-9 shrink-0 rounded-lg flex items-center justify-center transition-all duration-200",
-                  scrolled
-                    ? "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
-                    : "text-blue-100 hover:bg-white/10 hover:text-white"
-                )}
-              >
-                {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-              </button>
-
-              {/* Enroll CTA */}
-              <button
-                onClick={handleEnroll}
-                className={cn(
-                  "hidden sm:inline-flex items-center gap-2 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer",
-                  isKa ? "px-3.5 2xl:px-5" : "px-5",
-                  scrolled
-                    ? "bg-primary-900 text-white hover:bg-primary-800 shadow-md shadow-primary-900/20"
-                    : "bg-white text-primary-900 hover:bg-blue-50 shadow-md"
-                )}
-              >
-                {t("nav.enrollNow")}
-              </button>
-
-              {/* Mobile hamburger */}
-              <button
-                onClick={() => setMobileOpen((v) => !v)}
-                aria-label="Toggle mobile menu"
-                aria-expanded={mobileOpen}
-                className={cn(
-                  "w-9 h-9 rounded-lg flex items-center justify-center transition-colors duration-200 cursor-pointer",
-                  isKa ? "xl:hidden" : "lg:hidden",
-                  scrolled
-                    ? "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-white/10"
-                    : "text-white hover:bg-white/10"
-                )}
-              >
-                {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-              </button>
-            </div>
+              <Menu className="h-5 w-5" />
+            </IconButton>
           </div>
-        </div>
-      </motion.header>
+        </Container>
+      </header>
 
-      {/* Mobile drawer */}
+      {/* ── Mobile drawer ─────────────────────────────────────────────────── */}
       <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-            className={cn(
-              // header is h-16 / lg:h-20 — the ka drawer stays open into the lg range
-              "fixed top-16 left-0 right-0 z-40 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 shadow-lg",
-              isKa ? "lg:top-20 xl:hidden" : "lg:hidden"
-            )}
-          >
-            <nav
-              className="max-w-7xl mx-auto px-4 py-4 flex flex-col gap-1"
-              role="navigation"
-              aria-label="Mobile navigation"
+        {menuOpen && (
+          <div className="fixed inset-0 z-[60] lg:hidden">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={closeMenu}
+              className="absolute inset-0 bg-primary-950/60 backdrop-blur-sm"
+              aria-hidden="true"
+            />
+
+            <motion.div
+              ref={panelRef}
+              id="mobile-menu"
+              role="dialog"
+              aria-modal="true"
+              aria-label={t("footer.navigation")}
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "tween", duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+              className="absolute inset-y-0 right-0 flex w-full max-w-sm flex-col overflow-y-auto overscroll-contain bg-primary-950 text-white shadow-xl"
             >
-              {NAV_LINK_KEYS.map((link, i) => (
-                <motion.div
-                  key={link.path}
-                  initial={{ opacity: 0, x: -12 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.05, duration: 0.25 }}
-                >
-                  <Link
-                    to={link.path}
-                    className="block w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-slate-700 hover:text-primary-900 hover:bg-primary-50 dark:text-slate-300 dark:hover:text-white dark:hover:bg-white/10 transition-colors duration-150"
-                  >
-                    {t(link.key)}
-                  </Link>
-                </motion.div>
-              ))}
-
-              {/* Language switcher — mobile */}
-              <div className="mt-1">
-                <LanguageSwitcher mobile />
-              </div>
-
-              <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
+              <div className="flex h-16 shrink-0 items-center justify-between border-b border-white/10 px-5">
+                <span className="text-eyebrow uppercase text-accent-300">
+                  {t("footer.navigation")}
+                </span>
                 <button
-                  onClick={handleEnroll}
-                  className="w-full bg-primary-900 text-white py-3 rounded-lg text-sm font-semibold hover:bg-primary-800 transition-colors duration-200 cursor-pointer"
+                  type="button"
+                  onClick={closeMenu}
+                  aria-label="Close menu"
+                  className="flex h-9 w-9 items-center justify-center rounded-control text-primary-100 transition-colors hover:bg-white/15 hover:text-white"
                 >
-                  {t("nav.enrollNow")}
+                  <X className="h-5 w-5" />
                 </button>
               </div>
-            </nav>
-          </motion.div>
+
+              <nav className="flex flex-1 flex-col px-5 py-6" aria-label={t("footer.navigation")}>
+                <ul className="flex flex-col">
+                  {PRIMARY_NAV.map((link) => (
+                    <li key={link.path}>
+                      <NavLink
+                        to={link.path}
+                        className={({ isActive }) =>
+                          cn(
+                            "flex items-center justify-between border-b border-white/10 py-3.5 text-[1.0625rem] font-semibold transition-colors",
+                            isActive ? "text-accent-300" : "text-white hover:text-accent-300"
+                          )
+                        }
+                      >
+                        {t(link.key)}
+                        <ArrowRight className="h-4 w-4 opacity-40" aria-hidden="true" />
+                      </NavLink>
+                    </li>
+                  ))}
+                </ul>
+
+                <ul className="mt-6 grid grid-cols-2 gap-x-4 gap-y-1">
+                  {SECONDARY_NAV.map((link) => (
+                    <li key={link.path}>
+                      <NavLink
+                        to={link.path}
+                        className={({ isActive }) =>
+                          cn(
+                            "block py-2 text-body-sm transition-colors",
+                            isActive ? "text-accent-300" : "text-primary-200 hover:text-white"
+                          )
+                        }
+                      >
+                        {t(link.key)}
+                      </NavLink>
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="mt-auto flex flex-col gap-4 pt-8">
+                  <LanguageSwitcher variant="block" />
+
+                  <Link
+                    to="/enroll"
+                    className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-control bg-white text-btn font-semibold text-primary-900 transition-colors hover:bg-primary-50"
+                  >
+                    {t("nav.enrollNow")}
+                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                  </Link>
+
+                  <a
+                    href={`tel:${(siteData.contact?.phone || "").replace(/\s/g, "")}`}
+                    className="inline-flex items-center justify-center gap-2 text-body-sm text-primary-200 transition-colors hover:text-white"
+                  >
+                    <Phone className="h-4 w-4" aria-hidden="true" />
+                    {siteData.contact?.phone}
+                  </a>
+                </div>
+              </nav>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </>

@@ -22,12 +22,6 @@ export default defineConfig({
       output: {
         // Split heavy vendor libs into separate cacheable chunks
         manualChunks(id) {
-          if (
-            id.includes('node_modules/three') ||
-            id.includes('node_modules/@react-three')
-          ) {
-            return 'vendor-three';
-          }
           if (id.includes('node_modules/framer-motion')) {
             return 'vendor-motion';
           }
@@ -44,11 +38,16 @@ export default defineConfig({
           ) {
             return 'vendor-router';
           }
-          if (id.includes('node_modules/gsap')) {
-            return 'vendor-gsap';
+          if (id.includes('node_modules/firebase') || id.includes('node_modules/@firebase')) {
+            return 'vendor-firebase';
           }
           if (id.includes('node_modules/lucide-react')) {
             return 'vendor-icons';
+          }
+          // three.js is decoration only. Its own chunk keeps it out of the
+          // critical path — <Lazy3D> fetches it once the browser is idle.
+          if (id.includes('node_modules/three')) {
+            return 'vendor-three';
           }
           if (
             id.includes('node_modules/react/') ||

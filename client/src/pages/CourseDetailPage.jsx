@@ -4,8 +4,10 @@ import { CheckCircle2, Clock, Users, Calendar, ChevronDown, ArrowRight } from 'l
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { PageLayout } from '../components/layout/PageLayout'
+import { PhotoStrip } from '../components/sections/PhotoStrip'
 import { COURSE_DETAILS } from '../data/courseDetails'
 import { useSiteData } from '../context/SiteDataContext'
+import { HERO_BACKDROPS } from '../constants/media'
 
 function FaqItem({ q, a }) {
   const [open, setOpen] = useState(false)
@@ -83,6 +85,16 @@ export function CourseDetailPage() {
       {/* Hero */}
       <section className="relative pt-32 pb-16 bg-gradient-to-br from-primary-950 via-primary-900 to-primary-800 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
+          {/* Photograph first, then a heavy navy scrim: the course accent glow
+              has to keep reading over it, and the copy has to stay AAA. */}
+          <img
+            src={HERO_BACKDROPS.courseDetail}
+            alt=""
+            fetchPriority="low"
+            decoding="async"
+            className="h-full w-full object-cover opacity-20"
+          />
+          <div className="absolute inset-0 bg-primary-950/70" />
           <div className="absolute -top-40 -right-40 w-96 h-96 rounded-full blur-3xl opacity-30" style={{ background: course.accent }} />
         </div>
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -279,6 +291,8 @@ export function CourseDetailPage() {
           </div>
         </div>
       </section>
+
+      <PhotoStrip photos={['discussion', 'writingByHand', 'textbooks']} />
     </PageLayout>
   )
 }

@@ -1,189 +1,224 @@
-import { lazy, Suspense } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, ChevronDown, PlayCircle } from "lucide-react";
+import { Link } from "react-router-dom";
+import { ArrowRight, BadgeCheck, Check, GraduationCap } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "../ui/Button";
+import { Container } from "../ui/Container";
+import { Lazy3D } from "../3d/Lazy3D";
 import { useSiteData } from "../../context/SiteDataContext";
+import { EASE } from "../../utils/motion";
+import logoSrc from "../../assets/Screenshot_2026-04-16_211914-removebg-preview.png";
 
-const HeroBackground3D = lazy(() =>
-  import("../3d/HeroBackground3D").then(m => ({ default: m.HeroBackground3D }))
-);
-
-const containerVariants = {
+const container = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.12, delayChildren: 0.3 } },
+  visible: { transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
 };
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 32 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } },
+const item = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE } },
 };
+
+/**
+ * The CEFR ladder doubles as the hero visual: it is the academy's actual
+ * course structure rather than decoration, so the first screen already answers
+ * "where would I start?".
+ */
+function CourseLadder({ courses, isKa }) {
+  const { t } = useTranslation();
+
+  return (
+    <div className="relative rounded-panel border border-white/12 bg-white/[0.06] p-5 backdrop-blur-md sm:p-6">
+      <div className="mb-5 flex items-center gap-3">
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-control bg-white/10 ring-1 ring-inset ring-white/15">
+          <img src={logoSrc} alt="" width={32} height={32} className="h-7 w-7 object-contain" />
+        </span>
+        <div className="min-w-0">
+          <p className="text-body-sm font-semibold text-white">{t("footer.brand")} {t("footer.brandSub")}</p>
+          <p className="text-caption text-primary-200/70">{t("courses.eyebrow")}</p>
+        </div>
+      </div>
+
+      <ul className="flex flex-col gap-2">
+        {courses.slice(0, 4).map((course, i) => (
+          <motion.li
+            key={course.id ?? course.slug}
+            initial={{ opacity: 0, x: 16 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5 + i * 0.09, duration: 0.5, ease: EASE }}
+          >
+            <Link
+              to={`/courses/${course.slug}`}
+              className="group flex items-center gap-3 rounded-control px-3 py-2.5 transition-colors duration-200 hover:bg-white/8 focus-visible:bg-white/8"
+            >
+              <span
+                aria-hidden="true"
+                className="h-8 w-1 shrink-0 rounded-full"
+                style={{ background: course.accent }}
+              />
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-body-sm font-semibold text-white">
+                  {isKa ? course.ka?.title || course.title : course.title}
+                </span>
+                <span className="block text-caption text-primary-200/70">
+                  {isKa ? course.ka?.level || course.level : course.level}
+                </span>
+              </span>
+              <ArrowRight
+                className="h-4 w-4 shrink-0 text-primary-200/50 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-accent-300"
+                aria-hidden="true"
+              />
+            </Link>
+          </motion.li>
+        ))}
+      </ul>
+
+      <Link
+        to="/english-test"
+        className="mt-4 flex items-center justify-between gap-3 rounded-control border border-accent-400/25 bg-accent-400/10 px-4 py-3 transition-colors duration-200 hover:bg-accent-400/18"
+      >
+        <span className="flex items-center gap-2.5 text-body-sm font-semibold text-white">
+          <GraduationCap className="h-4 w-4 shrink-0 text-accent-300" aria-hidden="true" />
+          {t("nav.englishTest")}
+        </span>
+        <ArrowRight className="h-4 w-4 shrink-0 text-accent-300" aria-hidden="true" />
+      </Link>
+    </div>
+  );
+}
 
 export function Hero() {
   const { t, i18n } = useTranslation();
   const { siteData } = useSiteData();
   const isKa = i18n.language === "ka";
 
-  const heroEn = siteData.hero;
-  const heroKaOverride = heroEn.ka || {};
+  const hero = siteData.hero || {};
+  const ka = hero.ka || {};
 
-  const badge           = isKa ? (heroKaOverride.badge           || t("hero.badge"))           : heroEn.badge;
-  const title           = isKa ? (heroKaOverride.title           || t("hero.title"))           : heroEn.title;
-  const titleHighlight  = isKa ? (heroKaOverride.titleHighlight  || t("hero.titleHighlight"))  : heroEn.titleHighlight;
-  const subtitle        = isKa ? (heroKaOverride.subtitle        || t("hero.subtitle"))        : heroEn.subtitle;
-  const trustBadges     = isKa ? (heroKaOverride.trustBadges     || t("hero.trustBadges", { returnObjects: true })) : heroEn.trustBadges;
-  const floatingCards   = isKa ? (heroKaOverride.floatingCards   || t("hero.floatingCards", { returnObjects: true })) : (heroEn.floatingCards || t("hero.floatingCards", { returnObjects: true }));
-
-  const scrollTo = (id) =>
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  const badge = isKa ? ka.badge || t("hero.badge") : hero.badge;
+  const title = isKa ? ka.title || t("hero.title") : hero.title;
+  const titleHighlight = isKa ? ka.titleHighlight || t("hero.titleHighlight") : hero.titleHighlight;
+  const subtitle = isKa ? ka.subtitle || t("hero.subtitle") : hero.subtitle;
+  const rawBadges = isKa
+    ? ka.trustBadges || t("hero.trustBadges", { returnObjects: true })
+    : hero.trustBadges;
+  const trustBadges = Array.isArray(rawBadges) ? rawBadges : [];
 
   return (
     <section
       id="home"
-      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
-      aria-label="Hero section"
+      className="relative isolate overflow-hidden bg-primary-950 pt-28 pb-16 sm:pt-32 lg:pt-40 lg:pb-24"
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-primary-950 via-primary-900 to-primary-800" />
-      <Suspense fallback={null}><HeroBackground3D /></Suspense>
-
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-          animate={{ y: [-8, 8, -8] }}
-          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -top-40 -right-40 w-96 h-96 rounded-full bg-primary-700/30 blur-3xl"
-        />
-        <motion.div
-          animate={{ y: [8, -8, 8] }}
-          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-          className="absolute -bottom-40 -left-40 w-96 h-96 rounded-full bg-blue-600/20 blur-3xl"
-        />
-        <motion.div
-          animate={{ y: [-12, 12, -12] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-          className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-accent-500/10 blur-2xl"
-        />
+      {/* Field: a single soft light source plus a blueprint grid, with a WebGL
+          layer of drifting wireframes on top. The scene is additive — the
+          section is finished without it, and it only arrives once the browser
+          is idle, so it can never delay the headline. */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
+        <div className="absolute inset-0 bg-[radial-gradient(120%_90%_at_78%_8%,#1b3153_0%,#0d1c33_45%,#0a1526_100%)]" />
+        <div className="bg-grid absolute inset-0 opacity-60" />
+        <Lazy3D variant="shapes" opacity={0.75} />
+        <div className="absolute -right-24 top-[-10%] h-[32rem] w-[32rem] rounded-full bg-accent-500/12 blur-[120px]" />
+        <div className="absolute -left-32 bottom-[-20%] h-[28rem] w-[28rem] rounded-full bg-primary-500/18 blur-[110px]" />
       </div>
 
-      <div
-        className="absolute inset-0 opacity-[0.04]"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-        }}
-      />
-
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20 text-center">
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="flex flex-col items-center gap-6"
-        >
-          <motion.div variants={itemVariants}>
-            <span className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/15 text-blue-100 text-xs font-semibold uppercase tracking-widest px-4 py-2 rounded-full">
-              <span className="w-1.5 h-1.5 rounded-full bg-accent-400 animate-pulse" />
-              {badge}
-            </span>
-          </motion.div>
-
-          <motion.h1
-            variants={itemVariants}
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.1] tracking-tight max-w-4xl"
-          >
-            {title}{" "}
-            <span className="relative inline-block">
-              <span className="gradient-text-light">{titleHighlight}</span>
-              <motion.span
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ delay: 1.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="absolute bottom-1 left-0 right-0 h-0.5 bg-accent-400 origin-left"
-              />
-            </span>
-          </motion.h1>
-
-          <motion.p
-            variants={itemVariants}
-            className="text-blue-100/80 text-lg sm:text-xl max-w-2xl leading-relaxed"
-          >
-            {subtitle}
-          </motion.p>
-
+      <Container>
+        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-16">
           <motion.div
-            variants={itemVariants}
-            className="flex flex-col sm:flex-row items-center gap-3 pt-2"
+            variants={container}
+            initial="hidden"
+            animate="visible"
+            className="lg:col-span-7"
           >
-            <Button
-              variant="accent"
-              size="lg"
-              onClick={() => scrollTo("contact")}
-              className="group w-full sm:w-auto"
-            >
-              {t("hero.enrollBtn")}
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
-            </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              onClick={() => scrollTo("about")}
-              className="group w-full sm:w-auto"
-            >
-              <PlayCircle className="w-4 h-4" />
-              {t("hero.discoverBtn")}
-            </Button>
-          </motion.div>
-
-          <motion.div
-            variants={itemVariants}
-            className="flex flex-wrap items-center justify-center gap-6 pt-4"
-          >
-            {Array.isArray(trustBadges) &&
-              trustBadges.map((badge, i) => (
-                <div key={i} className="flex items-center gap-2 text-blue-200/70 text-sm">
-                  <div className="w-1 h-1 rounded-full bg-accent-400" />
+            {badge && (
+              <motion.p variants={item} className="mb-6">
+                <span className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/8 px-3.5 py-1.5 text-caption font-semibold text-primary-100 backdrop-blur-sm">
+                  <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-accent-300" />
                   {badge}
-                </div>
-              ))}
-          </motion.div>
-        </motion.div>
+                </span>
+              </motion.p>
+            )}
 
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 1.2, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="hidden lg:flex items-center justify-center gap-4 mt-16"
-        >
-          {Array.isArray(floatingCards) &&
-            floatingCards.map((card, i) => (
-              <motion.div
-                key={i}
-                animate={{ y: [0, i % 2 === 0 ? -8 : 8, 0] }}
-                transition={{ duration: 4 + i, repeat: Infinity, ease: "easeInOut", delay: i * 0.5 }}
-                className="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl px-6 py-4 text-center"
+            <motion.h1 variants={item} className="max-w-[16ch] text-display text-white">
+              {title}{" "}
+              <span className="relative whitespace-nowrap text-accent-300">
+                {titleHighlight}
+                <motion.span
+                  aria-hidden="true"
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{ delay: 0.75, duration: 0.6, ease: EASE }}
+                  className="absolute -bottom-1 left-0 right-0 h-[3px] origin-left rounded-full bg-accent-400/70"
+                />
+              </span>
+            </motion.h1>
+
+            <motion.p
+              variants={item}
+              className="mt-6 max-w-xl text-body-lg text-primary-100/80"
+            >
+              {subtitle}
+            </motion.p>
+
+            <motion.div variants={item} className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <Button as={Link} to="/enroll" variant="accent" size="lg" className="group w-full sm:w-auto">
+                {t("hero.enrollBtn")}
+                <ArrowRight
+                  className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1"
+                  aria-hidden="true"
+                />
+              </Button>
+              <Button as={Link} to="/courses" variant="outline" size="lg" className="w-full sm:w-auto">
+                {t("hero.discoverBtn")}
+              </Button>
+            </motion.div>
+
+            {/* The accreditation earns a place on the first screen — it is the
+                one claim here a visitor can independently check. */}
+            <motion.p variants={item} className="mt-9">
+              <a
+                href="#icef"
+                className="group inline-flex items-center gap-2.5 rounded-full border border-accent-400/25 bg-accent-400/10 py-2 pl-3.5 pr-4 transition-colors duration-200 hover:bg-accent-400/18"
               >
-                <div className="text-2xl mb-1">{["🎓", "📚", "🌍"][i]}</div>
-                <div className="text-white font-semibold text-sm">{card.title}</div>
-                <div className="text-blue-200/60 text-xs">{card.sub}</div>
-              </motion.div>
-            ))}
-        </motion.div>
-      </div>
+                <BadgeCheck className="h-4 w-4 shrink-0 text-accent-300" aria-hidden="true" />
+                <span className="text-caption font-semibold text-white">
+                  {t("icef.eyebrow")}
+                  <span className="mx-1.5 text-accent-300/50" aria-hidden="true">
+                    /
+                  </span>
+                  <span className="text-primary-100/80">{t("icef.statusValue")}</span>
+                </span>
+                <ArrowRight
+                  className="h-3.5 w-3.5 shrink-0 text-accent-300 transition-transform duration-200 group-hover:translate-x-0.5"
+                  aria-hidden="true"
+                />
+              </a>
+            </motion.p>
 
-      <motion.button
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 2, duration: 0.6 }}
-        onClick={() => scrollTo("about")}
-        aria-label="Scroll down"
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 text-white/40 hover:text-white/70 transition-colors duration-200 cursor-pointer"
-      >
-        <span className="text-xs uppercase tracking-widest">{t("hero.scrollLabel")}</span>
-        <motion.div
-          animate={{ y: [0, 6, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <ChevronDown className="w-5 h-5" />
-        </motion.div>
-      </motion.button>
+            {trustBadges.length > 0 && (
+              <motion.ul
+                variants={item}
+                className="mt-8 grid grid-cols-1 gap-x-6 gap-y-3 border-t border-white/10 pt-8 sm:grid-cols-2"
+              >
+                {trustBadges.map((badgeText, i) => (
+                  <li key={i} className="flex items-center gap-2.5 text-body-sm text-primary-100/75">
+                    <Check className="h-4 w-4 shrink-0 text-accent-300" aria-hidden="true" />
+                    <span className="min-w-0">{badgeText}</span>
+                  </li>
+                ))}
+              </motion.ul>
+            )}
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.7, ease: EASE }}
+            className="lg:col-span-5"
+          >
+            <CourseLadder courses={siteData.courses || []} isKa={isKa} />
+          </motion.div>
+        </div>
+      </Container>
     </section>
   );
 }

@@ -3,60 +3,36 @@
  * All user-facing text lives in src/i18n/locales/
  */
 
+/**
+ * Header navigation. Deliberately five items: the Georgian labels are ~40%
+ * wider than the English ones, and a five-item row fits both languages at
+ * 1024px without wrapping or the negative-margin hacks it used to need.
+ * Everything else stays one tap away in the drawer and the footer.
+ */
+export const PRIMARY_NAV = [
+  { key: "nav.courses",  path: "/courses"  },
+  { key: "nav.teachers", path: "/teachers" },
+  { key: "nav.about",    path: "/about"    },
+  { key: "nav.blog",     path: "/blog"     },
+  { key: "nav.contact",  path: "/contact"  },
+];
+
+/** Shown in the mobile drawer and the footer. */
+export const SECONDARY_NAV = [
+  { key: "nav.whyUs",        path: "/why-us"       },
+  { key: "nav.testimonials", path: "/testimonials" },
+  { key: "nav.faq",          path: "/faq"          },
+  { key: "nav.englishTest",  path: "/english-test" },
+];
+
+/** Every public route, in reading order. */
 export const NAV_LINK_KEYS = [
-  { key: "nav.home",         href: "#home",         path: "/"             },
-  { key: "nav.about",        href: "#about",        path: "/about"        },
-  { key: "nav.courses",      href: "#courses",      path: "/courses"      },
-  { key: "nav.whyUs",        href: "#why-us",       path: "/why-us"       },
-  { key: "nav.testimonials", href: "#testimonials", path: "/testimonials" },
-  { key: "nav.contact",      href: "#contact",      path: "/contact"      },
-  { key: "nav.blog",         href: "/blog",          path: "/blog"         },
-  { key: "nav.englishTest",  href: "/english-test",  path: "/english-test" },
+  { key: "nav.home", path: "/" },
+  ...PRIMARY_NAV,
+  ...SECONDARY_NAV,
 ];
 
-/** Visual/structural metadata for the 4 courses (order matches translation items array) */
-export const COURSES_META = [
-  {
-    id: 1,
-    icon: "BookOpen",
-    accent: "#10b981",
-    badgeColor: "bg-emerald-100 text-emerald-700",
-    popular: false,
-  },
-  {
-    id: 2,
-    icon: "TrendingUp",
-    accent: "#2563eb",
-    badgeColor: "bg-blue-100 text-blue-700",
-    popular: true,
-  },
-  {
-    id: 3,
-    icon: "Award",
-    accent: "#7c3aed",
-    badgeColor: "bg-purple-100 text-purple-700",
-    popular: false,
-  },
-  {
-    id: 4,
-    icon: "Briefcase",
-    accent: "#f59e0b",
-    badgeColor: "bg-amber-100 text-amber-700",
-    popular: false,
-  },
-];
-
-/** Color palette for benefit cards (order matches translation items array) */
-export const BENEFIT_COLORS = [
-  { bg: "bg-primary-100 dark:bg-primary-900/30", icon: "text-primary-700 dark:text-primary-400" },
-  { bg: "bg-emerald-100 dark:bg-emerald-900/30", icon: "text-emerald-700 dark:text-emerald-400" },
-  { bg: "bg-purple-100 dark:bg-purple-900/30", icon: "text-purple-700 dark:text-purple-400" },
-  { bg: "bg-amber-100 dark:bg-amber-900/30", icon: "text-amber-700 dark:text-amber-400" },
-  { bg: "bg-rose-100 dark:bg-rose-900/30", icon: "text-rose-700 dark:text-rose-400" },
-  { bg: "bg-cyan-100 dark:bg-cyan-900/30", icon: "text-cyan-700 dark:text-cyan-400" },
-];
-
-/** Icon names for benefits (order matches translation items array) */
+/** Icon names for benefits (order matches the benefits array) */
 export const BENEFIT_ICONS = [
   "GraduationCap",
   "Users",
@@ -64,23 +40,6 @@ export const BENEFIT_ICONS = [
   "Calendar",
   "Globe",
   "Shield",
-];
-
-/** Visual metadata for testimonials (order matches translation items array) */
-export const TESTIMONIALS_META = [
-  { id: 1, avatar: "MK", color: "bg-blue-600", rating: 5 },
-  { id: 2, avatar: "GT", color: "bg-purple-600", rating: 5 },
-  { id: 3, avatar: "AB", color: "bg-emerald-600", rating: 5 },
-  { id: 4, avatar: "LG", color: "bg-amber-600", rating: 5 },
-  { id: 5, avatar: "NS", color: "bg-rose-600", rating: 5 },
-];
-
-/** Numeric values and suffixes for stats (labels come from translations) */
-export const STATS_META = [
-  { value: 1200, suffix: "+" },
-  { value: 15, suffix: "+" },
-  { value: 8, suffix: "" },
-  { value: 96, suffix: "%" },
 ];
 
 /** Static contact data that doesn't need translation */
@@ -94,3 +53,7 @@ export const CONTACT_INFO = {
     linkedin: "#",
   },
 };
+
+/** Studio credit shown in the footer. No URL is published for WEBI, so the
+ *  credit renders as text only — never invent a link. */
+export const BUILT_BY = { name: "WEBI", url: "" };

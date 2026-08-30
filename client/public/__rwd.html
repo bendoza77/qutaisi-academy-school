@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>RWD harness</title>
+<style>
+  body { margin:0; background:#1b2431; font:12px/1.4 system-ui, sans-serif; color:#cbd5e1; }
+  .row { display:flex; gap:12px; padding:12px; align-items:flex-start; overflow-x:auto; }
+  figure { margin:0; flex:0 0 auto; }
+  figcaption { padding:6px 2px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; }
+  iframe { border:0; background:#fff; display:block; }
+</style>
+</head>
+<body>
+<div class="row" id="row"></div>
+<script>
+  const widths = new URLSearchParams(location.search).get('w')?.split(',').map(Number) || [320, 375, 414, 768];
+  const height = Number(new URLSearchParams(location.search).get('h') || 900);
+  const path = new URLSearchParams(location.search).get('p') || '/';
+  document.getElementById('row').innerHTML = widths.map(w =>
+    `<figure><figcaption>${w}px</figcaption><iframe src="${path}" width="${w}" height="${height}" loading="eager"></iframe></figure>`
+  ).join('');
+</script>
+</body>
+</html>

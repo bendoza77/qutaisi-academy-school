@@ -1,6 +1,4 @@
-import { createContext, useContext, useState, useCallback, useEffect } from 'react'
-import { doc, setDoc, onSnapshot } from 'firebase/firestore'
-import { db } from '../firebase'
+import { createContext, useContext, useState, useCallback, useEffect, useRef, useMemo } from 'react'
 
 export const DEFAULT_SITE_DATA = {
   hero: {
@@ -10,10 +8,27 @@ export const DEFAULT_SITE_DATA = {
     subtitle: "Kutaisi English Academy offers internationally-aligned courses taught by certified educators. Whether you're a beginner or preparing for IELTS — we'll get you there.",
     trustBadges: ["1200+ Students", "CEFR Aligned", "3+ Years of Excellence", "96% Success Rate"],
   },
+  /**
+   * "About Our Academy" — rendered on the home page and fully editable from
+   * Admin → About Section. `visible: false` removes the section from the site.
+   */
   about: {
+    visible: true,
+    eyebrow: "About the Academy",
     title: "Trusted English Education in the Heart of ",
     titleHighlight: "Kutaisi",
     description: "For over three years, Kutaisi English Academy has been the city's leading destination for professional English language education — from complete beginners to advanced speakers.",
+    secondaryDescription: "We teach four CEFR-aligned programmes in small groups, led by CELTA and DELTA certified educators, with progress tracked from your first placement assessment to your final certificate.",
+    image: "",
+    imageAlt: "Kutaisi English Academy",
+    ctaText: "Learn More About Us",
+    ctaLink: "/about",
+    stats: [
+      { id: 1, value: "96%",    label: "Student Satisfaction" },
+      { id: 2, value: "4.9★",   label: "Average Rating"       },
+      { id: 3, value: "1,200+", label: "Total Graduates"      },
+      { id: 4, value: "3+",     label: "Years of Excellence"  },
+    ],
     highlights: [
       "Founded in 2022 with a mission to make quality English education accessible",
       "Curriculum fully aligned with the Common European Framework of Reference (CEFR)",
@@ -309,7 +324,48 @@ export const DEFAULT_SITE_DATA = {
 }
 
 const CACHE_KEY = 'kea-site-data'
-const SITE_DOC = doc(db, 'siteData', 'main')
+
+/**
+ * The Firestore SDK is the heaviest dependency in the app and nothing on the
+ * first paint needs it: the page renders from the local cache (or the built-in
+ * defaults) and swaps in live content the moment the listener attaches. Loading
+ * it on demand keeps ~100 KB of gzipped JavaScript off the critical path.
+ */
+let firestorePromise = null
+function getFirestore() {
+  if (!firestorePromise) {
+    firestorePromise = Promise.all([
+      import('firebase/firestore'),
+      import('../firebase'),
+    ]).then(([firestore, { db }]) => ({
+      ...firestore,
+      siteDoc: firestore.doc(db, 'siteData', 'main'),
+    }))
+  }
+  return firestorePromise
+}
+
+/**
+ * Merge a stored document over the defaults.
+ *
+ * Plain-object sections are merged one level deep so a document written before
+ * a field existed (e.g. an `about` block saved without `image`) still picks up
+ * the new defaults instead of rendering `undefined`. Arrays are replaced whole —
+ * the admin owns their order and length.
+ */
+function mergeSiteData(stored) {
+  if (!stored || typeof stored !== 'object') return DEFAULT_SITE_DATA
+
+  const out = { ...DEFAULT_SITE_DATA }
+  for (const [key, value] of Object.entries(stored)) {
+    const base = DEFAULT_SITE_DATA[key]
+    const mergeable =
+      value && typeof value === 'object' && !Array.isArray(value) &&
+      base && typeof base === 'object' && !Array.isArray(base)
+    out[key] = mergeable ? { ...base, ...value } : value
+  }
+  return out
+}
 
 const SiteDataContext = createContext(null)
 
@@ -318,34 +374,68 @@ export function SiteDataProvider({ children }) {
   const [siteData, setSiteData] = useState(() => {
     try {
       const cached = localStorage.getItem(CACHE_KEY)
-      if (cached) return { ...DEFAULT_SITE_DATA, ...JSON.parse(cached) }
+      if (cached) return mergeSiteData(JSON.parse(cached))
     } catch {}
     return DEFAULT_SITE_DATA
   })
 
+  /** 'loading' until the first snapshot lands, then 'ready' or 'error'. */
+  const [status, setStatus] = useState('loading')
+
   // Real-time listener: any admin save on any device propagates to all visitors
   useEffect(() => {
-    const unsub = onSnapshot(
-      SITE_DOC,
-      (snap) => {
-        const data = snap.exists()
-          ? { ...DEFAULT_SITE_DATA, ...snap.data() }
-          : DEFAULT_SITE_DATA
-        setSiteData(data)
-        try { localStorage.setItem(CACHE_KEY, JSON.stringify(data)) } catch {}
-      },
-      (err) => console.error('[SiteData] Firestore read error:', err)
-    )
-    return unsub
+    let unsubscribe
+    let cancelled = false
+
+    getFirestore()
+      .then(({ onSnapshot, siteDoc }) => {
+        if (cancelled) return
+        unsubscribe = onSnapshot(
+          siteDoc,
+          (snap) => {
+            const data = snap.exists() ? mergeSiteData(snap.data()) : DEFAULT_SITE_DATA
+            setSiteData(data)
+            setStatus('ready')
+            try { localStorage.setItem(CACHE_KEY, JSON.stringify(data)) } catch {}
+          },
+          (err) => {
+            console.error('[SiteData] Firestore read error:', err)
+            setStatus('error')
+          }
+        )
+      })
+      .catch((err) => {
+        console.error('[SiteData] Firestore load error:', err)
+        if (!cancelled) setStatus('error')
+      })
+
+    return () => {
+      cancelled = true
+      unsubscribe?.()
+    }
   }, [])
 
+  // Keeps updateSection's rollback honest without re-creating the callback.
+  const siteDataRef = useRef(siteData)
+  useEffect(() => { siteDataRef.current = siteData }, [siteData])
+
+  /**
+   * Persist one top-level section.
+   * @returns {Promise<{ ok: boolean, error?: unknown }>} so callers can show a
+   *          real failure state instead of silently pretending the save worked.
+   */
   const updateSection = useCallback(async (key, value) => {
+    const previous = siteDataRef.current?.[key]
     // Optimistic local update so the admin UI feels instant
     setSiteData(prev => ({ ...prev, [key]: value }))
     try {
-      await setDoc(SITE_DOC, { [key]: value }, { merge: true })
+      const { setDoc, siteDoc } = await getFirestore()
+      await setDoc(siteDoc, { [key]: value }, { merge: true })
+      return { ok: true }
     } catch (err) {
       console.error('[SiteData] write error:', err)
+      setSiteData(prev => ({ ...prev, [key]: previous }))
+      return { ok: false, error: err }
     }
   }, [])
 
@@ -353,27 +443,34 @@ export function SiteDataProvider({ children }) {
     const def = DEFAULT_SITE_DATA[key]
     setSiteData(prev => ({ ...prev, [key]: def }))
     try {
-      await setDoc(SITE_DOC, { [key]: def }, { merge: true })
+      const { setDoc, siteDoc } = await getFirestore()
+      await setDoc(siteDoc, { [key]: def }, { merge: true })
+      return { ok: true }
     } catch (err) {
       console.error('[SiteData] write error:', err)
+      return { ok: false, error: err }
     }
   }, [])
 
   const resetAll = useCallback(async () => {
     setSiteData(DEFAULT_SITE_DATA)
-    localStorage.removeItem(CACHE_KEY)
+    try { localStorage.removeItem(CACHE_KEY) } catch {}
     try {
-      await setDoc(SITE_DOC, DEFAULT_SITE_DATA)
+      const { setDoc, siteDoc } = await getFirestore()
+      await setDoc(siteDoc, DEFAULT_SITE_DATA)
+      return { ok: true }
     } catch (err) {
       console.error('[SiteData] write error:', err)
+      return { ok: false, error: err }
     }
   }, [])
 
-  return (
-    <SiteDataContext.Provider value={{ siteData, updateSection, resetSection, resetAll }}>
-      {children}
-    </SiteDataContext.Provider>
+  const value = useMemo(
+    () => ({ siteData, status, updateSection, resetSection, resetAll }),
+    [siteData, status, updateSection, resetSection, resetAll]
   )
+
+  return <SiteDataContext.Provider value={value}>{children}</SiteDataContext.Provider>
 }
 
 export const useSiteData = () => useContext(SiteDataContext)

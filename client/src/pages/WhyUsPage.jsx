@@ -7,6 +7,8 @@ import { WhyChooseUs } from '../components/sections/WhyChooseUs'
 import { Stats } from '../components/sections/Stats'
 import { Testimonials } from '../components/sections/Testimonials'
 import { CTA } from '../components/sections/CTA'
+import { PhotoStrip } from '../components/sections/PhotoStrip'
+import { HERO_BACKDROPS } from '../constants/media'
 
 export function WhyUsPage() {
   const { t } = useTranslation()
@@ -17,8 +19,10 @@ export function WhyUsPage() {
         title={t('benefits.title')}
         highlight={t('benefits.titleHighlight')}
         subtitle={t('benefits.description')}
+        bgImage={HERO_BACKDROPS.whyUs}
       />
       <WhyChooseUs />
+      <PhotoStrip photos={['studyGroup', 'teacherAtBoard', 'conversation']} />
       <Stats />
       <Testimonials />
       <CTA />

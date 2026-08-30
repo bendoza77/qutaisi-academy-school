@@ -1,163 +1,230 @@
-import { lazy, Suspense } from "react";
 import { motion } from "framer-motion";
-import { CheckCircle2, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Check, ArrowRight, Quote } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { SectionTitle } from "../ui/SectionTitle";
-import { Button } from "../ui/Button";
+import { Section } from "../ui/Section";
+import { Eyebrow } from "../ui/Eyebrow";
 import { useSiteData } from "../../context/SiteDataContext";
+import { fadeUp, fadeLeft, inView, EASE } from "../../utils/motion";
+import logoSrc from "../../assets/Screenshot_2026-04-16_211914-removebg-preview.png";
 
-const AboutOrb3D = lazy(() =>
-  import("../3d/AboutOrb3D").then(m => ({ default: m.AboutOrb3D }))
-);
+/** Internal paths route through the SPA; anything else is a real anchor. */
+function CtaLink({ href, children }) {
+  const className =
+    "group inline-flex h-12 items-center gap-2 rounded-control bg-primary-900 px-6 text-btn font-semibold text-white transition-colors duration-200 hover:bg-primary-800 dark:bg-white dark:text-primary-950 dark:hover:bg-primary-100";
+  const inner = (
+    <>
+      {children}
+      <ArrowRight
+        className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1"
+        aria-hidden="true"
+      />
+    </>
+  );
 
-const cardVariants = {
-  hidden: { opacity: 0, x: 40 },
-  visible: { opacity: 1, x: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
-};
+  if (/^https?:\/\//i.test(href)) {
+    return (
+      <a href={href} target="_blank" rel="noopener noreferrer" className={className}>
+        {inner}
+      </a>
+    );
+  }
+  return (
+    <Link to={href || "/about"} className={className}>
+      {inner}
+    </Link>
+  );
+}
 
+/** Founder quote — falls back to the crest when no photo has been uploaded. */
+function QuotePanel({ quote, founder, founderTitle, compact = false }) {
+  if (!quote) return null;
+  const initials = (founder || "")
+    .split(" ")
+    .map((word) => word[0])
+    .filter(Boolean)
+    .join("")
+    .slice(0, 2);
+
+  return (
+    <figure
+      className={`relative overflow-hidden rounded-panel bg-primary-950 p-6 ring-1 ring-inset ring-white/10 sm:p-8 dark:bg-primary-900/70 ${
+        compact ? "" : "flex flex-1 flex-col justify-center"
+      }`}
+    >
+      <div aria-hidden="true" className="bg-grid absolute inset-0 opacity-50" />
+      <img
+        src={logoSrc}
+        alt=""
+        aria-hidden="true"
+        width={220}
+        height={220}
+        loading="lazy"
+        className="pointer-events-none absolute -bottom-8 -right-6 w-40 opacity-[0.07]"
+      />
+
+      <Quote className="relative h-7 w-7 text-accent-400" strokeWidth={1.5} aria-hidden="true" />
+      <blockquote className="relative mt-4 text-body-lg font-medium leading-relaxed text-white">
+        {quote}
+      </blockquote>
+      {founder && (
+        <figcaption className="relative mt-6 flex items-center gap-3">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent-600 text-caption font-bold text-white">
+            {initials}
+          </span>
+          <span className="min-w-0">
+            <span className="block truncate text-body-sm font-semibold text-white">{founder}</span>
+            <span className="block truncate text-caption text-primary-200/70">{founderTitle}</span>
+          </span>
+        </figcaption>
+      )}
+    </figure>
+  );
+}
+
+/**
+ * "About Our Academy" — every string, the image, the CTA, the statistics and
+ * the section's visibility come from Admin → About Section (Firestore).
+ */
 export function About() {
   const { t, i18n } = useTranslation();
   const { siteData } = useSiteData();
   const isKa = i18n.language === "ka";
 
-  const enData = siteData.about;
-  const kaOverride = enData.ka || {};
+  const about = siteData.about || {};
+  const ka = about.ka || {};
 
-  const title           = isKa ? (kaOverride.title           || t("about.title"))           : enData.title;
-  const titleHighlight  = isKa ? (kaOverride.titleHighlight  || t("about.titleHighlight"))  : enData.titleHighlight;
-  const description     = isKa ? (kaOverride.description     || t("about.description"))     : enData.description;
-  const highlights      = isKa ? (kaOverride.highlights      || t("about.highlights", { returnObjects: true })) : enData.highlights;
-  const quote           = isKa ? (kaOverride.quote           || t("about.quote"))           : enData.quote;
-  const founder         = isKa ? (kaOverride.founder         || t("about.founder"))         : enData.founder;
-  const founderTitle    = isKa ? (kaOverride.founderTitle    || t("about.founderTitle"))    : enData.founderTitle;
+  if (about.visible === false) return null;
 
-  const scrollTo = (id) =>
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  const pick = (field, localeKey) =>
+    isKa ? ka[field] || t(localeKey, { defaultValue: about[field] }) : about[field];
+
+  const eyebrow = pick("eyebrow", "about.eyebrow");
+  const title = pick("title", "about.title");
+  const titleHighlight = pick("titleHighlight", "about.titleHighlight");
+  const description = pick("description", "about.description");
+  const secondary = pick("secondaryDescription", "about.secondaryDescription");
+  const ctaText = pick("ctaText", "about.learnMore");
+  const quote = pick("quote", "about.quote");
+  const founder = pick("founder", "about.founder");
+  const founderTitle = pick("founderTitle", "about.founderTitle");
+
+  const rawHighlights = isKa
+    ? ka.highlights || t("about.highlights", { returnObjects: true, defaultValue: about.highlights })
+    : about.highlights;
+  const highlights = Array.isArray(rawHighlights) ? rawHighlights : [];
+
+  const rawStats = isKa
+    ? ka.stats || t("aboutPage.highlights.stats", { returnObjects: true, defaultValue: about.stats })
+    : about.stats;
+  const stats = Array.isArray(rawStats) ? rawStats.filter((s) => s && (s.value || s.label)) : [];
+
+  const image = about.image;
+  const imageAlt = (isKa ? ka.imageAlt : about.imageAlt) || t("about.sectionLabel");
 
   return (
-    <section
-      id="about"
-      className="relative py-20 lg:py-32 bg-white dark:bg-slate-900 overflow-hidden"
-      aria-label="About us"
-    >
-      <div className="absolute top-0 right-0 w-96 h-96 bg-primary-50 dark:bg-primary-950/30 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+    <Section id="about" tone="canvas" aria-labelledby="about-heading">
+      <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-12 lg:gap-16">
+        {/* Copy */}
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={inView}
+          className="flex flex-col lg:col-span-6"
+        >
+          {eyebrow && <Eyebrow>{eyebrow}</Eyebrow>}
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+          <h2 id="about-heading" className="mt-4 text-h2 text-fg">
+            {title}
+            {titleHighlight && (
+              <>
+                {title?.endsWith(" ") ? "" : " "}
+                <span className="gradient-text">{titleHighlight}</span>
+              </>
+            )}
+          </h2>
 
-          <div className="flex flex-col gap-8">
-            <SectionTitle
-              eyebrow={t("about.eyebrow")}
-              title={title}
-              highlight={titleHighlight}
-              description={description}
-              align="left"
-            />
+          {description && <p className="mt-5 text-body-lg text-fg-muted">{description}</p>}
+          {secondary && <p className="mt-4 text-body text-fg-muted">{secondary}</p>}
 
-            <ul className="flex flex-col gap-4">
-              {Array.isArray(highlights) &&
-                highlights.map((point, i) => (
-                  <motion.li
-                    key={i}
-                    initial={{ opacity: 0, x: -16 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.1, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                    className="flex items-start gap-3"
-                  >
-                    <CheckCircle2 className="w-5 h-5 text-primary-600 dark:text-primary-400 shrink-0 mt-0.5" />
-                    <span className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
-                      {point}
-                    </span>
-                  </motion.li>
-                ))}
+          {highlights.length > 0 && (
+            <ul className="mt-8 flex flex-col gap-3.5">
+              {highlights.map((point, i) => (
+                <li key={i} className="flex items-start gap-3">
+                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent-50 text-accent-700 dark:bg-accent-400/15 dark:text-accent-300">
+                    <Check className="h-3 w-3" strokeWidth={3} aria-hidden="true" />
+                  </span>
+                  <span className="text-body-sm leading-relaxed text-fg-muted">{point}</span>
+                </li>
+              ))}
             </ul>
+          )}
 
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.4, duration: 0.5 }}
-              className="flex items-center gap-4"
-            >
-              <Button variant="primary" size="md" onClick={() => scrollTo("courses")} className="group">
-                {t("about.viewCourses")}
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
-              </Button>
-              <Button variant="ghost" size="md" onClick={() => scrollTo("contact")}>
-                {t("about.getInTouch")}
-              </Button>
-            </motion.div>
-          </div>
-
-          <div className="relative">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-              className="relative bg-gradient-to-br from-primary-900 to-primary-950 rounded-3xl p-8 lg:p-10 overflow-hidden"
-            >
-              <div className="absolute inset-0"><Suspense fallback={null}><AboutOrb3D /></Suspense></div>
-              <div
-                className="absolute inset-0 opacity-5"
-                style={{
-                  backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23fff' fill-opacity='1' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='1.5'/%3E%3Ccircle cx='23' cy='3' r='1.5'/%3E%3Ccircle cx='3' cy='23' r='1.5'/%3E%3Ccircle cx='23' cy='23' r='1.5'/%3E%3C/g%3E%3C/svg%3E")`,
-                }}
-              />
-              <blockquote className="relative z-10">
-                <div className="text-5xl font-serif text-accent-400 leading-none mb-4">"</div>
-                <p className="text-white/90 text-lg lg:text-xl leading-relaxed font-medium mb-6">{quote}</p>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-accent-500 flex items-center justify-center">
-                    <span className="text-white font-bold text-sm">
-                      {founder.split(" ").map((w) => w[0]).join("").slice(0, 2)}
-                    </span>
-                  </div>
-                  <div>
-                    <div className="text-white font-semibold text-sm">{founder}</div>
-                    <div className="text-blue-300/60 text-xs">{founderTitle}</div>
-                  </div>
+          {stats.length > 0 && (
+            <dl className="mt-10 grid grid-cols-2 gap-x-6 gap-y-6 border-t border-line pt-8 sm:grid-cols-4">
+              {stats.map((stat, i) => (
+                <div key={stat.id ?? i}>
+                  <dt className="sr-only">{stat.label}</dt>
+                  <dd>
+                    <span className="block text-h3 font-bold tabular text-fg">{stat.value}</span>
+                    <span className="mt-1 block text-caption text-fg-subtle">{stat.label}</span>
+                  </dd>
                 </div>
-              </blockquote>
-            </motion.div>
+              ))}
+            </dl>
+          )}
 
-            <motion.div
-              variants={cardVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              transition={{ delay: 0.3 }}
-              className="absolute -bottom-15 -left-6 bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-4 flex items-center gap-3 border border-slate-100 dark:border-slate-700"
-            >
-              <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center shrink-0">
-                <span className="text-xl">🎓</span>
-              </div>
-              <div>
-                <div className="text-slate-900 dark:text-white font-bold text-lg leading-none">98%</div>
-                <div className="text-slate-500 dark:text-slate-400 text-xs">{t("about.satisfactionLabel")}</div>
-              </div>
-            </motion.div>
+          {ctaText && (
+            <div className="mt-9">
+              <CtaLink href={about.ctaLink}>{ctaText}</CtaLink>
+            </div>
+          )}
+        </motion.div>
 
+        {/* Media */}
+        <motion.div
+          variants={fadeLeft}
+          initial="hidden"
+          whileInView="visible"
+          viewport={inView}
+          className="flex w-full flex-col gap-5 lg:col-span-6"
+        >
+          {image ? (
+            <>
+              <div className="relative overflow-hidden rounded-panel border border-line bg-canvas-subtle">
+                <img
+                  src={image}
+                  alt={imageAlt}
+                  loading="lazy"
+                  decoding="async"
+                  className="aspect-[4/3] w-full object-cover"
+                />
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 rounded-panel ring-1 ring-inset ring-primary-950/8"
+                />
+              </div>
+              <QuotePanel
+                quote={quote}
+                founder={founder}
+                founderTitle={founderTitle}
+                compact
+              />
+            </>
+          ) : (
             <motion.div
-              variants={cardVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              transition={{ delay: 0.5 }}
-              className="absolute -top-6 -right-6 bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-4 flex items-center gap-3 border border-slate-100 dark:border-slate-700"
+              initial={{ opacity: 0, scale: 0.98 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={inView}
+              transition={{ duration: 0.6, ease: EASE }}
+              className="flex min-h-[22rem] flex-col"
             >
-              <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center shrink-0">
-                <span className="text-xl">⭐</span>
-              </div>
-              <div>
-                <div className="text-slate-900 dark:text-white font-bold text-lg leading-none">4.9/5</div>
-                <div className="text-slate-500 dark:text-slate-400 text-xs">{t("about.ratingLabel")}</div>
-              </div>
+              <QuotePanel quote={quote} founder={founder} founderTitle={founderTitle} />
             </motion.div>
-          </div>
-        </div>
+          )}
+        </motion.div>
       </div>
-    </section>
+    </Section>
   );
 }

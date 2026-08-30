@@ -1,69 +1,79 @@
-import { motion } from 'framer-motion'
+import { motion } from "framer-motion";
+import { Container } from "./Container";
+import { Eyebrow } from "./Eyebrow";
+import { Lazy3D } from "../3d/Lazy3D";
+import { EASE } from "../../utils/motion";
 
-export function PageHero({ eyebrow, title, highlight, subtitle, bgImage }) {
+/**
+ * Dark brand header used at the top of every inner page.
+ *
+ * The backdrop is deliberately layered: photograph, navy scrim, blueprint
+ * grid, then an optional WebGL layer. The photo is the page's subject, the
+ * scrim is what keeps AAA contrast on the heading no matter which photo is
+ * passed, and the 3D arrives last and only when the device can spare it.
+ *
+ * @param {{
+ *   eyebrow?: string,
+ *   title: string,
+ *   highlight?: string,
+ *   subtitle?: string,
+ *   bgImage?: string,
+ *   scene?: 'shapes' | 'globe' | false,
+ *   children?: React.ReactNode
+ * }} props
+ */
+export function PageHero({ eyebrow, title, highlight, subtitle, bgImage, scene = "shapes", children }) {
   return (
-    <section className="relative pt-32 pb-20 bg-gradient-to-br from-primary-950 via-primary-900 to-primary-800 overflow-hidden">
-      {/* Background cover image */}
-      {bgImage && (
-        <img
-          src={bgImage}
-          alt=""
-          className="absolute inset-0 w-full h-full object-cover opacity-25"
-        />
-      )}
-      {/* Dark overlay to keep text readable */}
-      {bgImage && <div className="absolute inset-0 bg-primary-950/60" />}
-
-      {/* Ambient blobs */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <motion.div
-          animate={{ y: [-8, 8, -8] }}
-          transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute -top-40 -right-40 w-96 h-96 rounded-full bg-primary-700/30 blur-3xl"
-        />
-        <motion.div
-          animate={{ y: [8, -8, 8] }}
-          transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
-          className="absolute -bottom-32 -left-32 w-80 h-80 rounded-full bg-blue-600/20 blur-3xl"
-        />
+    <section className="relative isolate overflow-hidden bg-primary-950 pt-28 pb-16 sm:pt-32 lg:pt-36 lg:pb-20">
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
+        {bgImage && (
+          <>
+            <img
+              src={bgImage}
+              alt=""
+              /* Decorative and behind a 75% scrim: it must never outrank the
+                 heading for bandwidth on a slow connection. */
+              fetchPriority="low"
+              decoding="async"
+              className="h-full w-full object-cover opacity-35"
+            />
+            <div className="absolute inset-0 bg-primary-950/65" />
+          </>
+        )}
+        {!bgImage && (
+          <div className="absolute inset-0 bg-[radial-gradient(100%_110%_at_60%_0%,#1b3153_0%,#0d1c33_55%,#0a1526_100%)]" />
+        )}
+        <div className="bg-grid absolute inset-0 opacity-50" />
+        {scene && <Lazy3D variant={scene} cameraZ={7} opacity={0.4} />}
+        <div className="absolute -right-20 -top-24 h-96 w-96 rounded-full bg-accent-500/12 blur-[110px]" />
       </div>
 
-      {/* Grid pattern */}
-      <div
-        className="absolute inset-0 opacity-[0.04]"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-        }}
-      />
-
-      <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <Container size="narrow">
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="flex flex-col items-center gap-4"
+          transition={{ duration: 0.6, ease: EASE }}
+          className="flex flex-col items-center text-center"
         >
-          {eyebrow && (
-            <span className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/15 text-blue-100 text-xs font-semibold uppercase tracking-widest px-4 py-2 rounded-full">
-              <span className="w-1.5 h-1.5 rounded-full bg-accent-400 animate-pulse" />
-              {eyebrow}
-            </span>
-          )}
+          {eyebrow && <Eyebrow light>{eyebrow}</Eyebrow>}
 
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-[1.1] tracking-tight">
+          <h1 className="mt-5 max-w-3xl text-h1 text-white">
             {title}
             {highlight && (
-              <> <span className="gradient-text-light">{highlight}</span></>
+              <>
+                {" "}
+                <span className="text-accent-300">{highlight}</span>
+              </>
             )}
           </h1>
 
           {subtitle && (
-            <p className="text-blue-100/80 text-lg sm:text-xl max-w-2xl leading-relaxed mt-2">
-              {subtitle}
-            </p>
+            <p className="mt-5 max-w-2xl text-body-lg text-primary-100/80">{subtitle}</p>
           )}
+
+          {children}
         </motion.div>
-      </div>
+      </Container>
     </section>
-  )
+  );
 }

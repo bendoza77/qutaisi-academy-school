@@ -1,14 +1,23 @@
 import { useTranslation } from "react-i18next";
-import { motion } from "framer-motion";
 import { cn } from "../../utils/cn";
 
+const LANGS = [
+  { code: "en", label: "EN", aria: "Switch to English" },
+  { code: "ka", label: "ქარ", aria: "Switch to Georgian" },
+];
+
 /**
- * Two-option language toggle: EN | KA
- * @param {{ scrolled?: boolean, mobile?: boolean }} props
+ * Two-option language toggle.
+ *
+ * @param {{
+ *   onDark?: boolean,        // sits on the transparent header over the hero
+ *   variant?: 'inline' | 'block',
+ *   className?: string
+ * }} props
  */
-export function LanguageSwitcher({ scrolled = false, mobile = false }) {
+export function LanguageSwitcher({ onDark = false, variant = "inline", className }) {
   const { i18n } = useTranslation();
-  const current = i18n.language.startsWith("ka") ? "ka" : "en";
+  const current = i18n.language?.startsWith("ka") ? "ka" : "en";
 
   const switchTo = (lang) => {
     if (lang === current) return;
@@ -16,21 +25,24 @@ export function LanguageSwitcher({ scrolled = false, mobile = false }) {
     document.documentElement.lang = lang;
   };
 
-  if (mobile) {
+  if (variant === "block") {
     return (
-      <div className="flex items-center gap-1 px-4 py-2">
-        {["en", "ka"].map((lang) => (
+      <div className={cn("grid grid-cols-2 gap-2", className)} role="group" aria-label="Language">
+        {LANGS.map(({ code, label, aria }) => (
           <button
-            key={lang}
-            onClick={() => switchTo(lang)}
+            key={code}
+            type="button"
+            onClick={() => switchTo(code)}
+            aria-label={aria}
+            aria-pressed={current === code}
             className={cn(
-              "flex-1 py-2 rounded-lg text-sm font-semibold transition-all duration-200 cursor-pointer",
-              current === lang
-                ? "bg-primary-900 text-white"
-                : "bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-600"
+              "h-11 rounded-control text-btn font-semibold transition-colors duration-200",
+              current === code
+                ? "bg-white/15 text-white ring-1 ring-inset ring-white/25"
+                : "text-primary-200 hover:bg-white/10 hover:text-white"
             )}
           >
-            {lang === "en" ? "EN" : "ქარ"}
+            {label}
           </button>
         ))}
       </div>
@@ -40,42 +52,32 @@ export function LanguageSwitcher({ scrolled = false, mobile = false }) {
   return (
     <div
       className={cn(
-        "relative flex items-center rounded-lg p-0.5 gap-0.5",
-        scrolled
-          ? "bg-slate-100 dark:bg-slate-800"
-          : "bg-white/10 backdrop-blur-sm"
+        "flex items-center gap-0.5 rounded-control p-0.5",
+        onDark ? "bg-white/10" : "bg-primary-50 dark:bg-white/8",
+        className
       )}
       role="group"
-      aria-label="Language switcher"
+      aria-label="Language"
     >
-      {["en", "ka"].map((lang) => (
+      {LANGS.map(({ code, label, aria }) => (
         <button
-          key={lang}
-          onClick={() => switchTo(lang)}
-          aria-pressed={current === lang}
-          aria-label={lang === "en" ? "Switch to English" : "Switch to Georgian"}
+          key={code}
+          type="button"
+          onClick={() => switchTo(code)}
+          aria-label={aria}
+          aria-pressed={current === code}
           className={cn(
-            "relative px-2.5 py-1 rounded-md text-xs font-semibold transition-all duration-200 cursor-pointer z-10",
-            current === lang
-              ? scrolled
-                ? "text-white"
-                : "text-primary-900"
-              : scrolled
-              ? "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
-              : "text-blue-200/70 hover:text-white"
+            "rounded-[0.4375rem] px-2.5 py-1 text-caption font-semibold transition-colors duration-200",
+            current === code
+              ? onDark
+                ? "bg-white text-primary-900"
+                : "bg-primary-900 text-white dark:bg-white dark:text-primary-950"
+              : onDark
+                ? "text-primary-100 hover:text-white"
+                : "text-fg-subtle hover:text-fg"
           )}
         >
-          {current === lang && (
-            <motion.span
-              layoutId="lang-pill"
-              className={cn(
-                "absolute inset-0 rounded-md",
-                scrolled ? "bg-primary-900 dark:bg-primary-600" : "bg-white"
-              )}
-              transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            />
-          )}
-          <span className="relative z-10">{lang === "en" ? "EN" : "ქარ"}</span>
+          {label}
         </button>
       ))}
     </div>

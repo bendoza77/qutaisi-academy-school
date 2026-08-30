@@ -10,14 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@react-three/drei": "^10.7.7",
-    "@react-three/fiber": "^9.6.0",
-    "@react-three/postprocessing": "^3.0.4",
     "@tailwindcss/vite": "^4.2.2",
     "firebase": "^12.12.1",
     "framer-motion": "^12.38.0",
-    "groq-sdk": "^1.1.2",
-    "gsap": "^3.15.0",
     "i18next": "^26.0.5",
     "i18next-browser-languagedetector": "^8.2.1",
     "lucide-react": "^1.8.0",
@@ -26,8 +21,7 @@
     "react-i18next": "^17.0.3",
     "react-router-dom": "^7.14.1",
     "tailwindcss": "^4.2.2",
-    "three": "^0.168.0",
-    "zustand": "^5.0.12"
+    "three": "^0.168.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
