@@ -1,9 +1,10 @@
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { Phone, Mail, MapPin, Clock, ArrowUpRight } from "lucide-react";
-import { PRIMARY_NAV, SECONDARY_NAV, BUILT_BY } from "../../constants";
+import { PRIMARY_NAV, SECONDARY_NAV } from "../../constants";
 import { useSiteData } from "../../context/SiteDataContext";
 import { Container } from "../ui/Container";
+import { WebiFooterCredit } from "../ui/WebiCredit";
 import logoSrc from "../../assets/Screenshot_2026-04-16_211914-removebg-preview.png";
 
 /* lucide-react ships no brand marks — these are the four we actually link to. */
@@ -74,6 +75,7 @@ export function Footer() {
   const address = (isKa && contact.ka?.address) || contact.address;
   const hours = (isKa && contact.ka?.hours) || contact.hours;
   const year = new Date().getFullYear();
+  const [emailUser, emailDomain] = (contact.email || "").split("@");
 
   /* Placeholder "#" entries in the CMS must never render as dead links. */
   const socials = Object.entries(contact.social || {}).filter(
@@ -82,10 +84,12 @@ export function Footer() {
 
   return (
     <footer className="bg-primary-950 text-primary-200" role="contentinfo">
+      <WebiFooterCredit />
+
       <Container className="py-16 lg:py-20">
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-12 lg:gap-8">
           {/* Brand */}
-          <div className="lg:col-span-4">
+          <div className="lg:col-span-3">
             <Link to="/" className="mb-5 inline-flex items-center gap-3">
               <img src={logoSrc} alt="" width={44} height={44} className="h-11 w-11 object-contain" />
               <span className="flex flex-col leading-none">
@@ -153,8 +157,8 @@ export function Footer() {
             </ul>
           </nav>
 
-          {/* Contact */}
-          <div className="lg:col-span-3">
+          {/* Contact — the widest column, so the email address stays on one line */}
+          <div className="lg:col-span-4">
             <ColumnHeading>{t("footer.contact")}</ColumnHeading>
             <ul className="flex flex-col gap-3.5">
               {contact.phone && (
@@ -175,7 +179,15 @@ export function Footer() {
                     className="group flex items-start gap-3 text-body-sm text-primary-200/80 transition-colors hover:text-white"
                   >
                     <Mail className="mt-0.5 h-4 w-4 shrink-0 text-accent-300" aria-hidden="true" />
-                    <span className="break-all">{contact.email}</span>
+                    {/* Narrow screens wrap before the @, never inside a word. */}
+                    <span className="min-w-0 wrap-anywhere">
+                      {emailUser}
+                      {emailDomain && (
+                        <>
+                          <wbr />@{emailDomain}
+                        </>
+                      )}
+                    </span>
                   </a>
                 </li>
               )}
@@ -216,25 +228,6 @@ export function Footer() {
             >
               {t("footer.terms")}
             </Link>
-            <span aria-hidden="true" className="hidden h-3 w-px bg-white/15 sm:block" />
-            <p className="text-caption text-primary-200/60">
-              {isKa ? "საიტი შექმნილია" : "Website designed & developed by"}{" "}
-              {BUILT_BY.url ? (
-                <a
-                  href={BUILT_BY.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-semibold tracking-[0.08em] text-primary-100 transition-colors hover:text-accent-300"
-                >
-                  {BUILT_BY.name}
-                </a>
-              ) : (
-                <span className="font-semibold tracking-[0.08em] text-primary-100">
-                  {BUILT_BY.name}
-                </span>
-              )}
-              {isKa ? "-ის მიერ" : ""}
-            </p>
           </div>
         </Container>
       </div>

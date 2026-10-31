@@ -54,6 +54,6 @@ export const CONTACT_INFO = {
   },
 };
 
-/** Studio credit shown in the footer. No URL is published for WEBI, so the
- *  credit renders as text only — never invent a link. */
+/** Studio credit (see components/ui/WebiCredit.jsx). WEBI has no website yet,
+ *  so the logo renders unlinked — set `url` here once it does. */
 export const BUILT_BY = { name: "WEBI", url: "" };

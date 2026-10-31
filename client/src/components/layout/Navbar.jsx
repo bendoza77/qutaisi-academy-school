@@ -8,6 +8,7 @@ import { useSiteData } from "../../context/SiteDataContext";
 import { useDialogBehavior } from "../../hooks/useDialogBehavior";
 import { LanguageSwitcher } from "../ui/LanguageSwitcher";
 import { Container } from "../ui/Container";
+import { WebiDrawerCredit } from "../ui/WebiCredit";
 import { PRIMARY_NAV, SECONDARY_NAV } from "../../constants";
 import { cn } from "../../utils/cn";
 import logoSrc from "../../assets/Screenshot_2026-04-16_211914-removebg-preview.png";
@@ -265,6 +266,8 @@ export function Navbar() {
                     <Phone className="h-4 w-4" aria-hidden="true" />
                     {siteData.contact?.phone}
                   </a>
+
+                  <WebiDrawerCredit />
                 </div>
               </nav>
             </motion.div>

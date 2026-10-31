@@ -13,7 +13,7 @@
     "enrollNow": "Enroll Now"
   },
   "hero": {
-    "badge": "Now Enrolling — Summer 2025 Cohort",
+    "badge": "Now Enrolling — New Groups Open",
     "title": "Learn English",
     "titleHighlight": "with Confidence",
     "subtitle": "Kutaisi English Academy offers internationally-aligned courses taught by certified educators. Whether you're a beginner or preparing for IELTS — we'll get you there.",
@@ -325,6 +325,8 @@
     "privacy": "Privacy Policy",
     "terms": "Terms of Service",
     "copyright": "Kutaisi English Academy. All rights reserved.",
+    "builtBy": "Website designed & developed by",
+    "builtByShort": "Website by",
     "courseLinks": [
       "Foundation English",
       "Progressive English",

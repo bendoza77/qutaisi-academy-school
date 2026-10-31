@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useCallback, useEffect, useRef, us
 
 export const DEFAULT_SITE_DATA = {
   hero: {
-    badge: "Now Enrolling — Summer 2025 Cohort",
+    badge: "Now Enrolling — New Groups Open",
     title: "Learn English",
     titleHighlight: "with Confidence",
     subtitle: "Kutaisi English Academy offers internationally-aligned courses taught by certified educators. Whether you're a beginner or preparing for IELTS — we'll get you there.",

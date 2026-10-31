@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect } from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { MotionConfig } from "framer-motion";
 import { useTranslation } from "react-i18next";
+import { Analytics } from "@vercel/analytics/react";
 import { ThemeProvider } from "./context/ThemeContext";
 import { SiteDataProvider } from "./context/SiteDataContext";
 import { Navbar } from "./components/layout/Navbar";
@@ -81,6 +82,11 @@ function HomeShell() {
 
 const lazyRoute = (element) => <Suspense fallback={<PageLoader />}>{element}</Suspense>;
 
+/* Cloudflare in front of Vercel holds a year-long HTML copy of the default
+   script URL. The ?v=1 gives the real script a clean cache key. Dev stays
+   undefined so the package still loads its debug script. */
+const ANALYTICS_SCRIPT = import.meta.env.PROD ? "/_vercel/insights/script.js?v=1" : undefined;
+
 function App() {
   return (
     <SiteDataProvider>
@@ -109,6 +115,7 @@ function App() {
               <Route path="*"                  element={lazyRoute(<NotFoundPage />)} />
             </Routes>
           </BrowserRouter>
+          <Analytics scriptSrc={ANALYTICS_SCRIPT} />
         </MotionConfig>
       </ThemeProvider>
     </SiteDataProvider>
