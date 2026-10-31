@@ -5,7 +5,9 @@ import { X, Send, Sparkles, Bot } from 'lucide-react'
 import { useSiteData } from '../../context/SiteDataContext'
 
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions'
-const MODEL = 'llama-3.1-8b-instant'
+/* Groq retires models without warning, and the old id then fails with a 404.
+   Current ids: GET https://api.groq.com/openai/v1/models */
+const MODEL = 'qwen/qwen3.8-27b'
 
 function buildSystemPrompt(siteData, isKa) {
   const { courses, contact, stats } = siteData
@@ -21,7 +23,7 @@ Academy details:
 Courses:
 ${courses.map(c => `• ${c.title} (${c.level}) — ${c.price} ${c.priceNote}, ${c.duration}, ${c.sessionsPerWeek}, max ${c.groupSize}`).join('\n')}
 
-Rules: Be warm and concise (2–4 sentences). Help users pick the right course. Mention the free placement test. Don't invent facts. If unsure, suggest calling or emailing the academy.`
+Rules: Be warm and concise (2–4 sentences). Write plain text only, no markdown. Help users pick the right course. Mention the free placement test. Don't invent facts. If unsure, suggest calling or emailing the academy.`
 }
 
 export function AIChatWidget() {
@@ -88,8 +90,9 @@ export function AIChatWidget() {
             ...history.map(m => ({ role: m.role, content: m.content })),
           ],
           stream: true,
-          max_tokens: 350,
+          max_tokens: 500,
           temperature: 0.7,
+          reasoning_format: 'hidden',
         }),
       })
 
@@ -98,12 +101,18 @@ export function AIChatWidget() {
       const reader = res.body.getReader()
       const dec = new TextDecoder()
       let reply = ''
+      let buffer = ''
       setMessages(prev => [...prev, { role: 'assistant', content: '' }])
 
       while (true) {
         const { done, value } = await reader.read()
         if (done) break
-        for (const line of dec.decode(value).split('\n')) {
+        // A network chunk can end mid-line or mid-way through a Georgian
+        // character, so hold the unfinished part back for the next one.
+        buffer += dec.decode(value, { stream: true })
+        const lines = buffer.split('\n')
+        buffer = lines.pop()
+        for (const line of lines) {
           if (!line.startsWith('data: ') || line === 'data: [DONE]') continue
           try {
             const delta = JSON.parse(line.slice(6)).choices[0]?.delta?.content || ''
@@ -112,8 +121,11 @@ export function AIChatWidget() {
           } catch {}
         }
       }
+
+      if (!reply) throw new Error('empty reply')
     } catch {
-      setMessages(prev => [...prev, { role: 'assistant', content: ui.error }])
+      // Drop the blank bubble too, or its typing dots would never stop.
+      setMessages(prev => [...prev.filter(m => m.content), { role: 'assistant', content: ui.error }])
     } finally {
       setLoading(false)
     }
