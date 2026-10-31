@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect } from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { MotionConfig } from "framer-motion";
 import { useTranslation } from "react-i18next";
+import { Analytics } from "@vercel/analytics/react";
 import { ThemeProvider } from "./context/ThemeContext";
 import { SiteDataProvider } from "./context/SiteDataContext";
 import { Navbar } from "./components/layout/Navbar";
@@ -111,6 +112,7 @@ function App() {
           </BrowserRouter>
         </MotionConfig>
       </ThemeProvider>
+      <Analytics />
     </SiteDataProvider>
   );
 }
